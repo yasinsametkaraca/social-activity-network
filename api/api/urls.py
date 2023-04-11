@@ -27,6 +27,8 @@ from rest_framework_simplejwt.views import (
 )
 
 from account.models import MyUser
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -70,3 +72,4 @@ urlpatterns = [
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('addresses/', include('address.urls'), name='address'),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
