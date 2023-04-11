@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'account',
     'userprofile',
+    'address',
     'drf_yasg',
 ]
 
