@@ -38,7 +38,7 @@ class Profile(models.Model):
     education_level = models.CharField(max_length=20, blank=True, null=True, choices=EDUCATION_LEVEL_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified_at = models.DateTimeField(auto_now=True)
-    avatar = models.ImageField(upload_to=low_file_directory_path, default='default.png', blank=True, null=True)
+    avatar = models.ImageField(upload_to=low_file_directory_path, blank=True, null=True)
     company_url = models.URLField(max_length=200, blank=True, null=True)
     company_name = models.CharField(max_length=100, blank=True, null=True)
     address = models.OneToOneField(Address, on_delete=models.CASCADE, blank=True, null=True)

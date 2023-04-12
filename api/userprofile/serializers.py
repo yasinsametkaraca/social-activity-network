@@ -1,18 +1,13 @@
 from rest_framework import serializers
 from .models import Profile
-from account.serializers import UserSerializer
 from address.serializers import AddressSerializer
+from account.serializers import UserSerializer
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = '__all__'
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        profile = Profile.objects.create(user=user, **validated_data)
-        return profile
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
@@ -22,11 +17,6 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = '__all__'
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        profile = Profile.objects.create(user=user, **validated_data)
-        return profile
 
     def get_user(self, obj):
         user = obj.user

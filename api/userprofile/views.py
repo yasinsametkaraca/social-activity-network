@@ -18,7 +18,6 @@ class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
 
 
 @api_view(['GET', ])
