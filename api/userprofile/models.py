@@ -29,21 +29,28 @@ class Profile(models.Model):
     user = models.OneToOneField(AUTH_USER_MODEL, on_delete=models.CASCADE)
     about = models.TextField(max_length=600, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
-    is_online = models.BooleanField(default=False)
-    following = models.ManyToManyField(AUTH_USER_MODEL, related_name="following")
-    follower = models.ManyToManyField(AUTH_USER_MODEL, related_name='follower')
+    linkedin_url = models.URLField(max_length=200, blank=True, null=True)
+    website_url = models.URLField(max_length=200, blank=True, null=True)
+    # following = models.ManyToManyField(AUTH_USER_MODEL, related_name="following")  # who I follow
+    # follower = models.ManyToManyField(AUTH_USER_MODEL, related_name='follower')  # who follow me
+    friends = models.ManyToManyField(AUTH_USER_MODEL, related_name='friends', blank=True)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, default='None', blank=True, null=True)
     education_level = models.CharField(max_length=20, blank=True, null=True, choices=EDUCATION_LEVEL_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified_at = models.DateTimeField(auto_now=True)
-    avatar = models.ImageField(upload_to=low_file_directory_path, default='/default.png', blank=True, null=True)
+    avatar = models.ImageField(upload_to=low_file_directory_path, default='default.png', blank=True, null=True)
     company_url = models.URLField(max_length=200, blank=True, null=True)
     company_name = models.CharField(max_length=100, blank=True, null=True)
     address = models.OneToOneField(Address, on_delete=models.CASCADE, blank=True, null=True)
 
-
     def __str__(self):
         return self.user.username
+
+    def get_friends_count(self):
+        return self.friends.all().count()
+
+    def get_friends(self):
+        return self.friends.all()
 
     class Meta:
         db_table = 'profile'
@@ -54,3 +61,24 @@ class Profile(models.Model):
         return self.user.get_full_name()
 
 
+FRIENDSHIP_STATUS = (
+    ('send', 'send'),
+    ('accepted', 'accepted'),
+    ('rejected', 'rejected'),
+)
+
+
+class Friendship(models.Model):
+    from_id = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='from_user')
+    to_id = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='to_user')
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_modified_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=10, choices=FRIENDSHIP_STATUS, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.from_id} -> {self.to_id} | status = {self.status}"
+
+    class Meta:
+        db_table = 'friendship'
+        verbose_name = 'Friendship'
+        verbose_name_plural = 'Friendships'

@@ -1,14 +1,14 @@
 from rest_framework import generics
-from address.models import Address
-from address.serializers import AddressSerializer
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly, SAFE_METHODS
+from .models import Address
+from .serializers import AddressSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, SAFE_METHODS, \
+    BasePermission
 
 
-# Create your views here.
-
-class ReadOnly(generics.ListAPIView):
+class ReadOnly(BasePermission):
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
+
 
 class AddressList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
