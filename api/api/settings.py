@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'account',
     'userprofile',
     'address',
+    'notification',
     'drf_yasg',
 ]
 

@@ -57,6 +57,7 @@ urlpatterns = [
     path('addresses/', include('address.urls'), name='address'),
     path('accounts/', include('account.urls'), name='account'),
     path('profiles/', include('userprofile.urls'), name='userprofile'),
+    path('notifications/', include('notification.urls'), name='notification'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

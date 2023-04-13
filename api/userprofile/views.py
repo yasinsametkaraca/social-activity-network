@@ -1,15 +1,12 @@
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, \
     RetrieveAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from .models import Profile
 from .serializers import ProfileSerializer, ProfileDetailSerializer, ProfileAvatarSerializer, UserProfileSerializer
-from account.serializers import UserSerializer
-
 from account.models import MyUser
+from notification.models import Notification
 
 
 class ProfileList(ListAPIView):
@@ -77,10 +74,15 @@ class FollowAndUnfollowView(APIView):
         if profile.user in my_profile.following.all():
             my_profile.following.remove(profile.user)
             profile.follower.remove(my_profile.user)
+            notification = Notification(sender=request.user, receiver=user, type="U")
+            notification.save()
             message = "Unfollowed user successfully."
+
         else:
             my_profile.following.add(profile.user)
             profile.follower.add(my_profile.user)
+            notification = Notification(sender=request.user, receiver=user, type="F")
+            notification.save()
             message = "Followed user successfully."
 
         return Response({"message": message})
