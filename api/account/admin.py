@@ -1,10 +1,14 @@
 from django.contrib import admin
-
 from account.models import MyUser
 from django.contrib.auth.admin import UserAdmin
+from userprofile.models import Profile
 
 
-# Register your models here.
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = "Profile"
+
 
 @admin.register(MyUser)
 class MyUserAdmin(UserAdmin):
@@ -24,3 +28,7 @@ class MyUserAdmin(UserAdmin):
             'fields': ('username', 'email', 'password1', 'password2', 'role', 'is_staff', 'is_superuser', 'is_active')}
          ),
     )
+    inlines = (ProfileInline,)
+
+
+admin.site.register(Profile)

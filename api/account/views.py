@@ -1,69 +1,77 @@
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from .models import MyUser
-from .serializers import UserSerializerWithToken, UserSerializer
+from .serializers import UserSerializer, UserRegisterSerializer, UserLoginSerializer
 from rest_framework import status
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 
 
-class UserRegister(APIView):
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            user.role = request.data.get('role')
-            login(request._request, user)
-            refresh = RefreshToken.for_user(user)
-            return Response(
-                {'user': UserSerializer(user).data, 'refresh': str(refresh), 'access': str(refresh.access_token)},
-                status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UserRegister(GenericAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = UserRegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        user.role = request.data.get('role')
+        login(request, user)
+        refresh = RefreshToken.for_user(user)
+        return Response(
+            {'user': serializer.data, 'refresh': str(refresh), 'access': str(refresh.access_token)},
+            status=status.HTTP_201_CREATED)
 
 
-class UserLogin(APIView):
-    def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
+class UserLogin(GenericAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = UserLoginSerializer
 
-        user = authenticate(request._request, username=username, password=password)
-
-        if user is not None:
-            login(request._request, user)
-            serializer = UserSerializer(user)
-            refresh = RefreshToken.for_user(user)
-            return Response({'user': serializer.data, 'refresh': str(refresh), 'access': str(refresh.access_token)},
-                            status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'Invalid username or password.'}, status=status.HTTP_401_UNAUTHORIZED)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+        serializer = UserSerializer(user)
+        refresh = RefreshToken.for_user(user)
+        return Response({'user': serializer.data, 'refresh': str(refresh), 'access': str(refresh.access_token)},
+                        status=status.HTTP_200_OK)
 
 
-class GetMyUser(APIView):
-    permission_classes = [IsAuthenticated, ]
+class UserLogout(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        user = request.user
-        serializer = UserSerializer(user, many=False)
-        return Response(serializer.data)
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserAPI(RetrieveUpdateAPIView):  # Bir Kullanıcı bilgisini güncelleme ve görüntüleme
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
 
 
 class UserDetailAPI(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get(self, request, pk):
-        # Kullanıcının istediği kullanıcıyı görüntüleme yetkisi olup olmadığını kontrol et
-        try:
+        try:  # Kullanıcının istediği kullanıcıyı görüntüleme yetkisi olup olmadığını kontrol et
             user = MyUser.objects.get(id=pk)
         except MyUser.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
         if request.user != user:
-            return Response({"error": "Unauthorized access"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"error": "Unauthorized access."}, status=status.HTTP_403_FORBIDDEN)
 
         serializer = UserSerializer(user)
         return Response(serializer.data)
-
-

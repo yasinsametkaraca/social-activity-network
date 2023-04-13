@@ -1,10 +1,16 @@
+from django.contrib.auth import authenticate
 from rest_framework import serializers
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import MyUser
-from userprofile.models import Profile
 
 
 class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyUser
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role']
+
+
+class UserRegisterSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -18,17 +24,21 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.role if obj.role in ['FRIEND', 'COMPANY_STAFF'] else None
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = MyUser(**validated_data)
-        user.set_password(password)
-        user.save()
-        profile = Profile(user=user)
-        profile.save()
-        return user
+        return MyUser.objects.create_user(**validated_data)
+
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError("Invalid username or password.")
 
 
 class UserSerializerWithToken(serializers.ModelSerializer):
-
     token = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
