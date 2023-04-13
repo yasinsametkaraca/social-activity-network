@@ -3,8 +3,8 @@ from . import views
 
 
 urlpatterns = [
-    path('login', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('register', views.register, name='register'),
-    path('', views.getMyUser, name='users'),
-    path('<str:pk>', views.getUserById, name='get_user_by_id'),
+    path('login', views.UserLogin.as_view(), name='user_login'),
+    path('register', views.UserRegister.as_view(), name='register'),
+    path('', views.GetMyUser.as_view(), name='get_my_user'),
+    path('<str:pk>', views.UserDetailAPI.as_view(), name='get_user_by_id'),
 ]

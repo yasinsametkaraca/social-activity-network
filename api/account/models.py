@@ -61,7 +61,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     )
 
     username = models.CharField(max_length=50, unique=True, blank=False, null=False)
-    role = models.CharField(max_length=50, null=False, blank=True, choices=ROLE_CHOICES, default=FRIEND)
+    role = models.CharField(max_length=50, null=False, blank=True, choices=ROLE_CHOICES)
     identification_number = models.CharField(max_length=20, blank=True, null=True, unique=True)
     first_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50, blank=True, null=True)

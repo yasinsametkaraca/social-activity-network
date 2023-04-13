@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def get_role(self, obj):
-        return obj.role
+        return obj.role if obj.role in ['FRIEND', 'COMPANY_STAFF'] else None
 
     def create(self, validated_data):
         password = validated_data.pop('password')
