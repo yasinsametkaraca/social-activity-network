@@ -30,5 +30,3 @@ class MyUserAdmin(UserAdmin):
     )
     inlines = (ProfileInline,)
 
-
-admin.site.register(Profile)

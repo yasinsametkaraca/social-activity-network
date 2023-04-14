@@ -8,6 +8,8 @@ from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 
+from api.permissions import IsFriend
+
 
 class UserRegister(GenericAPIView):
     permission_classes = (AllowAny,)
@@ -62,7 +64,7 @@ class UserAPI(RetrieveUpdateAPIView):  # Bir Kullanıcı bilgisini güncelleme v
 
 
 class UserDetailAPI(APIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated, ]
 
     def get(self, request, pk):
         try:  # Kullanıcının istediği kullanıcıyı görüntüleme yetkisi olup olmadığını kontrol et

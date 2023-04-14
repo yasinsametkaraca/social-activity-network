@@ -42,6 +42,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source='user.last_name')
     identification_number = serializers.CharField(source='user.identification_number')
     role = serializers.CharField(source='user.role', read_only=True)
+    follower = serializers.SerializerMethodField(read_only=True)
+    following = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Profile
@@ -63,8 +65,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'last_modified_at',
             'company_url',
             'company_name',
+            'follower',
+            'following',
         ]
 
+    def get_follower(self, obj):
+        return obj.follower.count()
+
+    def get_following(self, obj):
+        return obj.following.count()
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
         user = instance.user
@@ -89,15 +98,3 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
-class ProfileRelationsSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = Profile
-        fields = ('user', 'following', 'follower',)
-
-    def get_user(self, obj):
-        user = obj.user
-        serializer = UserSerializer(user, many=False)
-        return serializer.data

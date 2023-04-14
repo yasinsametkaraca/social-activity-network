@@ -31,8 +31,8 @@ class Profile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     linkedin_url = models.URLField(max_length=200, blank=True, null=True)
     website_url = models.URLField(max_length=200, blank=True, null=True)
-    following = models.ManyToManyField(AUTH_USER_MODEL, related_name="following")  # who I follow
-    follower = models.ManyToManyField(AUTH_USER_MODEL, related_name='follower')  # who follow me
+    following = models.ManyToManyField(AUTH_USER_MODEL, related_name="following", blank=True)  # who I follow
+    follower = models.ManyToManyField(AUTH_USER_MODEL, related_name='follower', blank=True)  # who follow me
     friends = models.ManyToManyField(AUTH_USER_MODEL, related_name='friends', blank=True)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, default='None', blank=True, null=True)
     education_level = models.CharField(max_length=20, blank=True, null=True, choices=EDUCATION_LEVEL_CHOICES)
@@ -45,6 +45,12 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def get_following_count(self):
+        return self.following.all().count()
+
+    def get_follower_count(self):
+        return self.follower.all().count()
 
     def get_friends_count(self):
         return self.friends.all().count()
