@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import MyUser
 
@@ -48,4 +49,3 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     def get_token(self, obj):  # get_token diyerek token alanını döndürüyoruz.
         token = RefreshToken.for_user(obj)
         return str(token.access_token)
-

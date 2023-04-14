@@ -1,14 +1,14 @@
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import MyUser
 from .serializers import UserSerializer, UserRegisterSerializer, UserLoginSerializer
 from rest_framework import status
 from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-
 from api.permissions import IsFriend
+from api.serializers import CustomTokenObtainPairSerializer
 
 
 class UserRegister(GenericAPIView):
@@ -21,9 +21,17 @@ class UserRegister(GenericAPIView):
         user = serializer.save()
         user.role = request.data.get('role')
         login(request, user)
+        token_serializer = CustomTokenObtainPairSerializer(data={
+            'username': user.username,
+            'role': user.role,
+            'id': user.id,
+            'password': request.data.get('password')
+        })
+        token_serializer.is_valid(raise_exception=True)
+        token = token_serializer.validated_data
         refresh = RefreshToken.for_user(user)
         return Response(
-            {'user': serializer.data, 'refresh': str(refresh), 'access': str(refresh.access_token)},
+            {'user': serializer.data, 'token': token},
             status=status.HTTP_201_CREATED)
 
 
@@ -36,8 +44,15 @@ class UserLogin(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
         serializer = UserSerializer(user)
-        refresh = RefreshToken.for_user(user)
-        return Response({'user': serializer.data, 'refresh': str(refresh), 'access': str(refresh.access_token)},
+        token_serializer = CustomTokenObtainPairSerializer(data={
+            'username': user.username,
+            'role': user.role,
+            'id': user.id,
+            'password': request.data.get('password')
+        })
+        token_serializer.is_valid(raise_exception=True)
+        token = token_serializer.validated_data
+        return Response({'user': serializer.data, 'token': token},
                         status=status.HTTP_200_OK)
 
 
