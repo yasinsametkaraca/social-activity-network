@@ -1,11 +1,13 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api.permissions import CanChangeActivityParticipateStatus
+from api.permissions import CanChangeActivityParticipateStatus, IsActivityOwner
 from .models import ActivityUser, Activity
 from .serializers import ActivitySerializer, ActivityCreateUpdateSerializer
+from account.models import MyUser
 
 
 class ActivityList(generics.ListCreateAPIView):
@@ -41,7 +43,7 @@ class ActivityCreateView(generics.CreateAPIView):
 class ActivityUpdateDeleteView(generics.UpdateAPIView, generics.DestroyAPIView):
     queryset = Activity.objects.all()
     serializer_class = ActivityCreateUpdateSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsActivityOwner]
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -84,22 +86,24 @@ class ActivityUserStatusUpdateView(APIView):
     ActivityUser modelindeki status alanını güncellemek için kullanılan view.
     Sadece aktivite sahibi izinlidir.
     """
-    permission_classes = [CanChangeActivityParticipateStatus]
+    permission_classes = [CanChangeActivityParticipateStatus, IsAuthenticated]
 
     def put(self, request, activity_id):
-        user_id = request.user.id
+        username = request.data.get('username')
+        user = get_object_or_404(MyUser, username=username)
         try:
-            activity_user = ActivityUser.objects.get(activity_id=activity_id, user_id=user_id)
+            activity_user = ActivityUser.objects.get(activity_id=activity_id, user_id=user)
         except ActivityUser.DoesNotExist:
-            return Response({'error': 'ActivityUser bulunamadı.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Activity User bulunamadı.'}, status=status.HTTP_404_NOT_FOUND)
 
-        new_status = request.data.get('status')
-        if new_status is None:
+        participate_status = request.data.get('participate_status')
+        if participate_status is None:
             return Response({'error': 'Yeni bir status belirtmelisiniz.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        activity_user.status = new_status
+        activity_user.participate_status = participate_status
         activity_user.save()
 
-        return Response({'status': new_status}, status=status.HTTP_200_OK)
+        return Response({'status': participate_status, 'message': f'{username} adlı kullanıcının aktiviteye katılmasını '
+                                                          f'onayladınız.'}, status=status.HTTP_200_OK)
 
 

@@ -37,8 +37,8 @@ class ActivityAdmin(admin.ModelAdmin):
 
 
 class ActivityUserAdmin(admin.ModelAdmin):
-    list_display = ('activity', 'user', 'status', 'apply_date')
-    list_filter = ('activity__title', 'user__username', 'status')
+    list_display = ('activity', 'user', 'participate_status', 'apply_date')
+    list_filter = ('activity__title', 'user__username', 'participate_status')
     search_fields = ('activity__title', 'user__username')
     date_hierarchy = 'apply_date'
     ordering = ('-apply_date',)
