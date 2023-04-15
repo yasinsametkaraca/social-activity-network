@@ -28,3 +28,12 @@ class CanChangeActivityParticipateStatus(BasePermission):
     def has_object_permission(self, request, view, obj):
         activity = obj.activity
         return activity.owner == request.user
+
+
+class IsActivityOwner(BasePermission):
+    """
+    Bu izin sınıfı, sadece aktiviteyi oluşturan kullanıcının güncelleme yapabilmesine izin verir.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj.owner == request.user

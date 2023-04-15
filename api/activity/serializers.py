@@ -4,15 +4,14 @@ from address.serializers import AddressSerializer
 
 
 class ActivityUserSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    activity = serializers.StringRelatedField()
+    user = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = ActivityUser
-        fields = '__all__'
+        fields = ('user', 'participate_status')
 
     def get_user(self, obj):
-        return obj.user.username
+        return obj.username
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -49,7 +48,7 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
             address=address,
             **validated_data
         )
-        ActivityUser.objects.create(user=self.context['request'].user, activity=activity, status=True)
+        ActivityUser.objects.create(user=self.context['request'].user, activity=activity, participate_status=True)
 
         return activity
 

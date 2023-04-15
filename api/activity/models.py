@@ -14,7 +14,7 @@ def activity_file_directory_path(self, filename):
 class ActivityUser(models.Model):
     activity = models.ForeignKey('activity.Activity', on_delete=models.CASCADE)
     user = models.ForeignKey('account.MyUser', on_delete=models.CASCADE)
-    status = models.BooleanField(default=False)
+    participate_status = models.BooleanField(default=False)
     apply_date = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
 

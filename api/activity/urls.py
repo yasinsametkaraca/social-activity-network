@@ -4,9 +4,9 @@ from .views import ActivityUserStatusUpdateView, ActivityJoinView, ActivityCreat
 
 urlpatterns = [
     path('', ActivityList.as_view(), name='activity_list'),
-    path('<str:username>', ActivityListByUsernameView.as_view(), name='activity_list_by_username'),
-    path('update/<str:id>/', ActivityUpdateDeleteView.as_view(), name='activity_update_delete'),
     path('create/', ActivityCreateView.as_view(), name='activity_create'),
-    path('<str:activity_id>/join', ActivityJoinView.as_view(), name='activity_join'),
-    path('<str:activity_id>/status', ActivityUserStatusUpdateView.as_view(), name='activity_user_status_update'),
+    path('<str:username>', ActivityListByUsernameView.as_view(), name='activity_list_by_username'),
+    path('activity/<str:id>/', ActivityUpdateDeleteView.as_view(), name='activity_update_delete'),
+    path('<str:activity_id>/join/', ActivityJoinView.as_view(), name='activity_join'),
+    path('<str:activity_id>/status/', ActivityUserStatusUpdateView.as_view(), name='activity_user_status_update'),
 ]
