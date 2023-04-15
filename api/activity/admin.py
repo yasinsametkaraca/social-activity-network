@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Activity, Category, ActivityUser
+from .models import Activity, ActivityUser
 
 
 class ActivityUserInline(admin.TabularInline):
@@ -36,12 +36,6 @@ class ActivityAdmin(admin.ModelAdmin):
         return super().get_inline_instances(request, obj)
 
 
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
-    ordering = ('name',)
-
-
 class ActivityUserAdmin(admin.ModelAdmin):
     list_display = ('activity', 'user', 'status', 'apply_date')
     list_filter = ('activity__title', 'user__username', 'status')
@@ -50,6 +44,5 @@ class ActivityUserAdmin(admin.ModelAdmin):
     ordering = ('-apply_date',)
 
 
-admin.site.register(Category, CategoryAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(ActivityUser, ActivityUserAdmin)

@@ -3,22 +3,6 @@ from django.db import models
 from address.models import Address
 
 
-class Category(models.Model):
-    CATEGORY_CHOICES = (
-        ('Sport', "SPORT"),
-        ('Culture', "CULTURE"),
-        ('Music', "MUSIC"),
-        ('Game', "GAME"),
-        ('Travel', "TRAVEL"),
-        ('Cinema', "CINEMA"),
-        ('Theatre', "THEATRE"),
-    )
-    name = models.CharField(max_length=50, blank=True, null=True, choices=CATEGORY_CHOICES)
-
-    def __str__(self):
-        return self.name
-
-
 def activity_file_directory_path(self, filename):
     activity_id = self.id
     username = self.owner_id.username
@@ -41,9 +25,25 @@ class ActivityUser(models.Model):
         super(ActivityUser, self).save(*args, **kwargs)
 
 
+class ActivityManager(models.Manager):
+    def get_activities_by_username(self, username):
+        activities = self.filter(owner__username=username)
+        return activities
+
+
 class Activity(models.Model):
+    CATEGORY_CHOICES = (
+        ('Sport', "SPORT"),
+        ('Culture', "CULTURE"),
+        ('Music', "MUSIC"),
+        ('Game', "GAME"),
+        ('Travel', "TRAVEL"),
+        ('Cinema', "CINEMA"),
+        ('Theatre', "THEATRE"),
+    )
+
     owner = models.ForeignKey('account.MyUser', on_delete=models.CASCADE, related_name='owner_id')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='category',)
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='address')
@@ -59,6 +59,8 @@ class Activity(models.Model):
     activity_status = models.BooleanField(default=False)
     add_favourite = models.ManyToManyField('account.MyUser', related_name='add_favourite', blank=True)
     activity_user = models.ManyToManyField('account.MyUser', through=ActivityUser, related_name='activity_user', blank=True)
+
+    objects = ActivityManager()
 
     def __str__(self):
         return self.title

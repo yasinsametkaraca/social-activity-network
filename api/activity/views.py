@@ -1,9 +1,11 @@
 from rest_framework import status, generics
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.permissions import CanChangeActivityParticipateStatus
 from .models import ActivityUser, Activity
-from .serializers import ActivitySerializer
+from .serializers import ActivitySerializer, ActivityCreateUpdateSerializer
 
 
 class ActivityList(generics.ListCreateAPIView):
@@ -14,18 +16,51 @@ class ActivityList(generics.ListCreateAPIView):
         return queryset
 
 
+class ActivityListByUsernameView(ListAPIView):
+    serializer_class = ActivitySerializer
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        queryset = Activity.objects.get_activities_by_username(username)
+        return queryset
+
+
 class ActivityCreateView(generics.CreateAPIView):
     queryset = Activity.objects.all()
-    serializer_class = ActivitySerializer
+    serializer_class = ActivityCreateUpdateSerializer
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        activity = serializer.save(owner=request.user) # Aktivitenin sahibi olarak mevcut kullanıcıyı atıyoruz
-        activity_user = activity.activity_user.create(user=request.user, status=True)  # Aktiviteye sahibi olarak katılan kullanıcıyı ekliyoruz
+        activity = serializer.save(owner=request.user, activity_status=False)
         headers = self.get_success_headers(serializer.data)
-        return Response(ActivitySerializer(activity).data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(ActivityCreateUpdateSerializer(activity).data, status=status.HTTP_201_CREATED, headers=headers)
 
+
+class ActivityUpdateDeleteView(generics.UpdateAPIView, generics.DestroyAPIView):
+    queryset = Activity.objects.all()
+    serializer_class = ActivityCreateUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        activity = serializer.save()
+        return Response(ActivityCreateUpdateSerializer(activity).data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = generics.get_object_or_404(queryset, pk=self.kwargs.get('id'))
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 
 class ActivityJoinView(APIView):
@@ -66,3 +101,5 @@ class ActivityUserStatusUpdateView(APIView):
         activity_user.save()
 
         return Response({'status': new_status}, status=status.HTTP_200_OK)
+
+
