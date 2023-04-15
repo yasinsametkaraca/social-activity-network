@@ -16,11 +16,10 @@ def update_activity_status(sender, instance, **kwargs):
         instance.activity.save()
         post_save.connect(update_confirmation, sender=Activity)  # post_save sinyalini tekrar etkinleştir
     else:
-        # Confirmation modelinde confirm_status False ise, ilgili Activity modelinin activity_status'u da False olarak güncellenir.
         instance.activity.activity_status = False
-        post_save.disconnect(update_confirmation, sender=Activity)  # post_save sinyalini geçici olarak devre dışı bırak
+        post_save.disconnect(update_confirmation, sender=Activity)
         instance.activity.save()
-        post_save.connect(update_confirmation, sender=Activity)  # post_save sinyalini tekrar etkinleştir
+        post_save.connect(update_confirmation, sender=Activity)
 
 
 @receiver(post_save, sender=Activity)
