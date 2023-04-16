@@ -68,12 +68,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'follower',
             'following',
         ]
+        extra_kwargs = {
+            'identification_number': {'write_only': True}
+        }
 
     def get_follower(self, obj):
         return obj.follower.count()
 
     def get_following(self, obj):
         return obj.following.count()
+
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
         user = instance.user

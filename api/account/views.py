@@ -10,6 +10,8 @@ from rest_framework.views import APIView
 from api.permissions import IsFriend
 from api.serializers import CustomTokenObtainPairSerializer
 
+from userprofile.serializers import UserProfileSerializer
+
 
 class UserRegister(GenericAPIView):
     permission_classes = (AllowAny,)
@@ -18,8 +20,7 @@ class UserRegister(GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        user.role = request.data.get('role')
+        user = serializer.save(role=request.data.get('role'))
         login(request, user)
         token_serializer = CustomTokenObtainPairSerializer(data={
             'username': user.username,
@@ -43,7 +44,8 @@ class UserLogin(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-        serializer = UserSerializer(user)
+        serializer = UserProfileSerializer(user.profile)     #  serializer = UserSerializer(user)
+
         token_serializer = CustomTokenObtainPairSerializer(data={
             'username': user.username,
             'role': user.role,

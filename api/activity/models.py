@@ -63,6 +63,9 @@ class Activity(models.Model):
     objects = ActivityManager()
 
     class Meta:
+        db_table = 'activity'
+        verbose_name = 'Activity'
+        verbose_name_plural = 'Activities'
         ordering = ("-created_at",)
 
     def __str__(self):
