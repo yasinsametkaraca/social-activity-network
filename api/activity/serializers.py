@@ -18,7 +18,7 @@ class ActivitySerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
     address = AddressSerializer()
     confirm = serializers.StringRelatedField(read_only=True)
-    add_favourite = serializers.StringRelatedField(many=True)
+    add_favourite = serializers.StringRelatedField(many=True, read_only=True)
     activity_user = serializers.StringRelatedField(many=True)
 
     class Meta:
@@ -27,6 +27,18 @@ class ActivitySerializer(serializers.ModelSerializer):
 
     def get_confirm(self, obj):
         return obj.confirm.confirm_status
+
+    def get_add_favorite(self, obj):
+        add_favourites = list(
+            add_favourite.username for add_favourite in obj.add_favourites.get_queryset().only("username")
+        )
+        return obj.add_favourites
+
+    def get_activity_user(self, obj):
+        activity_users = list(
+            activity_user.username for activity_user in obj.activity_users.get_queryset(filter(participate_status = True))
+        )
+        return obj.activity_users
 
 
 class ActivityCreateUpdateSerializer(serializers.ModelSerializer):

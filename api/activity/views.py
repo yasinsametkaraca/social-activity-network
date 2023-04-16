@@ -107,3 +107,18 @@ class ActivityUserStatusUpdateView(APIView):
                                                           f'onayladınız.'}, status=status.HTTP_200_OK)
 
 
+class AddFavouriteAPIView(APIView):
+
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        user = request.user
+        activity = get_object_or_404(Activity, pk=pk)
+
+        if user in activity.add_favourite.all():
+            activity.add_favourite.remove(user)
+
+        else:
+            activity.add_favourite.add(user)
+
+        return Response(status=status.HTTP_200_OK)
