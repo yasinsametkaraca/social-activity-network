@@ -4,7 +4,7 @@ from account.models import MyUser
 
 
 class Comment(models.Model):
-    user_id = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='comments', null=True)
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='owner', null=True)
     activity_comment = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name='activity_comment', null=True)
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -17,12 +17,12 @@ class Comment(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return f'Comment by {self.user_id.username} on {self.activity_comment.title}'
+        return f'Comment by {self.owner.username} on {self.activity_comment.title}'
 
     def get_username(self):
-        return self.user_id.username if self.user_id else '-'
+        return self.owner.username if self.owner else '-'
 
-    get_username.admin_order_field = 'user_id__username'
+    get_username.admin_order_field = 'owner__username'
     get_username.short_description = 'User'
 
     def get_activity_title(self):

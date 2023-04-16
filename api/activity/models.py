@@ -62,8 +62,11 @@ class Activity(models.Model):
 
     objects = ActivityManager()
 
+    class Meta:
+        ordering = ("-created_at",)
+
     def __str__(self):
-        return self.title
+        return f"{self.title} - {self.owner.username}"
 
     def get_owner(self):
         return self.owner
