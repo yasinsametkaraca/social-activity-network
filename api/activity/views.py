@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.permissions import CanChangeActivityParticipateStatus, IsActivityOwner
 from .models import ActivityUser, Activity
-from .serializers import ActivitySerializer, ActivityCreateUpdateSerializer
+from .serializers import ActivitySerializer, ActivityCreateUpdateSerializer, ActivityUserSerializer
 from account.models import MyUser
 
 
@@ -24,6 +24,16 @@ class ActivityListByUsernameView(ListAPIView):
     def get_queryset(self):
         username = self.kwargs['username']
         queryset = Activity.objects.get_activities_by_username(username)
+        return queryset
+
+
+class ActivityUserListView(generics.ListCreateAPIView):
+    serializer_class = ActivityUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        activity_id = self.kwargs['activity_id']  # Aktivite ID' sini URL parametresinden alıyoruz
+        queryset = ActivityUser.objects.filter(activity_id=activity_id)
         return queryset
 
 

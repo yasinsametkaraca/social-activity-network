@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from address.models import Address
+from dirtyfields import DirtyFieldsMixin
 
 
 def activity_file_directory_path(self, filename):
@@ -31,7 +32,7 @@ class ActivityManager(models.Manager):
         return activities
 
 
-class Activity(models.Model):
+class Activity(models.Model, DirtyFieldsMixin):
     CATEGORY_CHOICES = (
         ('Sport', "SPORT"),
         ('Culture', "CULTURE"),
@@ -79,6 +80,9 @@ class Activity(models.Model):
 
     def get_title(self):
         return self.title
+
+    def get_activity_user(self):
+        return self.activity_user
 
 
 

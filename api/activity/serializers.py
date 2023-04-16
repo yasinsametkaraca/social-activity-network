@@ -1,16 +1,37 @@
 from rest_framework import serializers
 from .models import Activity, ActivityUser
 from address.serializers import AddressSerializer
+from userprofile.models import Profile
+from userprofile.serializers import ProfileAvatarSerializer
 
 
 class ActivityUserSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField(read_only=True)
+    username = serializers.SerializerMethodField(read_only=True)
+    profile = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = ActivityUser
-        fields = ('user', 'participate_status')
+        fields = ('username', 'participate_status', 'description', 'profile')
 
-    def get_user(self, obj):
+    def get_username(self, obj):
+        return obj.user.username
+
+    def get_profile(self, obj):
+        try:
+            profile = Profile.objects.get(user=obj.user)
+            return ProfileAvatarSerializer(profile).data
+        except Profile.DoesNotExist:
+            return None
+
+
+class UserActivitySerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = ActivityUser
+        fields = ('username', 'participate_status', 'description')
+
+    def get_username(self, obj):
         return obj.username
 
 
@@ -19,7 +40,7 @@ class ActivitySerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     confirm = serializers.StringRelatedField(read_only=True)
     add_favourite = serializers.StringRelatedField(many=True, read_only=True)
-    activity_user = serializers.StringRelatedField(many=True)
+    activity_user = UserActivitySerializer(many=True, read_only=True)
 
     class Meta:
         model = Activity
