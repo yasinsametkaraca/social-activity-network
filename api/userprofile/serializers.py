@@ -13,6 +13,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 class ProfileDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
     address = serializers.SerializerMethodField(read_only=True)
+    follower = serializers.SerializerMethodField(read_only=True)
+    following = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Profile
@@ -27,6 +29,16 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
         address = obj.address
         serializer = AddressSerializer(address, many=False)
         return serializer.data
+
+    def get_follower(self, obj):
+        followers = obj.follower.all()
+        usernames = [follower.profile.user.username for follower in followers]
+        return usernames
+
+    def get_following(self, obj):
+        followings = obj.follower.all()
+        usernames = [following.profile.user.username for following in followings]
+        return usernames
 
 
 class ProfileAvatarSerializer(serializers.ModelSerializer):
@@ -54,6 +66,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'last_name',
             'identification_number',
             'role',
+            'avatar',
             'about',
             'birth_date',
             'linkedin_url',
@@ -82,14 +95,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
         user_data = validated_data.pop('user', {})
         user = instance.user
 
-        # User alanlarını güncelleştir
         user.email = user_data.get('email', user.email)
         user.first_name = user_data.get('first_name', user.first_name)
         user.last_name = user_data.get('last_name', user.last_name)
         user.identification_number = user_data.get('identification_number', user.identification_number)
         user.save()
 
-        # Profile alanlarını güncelleştir
         instance.about = validated_data.get('about', instance.about)
         instance.birth_date = validated_data.get('birth_date', instance.birth_date)
         instance.linkedin_url = validated_data.get('linkedin_url', instance.linkedin_url)

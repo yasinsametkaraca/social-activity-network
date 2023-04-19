@@ -4,7 +4,7 @@ from .models import Comment
 
 
 class CommentReadSerializer(serializers.ModelSerializer):
-    author = serializers.CharField(source="author.username", read_only=True)
+    owner = serializers.CharField(source="owner.username", read_only=True)
 
     class Meta:
         model = Comment
@@ -12,7 +12,7 @@ class CommentReadSerializer(serializers.ModelSerializer):
 
 
 class CommentWriteSerializer(serializers.ModelSerializer):
-    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Comment

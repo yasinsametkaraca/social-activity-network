@@ -3,10 +3,9 @@ from rest_framework.routers import DefaultRouter
 
 from .views import CommentViewSet
 
-app_name = "posts"
 
 router = DefaultRouter()
-router.register(r"^(?P<activity_id>\d+)/comment", CommentViewSet)
+router.register(r"^(?P<activity_id>\d+)", CommentViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),

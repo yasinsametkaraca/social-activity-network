@@ -1,6 +1,7 @@
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, \
     RetrieveAPIView, get_object_or_404
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Profile
@@ -11,35 +12,16 @@ from notification.models import Notification
 
 class ProfileList(ListAPIView):
     serializer_class = ProfileDetailSerializer
-    queryset = Profile.objects.all()
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    queryset = Profile.objects.filter(user__is_superuser=False, user__is_staff=False, user__role='FRIEND')
+    permission_classes = [IsAuthenticated]
 
 
-class ProfileApi(RetrieveUpdateAPIView):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
-    permission_classes = (IsAuthenticated,)
-
-    def get_object(self):
-        return self.request.user.profile
-
-
-class UserAvatarAPIView(RetrieveUpdateAPIView):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileAvatarSerializer
-    permission_classes = (IsAuthenticated,)
-
-    def get_object(self):
-        return self.request.user.profile
-
-
-class UserProfileRetrieveUpdate(RetrieveUpdateAPIView):
-    queryset = Profile.objects.all()
+class UserProfileByUsername(RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
+    queryset = Profile.objects.filter(user__role='FRIEND')
+    lookup_field = 'user__username'
+    lookup_url_kwarg = 'username'
     permission_classes = (IsAuthenticated,)
-
-    def get_object(self):
-        return Profile.objects.get(user=self.request.user)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -49,25 +31,19 @@ class UserProfileRetrieveUpdate(RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
+        if instance.user.username != request.user.username:
+            raise PermissionDenied("You do not have permission to perform this action.")
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
 
 
-class UserProfileByUsername(RetrieveAPIView):
-    serializer_class = UserProfileSerializer
-    queryset = Profile.objects.all()
-    lookup_field = 'user__username'
-    lookup_url_kwarg = 'username'
-
-
 class FollowAndUnfollowView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request):
+    def post(self, request, username):
         my_profile = Profile.objects.get(user=request.user)
-        username = request.data['username']
         user = get_object_or_404(MyUser, username=username)
         profile = user.profile
 
@@ -122,3 +98,12 @@ class FollowingListAPIView(APIView):
         } for following in followings]
 
         return Response(data)
+
+
+class UserAvatarAPIView(RetrieveUpdateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileAvatarSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user.profile

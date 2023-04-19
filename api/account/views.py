@@ -83,9 +83,9 @@ class UserAPI(RetrieveUpdateAPIView):  # Bir Kullanıcı bilgisini güncelleme v
 class UserDetailAPI(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def get(self, request, pk):
-        try:  # Kullanıcının istediği kullanıcıyı görüntüleme yetkisi olup olmadığını kontrol et
-            user = MyUser.objects.get(id=pk)
+    def get(self, request, username):
+        try:  # Kullanıcının istediği kullanıcıyı görüntüleme yetkisi olup olmadığını kontrol edilmiştir
+            user = MyUser.objects.get(username=username)
         except MyUser.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
