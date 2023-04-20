@@ -1,8 +1,6 @@
 from django.db import models
 
 
-
-
 class Confirmation(models.Model):
     CONFIRM_TYPE_CHOICES = (
         ('Create', 'Create'),
