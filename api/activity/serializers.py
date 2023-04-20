@@ -38,16 +38,12 @@ class UserActivitySerializer(serializers.ModelSerializer):
 class ActivitySerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
     address = AddressSerializer()
-    confirm = serializers.StringRelatedField(read_only=True)
     add_favourite = serializers.StringRelatedField(many=True, read_only=True)
     activity_user = UserActivitySerializer(many=True, read_only=True)
 
     class Meta:
         model = Activity
-        fields = '__all__'
-
-    def get_confirm(self, obj):
-        return obj.confirm.confirm_status
+        exclude = ['confirm', ]
 
     def get_add_favorite(self, obj):
         add_favourites = list(
@@ -65,10 +61,12 @@ class ActivitySerializer(serializers.ModelSerializer):
 class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
     address = AddressSerializer()
+    add_favourite = serializers.StringRelatedField(many=True, read_only=True)
+    activity_user = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Activity
-        fields = '__all__'
+        exclude = ['confirm', ]
 
     def create(self, validated_data):
         address_data = validated_data.pop('address')
