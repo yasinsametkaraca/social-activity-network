@@ -1,12 +1,12 @@
 import uuid
 from django.db import models
-from address.models import Address
+
 from dirtyfields import DirtyFieldsMixin
 
 
 def activity_file_directory_path(self, filename):
     activity_id = self.id
-    username = self.owner_id.username
+    username = self.owner.username
     ext = filename.split('.')[-1]
     fn = uuid.uuid4()
     return 'activity_files/photos_{0}/{1}_{2}.{3}'.format(username, activity_id, fn, ext)

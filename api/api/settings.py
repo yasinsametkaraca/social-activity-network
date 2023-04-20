@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'activity',
     'confirmation',
     'comment',
+    'advertisement',
     'dirtyfields',
     'drf_yasg',
 ]
