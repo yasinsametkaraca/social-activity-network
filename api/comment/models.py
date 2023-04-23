@@ -34,3 +34,4 @@ class Comment(models.Model):
 
     get_activity_owner.admin_order_field = 'activity__owner__username'
     get_activity_owner.short_description = 'Activity Owner'
+

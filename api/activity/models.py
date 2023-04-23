@@ -83,12 +83,3 @@ class Activity(models.Model, DirtyFieldsMixin):
     def get_activity_user(self):
         return self.activity_user
 
-
-
-
-
-
-
-
-
-

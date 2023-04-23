@@ -1,12 +1,8 @@
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from django.urls import path
+from .views import CommentList, CommentDetail
 
-from .views import CommentViewSet
-
-
-router = DefaultRouter()
-router.register(r"^(?P<activity_id>\d+)", CommentViewSet)
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path('', CommentList.as_view(), name='comment_list_create'),
+    path('<int:pk>/', CommentDetail.as_view(), name='comment_retrieve_update_destroy')
 ]
