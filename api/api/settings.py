@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'dirtyfields',
     'drf_yasg',
 ]
+default_app_config = 'django.contrib.contenttypes.apps.ContentTypesConfig'
 
 AUTH_USER_MODEL = 'account.MyUser'
 
@@ -109,6 +110,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'TEST': {
+            'NAME': 'testdb.sqlite3',
+        },
     }
 }
 
@@ -178,3 +182,5 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = 'static/'  # eklenen resimlerin kaydedileceği klasör
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+TEST_DIR = 'test_db'

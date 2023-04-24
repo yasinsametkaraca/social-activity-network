@@ -14,10 +14,12 @@ class CommentReadSerializer(serializers.ModelSerializer):
 
 
 class CommentWriteSerializer(serializers.ModelSerializer):
+    owner_username = serializers.CharField(source='owner.username', read_only=True)
+
     class Meta:
         model = Comment
-        fields = ('id', 'owner', 'activity', 'comment', 'is_public', 'created_at')
-        read_only_fields = ('owner', 'created_at', 'last_modified_at')
+        fields = ('id', 'owner', 'activity', 'comment', 'is_public', 'created_at', 'owner_username')
+        read_only_fields = ('owner', 'created_at', 'last_modified_at', 'owner_username')
 
     def create(self, validated_data):
         return Comment.objects.create(**validated_data)

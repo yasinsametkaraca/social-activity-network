@@ -10,6 +10,7 @@ class Comment(models.Model):
     is_public = models.BooleanField(default=True)
 
     class Meta:
+        app_label = 'comment'
         verbose_name = 'Comment'
         verbose_name_plural = 'Comments'
         ordering = ('-created_at',)

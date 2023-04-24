@@ -18,6 +18,9 @@ class ActivityUser(models.Model):
     apply_date = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
 
+    class Meta:
+        app_label = 'activity'
+
     def save(self, *args, **kwargs):
         if self.activity:
             self.activity.missing_player_count = self.activity.total_player_count - self.activity.activity_user.count() - 1
@@ -46,14 +49,14 @@ class Activity(models.Model, DirtyFieldsMixin):
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    address = models.OneToOneField('address.Address', on_delete=models.CASCADE, related_name='address')
+    address = models.OneToOneField('address.Address', on_delete=models.CASCADE, related_name='address', null=True, blank=True)
     image = models.ImageField(upload_to=activity_file_directory_path, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified_at = models.DateTimeField(auto_now=True)
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     confirm = models.ForeignKey('confirmation.Confirmation', on_delete=models.CASCADE, related_name='confirm', blank=True, null=True)
-    total_player_count = models.IntegerField(blank=True, null=True)
+    total_player_count = models.IntegerField(default=2)
     missing_player_count = models.IntegerField(blank=True, null=True)
     activity_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     activity_status = models.BooleanField(default=False)
@@ -63,6 +66,7 @@ class Activity(models.Model, DirtyFieldsMixin):
     objects = ActivityManager()
 
     class Meta:
+        app_label = 'activity'
         db_table = 'activity'
         verbose_name = 'Activity'
         verbose_name_plural = 'Activities'

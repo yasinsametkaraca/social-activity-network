@@ -1,6 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from activity.models import Activity
-
 from activity.models import ActivityUser
 
 
@@ -52,50 +51,23 @@ class IsOwnerOrReadOnly(BasePermission):
         return obj.owner == request.user
 
 
-class CanViewPrivateComments(BasePermission):  # sadece o aktiviteye katılanlar private yorumları görebilir.
+class CanCrudPrivateComments(BasePermission):
+    def has_permission(self, request, view):
+        if request.method == 'GET':
+            activity_id = request.GET.get('activity')
+            is_public = request.GET.get('is_public', 'true')
+        else:
+            activity_id = request.data.get('activity')
+            is_public = request.data.get('is_public')
+        if is_public:
+            return True
+        else:
+            return ActivityUser.objects.filter(activity=activity_id, user=request.user,
+                                               participate_status=True).exists()
+
+
+class CanCrudPrivateCommentDetail(BasePermission):  # sadece o aktiviteye katılanlar private yorumları görebilir.
     def has_object_permission(self, request, view, obj):
         if obj.is_public:
             return True
         return request.user in obj.activity.activity_user.filter(activityuser__participate_status=True)
-
-
-class CanCreatePrivateComments(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        print(obj.is_public)
-        if obj.is_public:
-            return True
-
-        if request.user.is_authenticated:
-            activity_id = obj.activity.id
-            return ActivityUser.objects.filter(activity=activity_id, user=request.user,
-                                               participate_status=True).exists()
-
-        return False
-
-
-# class CanCreatePrivateComments(BasePermission):
-#     message = 'You are not authorized to create comments for non-public activities.'
-#
-#     def has_permission(self, request, view):
-#         if request.method == 'POST':
-#             activity_id = request.data.get('activity')
-#             is_public = request.data.get('is_public')
-#             if not is_public:
-#                 activity = Activity.objects.filter(id=activity_id).first()
-#                 if activity and request.user in activity.activity_user.all():
-#                     return True
-#                 return False
-#         return True
-#
-# class CanViewPrivateComments(BasePermission):
-#     message = 'You are not authorized to view comments for non-public activities.'
-#
-#     def has_permission(self, request, view):
-#         activity_id = request.GET.get('activity')
-#         is_public = request.GET.get('is_public', True)
-#         if not is_public:
-#             activity = Activity.objects.filter(id=activity_id).first()
-#             if activity and request.user in activity.activity_user.all():
-#                 return True
-#             return False
-#         return True

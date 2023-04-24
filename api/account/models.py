@@ -78,6 +78,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     class Meta:
+        app_label = 'account'
         db_table = 'user'
         verbose_name = 'User'
         verbose_name_plural = 'Users'
