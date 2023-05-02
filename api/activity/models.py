@@ -33,6 +33,10 @@ class ActivityManager(models.Manager):
         activities = self.filter(owner__username=username)
         return activities
 
+    def get_activities_by_category(self, category):
+        activities = self.filter(category=category)
+        return activities
+
 
 class Activity(models.Model, DirtyFieldsMixin):
     CATEGORY_CHOICES = (
@@ -49,7 +53,7 @@ class Activity(models.Model, DirtyFieldsMixin):
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    address = models.OneToOneField('address.Address', on_delete=models.CASCADE, related_name='address', null=True, blank=True)
+    address = models.ForeignKey('address.Address', on_delete=models.CASCADE, related_name='address', null=True, blank=True)
     image = models.ImageField(upload_to=activity_file_directory_path, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified_at = models.DateTimeField(auto_now=True)

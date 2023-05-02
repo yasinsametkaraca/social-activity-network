@@ -11,11 +11,13 @@ from account.models import MyUser
 
 
 class ActivityListCreate(generics.ListCreateAPIView):
-    serializer_class = ActivitySerializer
-
     def get_queryset(self):
         if self.request.method == 'GET':
-            queryset = Activity.objects.filter(activity_status=True)
+            category = self.request.GET.get('category')
+            if category:
+                queryset = Activity.objects.filter(category=category, activity_status=True)
+            else:
+                queryset = Activity.objects.filter(activity_status=True)
         else:
             queryset = Activity.objects.all()
         return queryset

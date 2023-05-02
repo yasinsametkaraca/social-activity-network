@@ -8,14 +8,14 @@ from account.models import MyUser
 @receiver(post_save, sender=MyUser)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        if instance.is_staff and instance.is_superuser:
+        if instance.is_staff or instance.is_superuser:
             return None
         Profile.objects.create(user=instance)
 
 
 @receiver(post_save, sender=MyUser)
 def save_user_profile(sender, instance, **kwargs):
-    if instance.is_staff and instance.is_superuser:
+    if instance.is_staff or instance.is_superuser:
         return None
     instance.profile.save()
 

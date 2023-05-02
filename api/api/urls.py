@@ -60,6 +60,7 @@ urlpatterns = [
     path('notifications/', include('notification.urls'), name='notification'),
     path('activities/', include('activity.urls'), name='activity'),
     path('comments/', include('comment.urls'), name='comment'),
+    path('advertisements/', include('advertisement.urls'), name='advertisement'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

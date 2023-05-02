@@ -1,8 +1,6 @@
 import uuid
 from django.db import models
 
-from dirtyfields import DirtyFieldsMixin
-
 
 def advertisement_file_directory_path(self, filename):
     advertisement_id = self.id
@@ -22,7 +20,7 @@ class AdvertisementManager(models.Manager):
         return advertisements
 
 
-class Advertisement(models.Model, DirtyFieldsMixin):
+class Advertisement(models.Model):
     CATEGORY_CHOICES = (
         ('Travel', "TRAVEL"),
         ('Cinema', "CINEMA"),
@@ -31,7 +29,6 @@ class Advertisement(models.Model, DirtyFieldsMixin):
         ('Culture', "CULTURE"),
         ('Music', "MUSIC"),
         ('Game', "GAME"),
-
     )
 
     employer = models.ForeignKey('account.MyUser', on_delete=models.CASCADE, related_name='employer')

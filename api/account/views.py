@@ -9,7 +9,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from api.permissions import IsFriend
 from api.serializers import CustomTokenObtainPairSerializer
-
 from userprofile.serializers import UserProfileSerializer
 
 

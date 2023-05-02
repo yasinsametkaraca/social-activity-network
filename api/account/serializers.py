@@ -9,6 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role']
+        ref_name = 'UserSerializer'
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -45,6 +46,7 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     class Meta:
         model = MyUser
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'token', 'role')
+
 
     def get_token(self, obj):  # get_token diyerek token alanını döndürüyoruz.
         token = RefreshToken.for_user(obj)

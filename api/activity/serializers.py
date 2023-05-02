@@ -70,7 +70,6 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         address_data = validated_data.pop('address')
-
         address_serializer = AddressSerializer(data=address_data)
         address_serializer.is_valid(raise_exception=True)
         address = address_serializer.save()
@@ -80,7 +79,6 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
             **validated_data
         )
         ActivityUser.objects.create(user=self.context['request'].user, activity=activity, participate_status=True)
-
         return activity
 
     def update(self, instance, validated_data):
