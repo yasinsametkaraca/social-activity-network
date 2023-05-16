@@ -100,6 +100,3 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
-
-    def delete(self, instance):
-        instance.delete()

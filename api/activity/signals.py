@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from confirmation.models import Confirmation
 from activity.models import Activity
@@ -38,3 +38,9 @@ def update_confirmation(sender, instance, **kwargs):
         Confirmation.objects.create(activity=instance, confirm_status=False, confirm_type='Create')
         post_save.connect(update_activity_status, sender=Confirmation)
     print(instance.get_dirty_fields())
+
+
+@receiver(post_delete, sender=Activity)
+def delete_related_address(sender, instance, **kwargs):
+    if instance.address:
+        instance.address.delete()

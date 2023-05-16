@@ -184,3 +184,16 @@ MEDIA_ROOT = 'static/'  # eklenen resimlerin kaydedileceği klasör
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TEST_DIR = 'test_db'
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Basic': {
+            'type': 'basic'
+      },
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}

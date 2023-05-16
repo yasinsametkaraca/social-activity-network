@@ -10,7 +10,7 @@ from .serializers import ActivitySerializer, ActivityCreateUpdateSerializer, Act
 from account.models import MyUser
 
 
-class ActivityListCreate(generics.ListCreateAPIView):
+class ActivityList(generics.ListCreateAPIView):
     def get_queryset(self):
         if self.request.method == 'GET':
             category = self.request.GET.get('category')
@@ -42,9 +42,15 @@ class ActivityListCreate(generics.ListCreateAPIView):
         return Response(ActivityCreateUpdateSerializer(activity).data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class ActivityUserListView(generics.ListAPIView):
+class ActivityDetail(generics.UpdateAPIView, generics.DestroyAPIView, generics.RetrieveAPIView):
+    queryset = Activity.objects.all()
+    serializer_class = ActivityCreateUpdateSerializer
+    permission_classes = [IsAuthenticated, IsActivityOwner]
+
+
+class ActivityUserList(generics.ListAPIView):
     serializer_class = ActivityUserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,  ]
 
     def get_queryset(self):
         activity_id = self.kwargs['activity_id']  # Aktivite ID' sini URL parametresinden alıyoruz
@@ -52,35 +58,10 @@ class ActivityUserListView(generics.ListAPIView):
         return queryset
 
 
-class ActivityUpdateDeleteView(generics.UpdateAPIView, generics.DestroyAPIView, generics.RetrieveAPIView):
-    queryset = Activity.objects.all()
-    serializer_class = ActivityCreateUpdateSerializer
-    permission_classes = [IsAuthenticated, IsActivityOwner]
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        activity = serializer.save()
-        return Response(ActivityCreateUpdateSerializer(activity).data)
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def get_object(self):
-        queryset = self.get_queryset()
-        obj = generics.get_object_or_404(queryset, pk=self.kwargs.get('id'))
-        self.check_object_permissions(self.request, obj)
-        return obj
-
-
-class ActivityJoinView(generics.CreateAPIView, generics.RetrieveDestroyAPIView):
-    serializer_class = ActivityUserSerializer  # replace with your serializer
-    queryset = ActivityUser.objects.all()  # replace with your queryset
-    permission_classes = [IsAuthenticated, ]
+class ActivityJoin(generics.CreateAPIView, generics.RetrieveDestroyAPIView):
+    serializer_class = ActivityUserSerializer
+    queryset = ActivityUser.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         activity_id = self.kwargs['activity_id']
@@ -105,7 +86,7 @@ class ActivityJoinView(generics.CreateAPIView, generics.RetrieveDestroyAPIView):
         return Response({'success': 'Aktivite katılımı başarıyla iptal edildi.'}, status=status.HTTP_204_NO_CONTENT)
 
 
-class ActivityUserStatusUpdateView(generics.UpdateAPIView):
+class ActivityUserStatusUpdate(generics.UpdateAPIView):
     serializer_class = ActivityUserSerializer
     queryset = ActivityUser.objects.all()
     permission_classes = [CanChangeActivityParticipateStatus, IsAuthenticated]
@@ -132,7 +113,7 @@ class ActivityUserStatusUpdateView(generics.UpdateAPIView):
                                                           f'onayladınız.'}, status=status.HTTP_200_OK)
 
 
-class AddFavouriteAPIView(APIView):
+class FavouriteActivity(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, pk):
@@ -149,7 +130,7 @@ class AddFavouriteAPIView(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class ActivityListByUsernameView(ListAPIView):
+class ActivityListByUsername(ListAPIView):
     serializer_class = ActivitySerializer
 
     def get_queryset(self):

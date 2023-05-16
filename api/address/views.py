@@ -11,7 +11,7 @@ class ReadOnly(BasePermission):
 
 
 class AddressList(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
 

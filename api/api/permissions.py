@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from activity.models import Activity
 from activity.models import ActivityUser
@@ -21,7 +22,7 @@ class CanChangeActivityParticipateStatus(BasePermission):
     def has_permission(self, request, view):
         if 'activity_id' in view.kwargs:
             activity_id = view.kwargs['activity_id']
-            activity = Activity.objects.get(id=activity_id)
+            activity = get_object_or_404(Activity, id=activity_id)
             return activity.owner == request.user
         return False
 
@@ -32,7 +33,7 @@ class CanChangeActivityParticipateStatus(BasePermission):
 
 class IsActivityOwner(BasePermission):
     """
-    Bu izin sınıfı, sadece aktiviteyi oluşturan kullanıcının güncelleme yapabilmesine izin verir.
+    Sadece aktiviteyi oluşturan kullanıcının güncelleme yapabilmesine izin verir.
     """
 
     def has_object_permission(self, request, view, obj):
