@@ -47,7 +47,6 @@ class UserSerializerWithToken(serializers.ModelSerializer):
         model = MyUser
         fields = ('id', 'username', 'email', 'first_name', 'last_name', 'token', 'role')
 
-
     def get_token(self, obj):  # get_token diyerek token alanını döndürüyoruz.
         token = RefreshToken.for_user(obj)
         return str(token.access_token)

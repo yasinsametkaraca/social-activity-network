@@ -49,7 +49,7 @@ class ProfileAvatarSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.EmailField(source='user.email', )
+    email = serializers.EmailField(source='user.email')
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
     identification_number = serializers.CharField(source='user.identification_number')

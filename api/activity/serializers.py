@@ -40,6 +40,9 @@ class ActivitySerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     add_favourite = serializers.StringRelatedField(many=True, read_only=True)
     activity_user = UserActivitySerializer(many=True, read_only=True)
+    avatar = serializers.CharField(source='owner.profile.avatar', read_only=True)
+    role = serializers.CharField(source='owner.role', read_only=True)
+    userId = serializers.CharField(source='owner.id', read_only=True)
 
     class Meta:
         model = Activity

@@ -15,6 +15,7 @@ from userprofile.serializers import UserProfileSerializer
 class UserRegister(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = UserRegisterSerializer
+    authentication_classes = []
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -36,8 +37,9 @@ class UserRegister(GenericAPIView):
 
 
 class UserLogin(GenericAPIView):
-    permission_classes = (AllowAny,)
     serializer_class = UserLoginSerializer
+    authentication_classes = []
+    permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

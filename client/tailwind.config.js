@@ -1,11 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  darkMode: "class",
+  mode: "jit",
+  content: ["./public/**/*.html", "./src/**/*.{js,jsx,ts,tsx,vue}"],
   theme: {
-    extend: {},
+    extends: {
+      backgroundImage: {
+        space: "url('/images/bg.png')",
+      },
+    },
   },
-  plugins: [],
+  variants: {
+    scrollbar: ["dark"],
+  },
+  plugins: [require("@tailwindcss/forms"), require("tailwind-scrollbar")],
 }
