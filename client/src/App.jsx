@@ -62,7 +62,7 @@ const App = () => {
                             element={<UpdateProfile />}
                         />
                         <Route
-                            path='/post/information/:id'
+                            path='/activity/detail/:id'
                             element={<Information />}
                         />
                     </Route>

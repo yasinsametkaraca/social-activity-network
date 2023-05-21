@@ -43,6 +43,8 @@ class ActivitySerializer(serializers.ModelSerializer):
     avatar = serializers.CharField(source='owner.profile.avatar', read_only=True)
     role = serializers.CharField(source='owner.role', read_only=True)
     userId = serializers.CharField(source='owner.id', read_only=True)
+    start_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    end_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
 
     class Meta:
         model = Activity
@@ -66,6 +68,8 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
     add_favourite = serializers.StringRelatedField(many=True, read_only=True)
     activity_user = serializers.StringRelatedField(many=True, read_only=True)
+    start_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    end_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
 
     class Meta:
         model = Activity

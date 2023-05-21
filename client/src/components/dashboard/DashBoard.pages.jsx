@@ -27,7 +27,7 @@ const Dashboard = () => {
             const data = await autoFetch.get(
                 `/activities/`
             );
-            setActivities(data.data);
+            setActivities(data.data.results);
         } catch (error) {
             console.log(error);
             setError(true);
@@ -38,11 +38,10 @@ const Dashboard = () => {
     const getNewActivities = async () => {
         try {
             const {data} = await autoFetch.get(
-                `/api/post/news-feed?page=${page + 1}&perPage=5`
+                `/activities/?page=${page + 1}`
             );
             setPage(page + 1);
-            // @ts-ignore
-            setActivities([...activities, ...data.activities]);
+            setActivities([...activities, ...data.results]);
         } catch (error) {
             console.log(error);
         }

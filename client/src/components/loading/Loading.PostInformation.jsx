@@ -1,7 +1,7 @@
 import React from "react";
 import {useAppContext} from "../../context/useContext.jsx";
 
-const LoadingPostInformation = ({}) => {
+const LoadingPostInformation = () => {
     const {dark} = useAppContext();
 
     return (

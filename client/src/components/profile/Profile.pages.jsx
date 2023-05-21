@@ -85,9 +85,7 @@ const Profile = () => {
     }, [posts]);
 
     const getDeletePostId = (postId) => {
-        // @ts-ignore
-        const newPosts = posts.filter((v) => v._id !== postId);
-        // @ts-ignore
+        const newPosts = posts.filter((v) => v.id !== postId);
         setPosts(newPosts);
         console.log("delete post: ", postId);
     };

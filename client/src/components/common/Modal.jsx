@@ -12,17 +12,31 @@ import {toast} from "react-toastify";
 import ReactLoading from "react-loading";
 
 const Modal = ({
-    text = "",
-    setText = (event) => {},
     setOpenModal = (event) => {},
     attachment = "",
     setAttachment = (event) => {},
-    createNewPost = () => {},
+    createNewActivity = () => {},
     handleEditPost = () => {},
     isEditPost = false,
-    imageEdit = null,
+    imageEdit = "",
     setFormDataEdit = (event) => {},
     setImageEdit = (event) => {},
+    description= "",
+    setDescription = (event) => {},
+    address = "",
+    setAddress = (event) => {},
+    category = "",
+    setCategory = (event) => {},
+    price = "",
+    setPrice = (event) => {},
+    title = "",
+    setTitle = (event) => {},
+    totalPlayerCount = "",
+    setTotalPlayerCount = (event) => {},
+    startDate = "",
+    setStartDate = (event) => {},
+    endDate = "",
+    setEndDate = (event) => {},
 }) => {
     const {user} = useAppContext();
     const [image, setImage] = useState(imageEdit);
@@ -43,7 +57,6 @@ const Modal = ({
             if (isEditPost) {
                 setFormDataEdit(formData);
             } else {
-                // @ts-ignore
                 setFormData(formData);
             }
         } catch (error) {
@@ -58,10 +71,16 @@ const Modal = ({
             handleEditPost();
         } else {
             // Create post
-            // @ts-ignore
-            createNewPost(formData);
+            createNewActivity(formData);
         }
-        setText("");
+        setTitle("");
+        setDescription("");
+        setAddress("");
+        setCategory("");
+        setPrice("");
+        setTotalPlayerCount("");
+        setStartDate("");
+        setEndDate("");
         setOpenModal(false);
         setAttachment("");
         setFormData(null);
@@ -70,10 +89,9 @@ const Modal = ({
     const uploadImage = () => {
         if (image) {
             return (
-                <div className='w-full h-full relative group '>
+                <div className='w-full h-full relative group'>
                     <img
-                        // @ts-ignore
-                        src={image?.url}
+                        src={image}
                         alt='xasdws'
                         className='flex items-center justify-center w-full max-h-full object-contain '
                     />
@@ -91,7 +109,7 @@ const Modal = ({
         }
         if (loading) {
             return (
-                <div className='flex items-center justify-center w-full h-full '>
+                <div className='flex items-center justify-center w-full h-full'>
                     <ReactLoading
                         type='spinningBubbles'
                         color='#6A7583'
@@ -129,9 +147,8 @@ const Modal = ({
             </>
         );
     };
-
     return (
-        <div className=' fixed flex items-center justify-center w-screen h-screen dark:bg-black/50 bg-white/50 z-[200] top-0 left-0 '>
+        <div className='fixed flex items-center justify-center w-screen h-screen dark:bg-black/50 bg-white/50 z-[200] top-0 left-0 h-full'>
             <div
                 className='z-[201] bg-none fixed w-full h-full top-0 right-0 '
                 onClick={() => {
@@ -146,19 +163,19 @@ const Modal = ({
                         setOpenModal(false);
                     }}
                 />
-                <div className='POST '>
+                <div className='POST'>
                     <div className='font-extrabold py-4 text-xl text-center border-b-[1px] border-black/20 dark:border-white/20 '>
-                        {isEditPost ? "Edit post" : "Create Post"}
+                        {isEditPost ? "Edit activity" : "Create Activity"}
                     </div>
-                    <div className='flex gap-x-2 py-4 items-center  '>
+                    <div className='flex gap-x-2 py-4 items-center'>
                         <img
-                            src={user?.image?.url}
+                            src={`${user.avatar ? user.avatar : "images/profile.png"}`}
                             alt='userImage'
                             className='w-10 h-10 rounded-full object-cover '
                         />
                         <div>
                             <div className='text-[15px] font-semibold '>
-                                {user?.name}
+                                {user?.username}
                             </div>
                             <button className='px-2 py-1 flex gap-x-0.5 items-center text-[12px] bg-[#E4E6EB] dark:bg-[#3A3B3C] rounded-lg mt-0.5 font-semibold scrollbar scrollbar-thumb-sky-200 scrollbar-track-gray-100 '>
                                 <GiEarthAmerica className=' ' />
@@ -168,18 +185,148 @@ const Modal = ({
                         </div>
                     </div>
                     <textarea
-                        value={text}
+                        value={title}
                         className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
-                            text.length > 40 || attachment
-                                ? "text-[18px] "
-                                : "text-[22px]"
-                        } ${attachment ? "h-[100px]" : "h-[200px]"} relative`}
-                        placeholder={`What's on your mind, ${user.name}?`}
+                            title?.length > 40 || attachment
+                                ? "text-[11px] "
+                                : "text-[17px]"
+                        } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                        placeholder={`Title`}
                         onChange={(e) => {
-                            setText(e.target.value);
+                            setTitle(e.target.value);
+                        }}
+                        required
+                    />
+                    <textarea
+                        value={description}
+                        className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                            description?.length > 40 || attachment
+                                ? "text-[11px] "
+                                : "text-[17px]"
+                        } ${attachment ? "h-[50px]" : "h-[60px]"} relative`}
+                        placeholder={`Description`}
+                        onChange={(e) => {
+                            setDescription(e.target.value);
+                        }}
+                        required
+                    />
+                    <input
+                        type={"number"}
+                        max="1000"
+                        value={totalPlayerCount}
+                        className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                            totalPlayerCount?.length > 40 || attachment
+                                ? "text-[11px] "
+                                : "text-[17px]"
+                        } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                        placeholder={`Total Player Count`}
+                        onChange={(e) => {
+                           e.target.value >= 2 ? setTotalPlayerCount(e.target.value) : setTotalPlayerCount(2);
+                        }}
+
+                    />
+                    <div className={"flex"}>
+                        <label className={`w-40 mt-3 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}>Start Date</label>
+                        <input
+                            type="datetime-local"
+                            value={startDate}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] w-40 mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}
+                            placeholder={`Start Date`}
+                            onChange={(e) => {
+                                setStartDate(e.target.value);
+                            }}
+                        />
+                    </div>
+                    <div className={"flex"}>
+                        <label className={`w-40 mt-5 mb-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}>End Date</label>
+                        <input
+                            type="datetime-local"
+                            value={endDate}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] w-40 mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}
+                            placeholder={`End Date`}
+                            onChange={(e) => {
+                                setEndDate(e.target.value);
+                            }}
+                        />
+                    </div>
+                    <textarea
+                        value={address.address_line1}
+                        className={`input-modal style-3 mt-1 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                            address.address_line1?.length > 40 || attachment
+                                ? "text-[11px] "
+                                : "text-[17px]"
+                        } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                        placeholder={`Address line 1`}
+                        onChange={(e) => {
+                            setAddress({...address, address_line1: e.target.value});
                         }}
                     />
-
+                    <div className={"flex flex-row"}>
+                        <textarea
+                            value={address.city}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                                address.city?.length > 40 || attachment
+                                    ? "text-[11px] "
+                                    : "text-[17px]"
+                            } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                            placeholder={`City`}
+                            onChange={(e) => {
+                                setAddress({...address, city: e.target.value});
+                            }}
+                        />
+                        <textarea
+                            value={address.country}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                                address.country?.length > 40 || attachment
+                                    ? "text-[11px] "
+                                    : "text-[17px]"
+                            } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                            placeholder={`Country`}
+                            onChange={(e) => {
+                                setAddress({...address, country: e.target.value});
+                            }}
+                        />
+                        <textarea
+                            value={address.postal_code}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                                address.postal_code?.length > 40 || attachment
+                                    ? "text-[11px] "
+                                    : "text-[17px]"
+                            } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                            placeholder={`Postal Code`}
+                            onChange={(e) => {
+                                setAddress({...address, postal_code: e.target.value});
+                            }}
+                        />
+                    </div>
+                    <div className={"flex flex-row mt-3"}>
+                        <input
+                            type={"number"}
+                            max="10000000"
+                            value={price}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                                price?.length > 40 || attachment
+                                    ? "text-[11px] "
+                                    : "text-[17px]"
+                            } ${attachment ? "h-[30px]" : "h-[40px]"} relative`}
+                            placeholder={`Price`}
+                            onChange={(e) => {
+                                e.target.value >= 0 ? setPrice(e.target.value) : setPrice(0);
+                            }}
+                        />
+                        <select className={`w-40 w-full mb-2 border-0 outline-none mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]"}`} value={category} onChange={(e) => setCategory(e.target.value)}>
+                            <option value="">Categories</option>
+                            <option value={"Theatre"}>
+                                {"Theatre"}
+                            </option>
+                            <option value={"Music"}>
+                                {"Music"}
+                            </option>
+                            <option value={"Sport"}>
+                                {"Sport"}
+                            </option>
+                        </select>
+                    </div>
                     {attachment && (
                         <div className='relative flex w-full h-[200px] p-2 rounded-md border dark:border-white/20 group '>
                             {uploadImage()}
@@ -188,11 +335,11 @@ const Modal = ({
                     {!attachment && (
                         <div className='flex items-center justify-between px-4 mt-3 border rounded-md dark:border-white/20 border-black/20 '>
                             <div className='text-[15px] font-semibold '>
-                                Add to your post
+                                Add to your activity
                             </div>
-                            <div className='flex  gap-x-4 items-center  py-2  '>
+                            <div className='flex gap-x-4 items-center py-2  '>
                                 <div
-                                    className='w-[35px] h-[35px]  rounded-full flex items-center justify-center dark:hover:bg-[#3A3B3C] px-1.5 cursor-pointer hover:bg-black/10 transition-20 '
+                                    className='w-[35px] h-[35px] rounded-full flex items-center justify-center dark:hover:bg-[#3A3B3C] px-1.5 cursor-pointer hover:bg-black/10 transition-20 '
                                     onClick={() => {
                                         setAttachment("photo");
                                     }}>
@@ -210,14 +357,13 @@ const Modal = ({
                             </div>
                         </div>
                     )}
-
                     <button
                         className={`w-full py-1.5 text-center rounded-[4px] font-semibold my-3 ${
-                            text
+                            title
                                 ? "bg-[#3982E4] text-white "
                                 : "dark:bg-[#505151] dark:text-white/70 bg-[#3982E4] text-white "
                         }`}
-                        disabled={!text || loading}
+                        disabled={!title || loading}
                         onClick={handleButton}>
                         {isEditPost ? "Save" : "Post"}
                     </button>

@@ -151,7 +151,7 @@ export default function CustomizedTables({
                                                     row.image
                                                 ) {
                                                     navigate(
-                                                        `/post/information/${row.id}`
+                                                        `/activity/detail/${row.id}`
                                                     );
                                                 }
                                                 if (

@@ -1,9 +1,12 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from api.pagination import CustomPagination
 from api.permissions import CanChangeActivityParticipateStatus, IsActivityOwner
 from .models import ActivityUser, Activity
 from .serializers import ActivitySerializer, ActivityCreateUpdateSerializer, ActivityUserSerializer
@@ -11,6 +14,8 @@ from account.models import MyUser
 
 
 class ActivityList(generics.ListCreateAPIView):
+    pagination_class = CustomPagination
+
     def get_queryset(self):
         if self.request.method == 'GET':
             category = self.request.GET.get('category')

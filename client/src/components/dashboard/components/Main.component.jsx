@@ -3,22 +3,22 @@ import {toast} from "react-toastify";
 import {Modal, Post, LoadingPost, LoadingForm, FormCreatePost} from "../..";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-const Center = ({
-    activities,
-    loading,
-    token,
-    autoFetch,
-    setOneState,
-    dark,
-    user,
-    getAllActivities,
-    setActivities,
-    getNewActivities,
-    error,
-    isQrCode,
-}) => {
+const Center = ({activities, loading, token, autoFetch, setOneState, dark, user, getAllActivities, setActivities, getNewActivities, error, isQrCode,}) => {
+
     const [attachment, setAttachment] = useState("");
-    const [text, setText] = useState("");
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [totalPlayerCount, setTotalPlayerCount] = useState();
+    const [startDate, setStartDate] = useState();
+    const [endDate, setEndDate] = useState();
+    const [address, setAddress] = useState({
+        address_line1: "",
+        city: "",
+        postal_code:"",
+        country: "",
+    });
+    const [category, setCategory] = useState("");
+    const [price, setPrice] = useState();
     const [openModal, setOpenModal] = useState(false);
     const [loadingCreateNewActivity, setLoadingCreateNewActivity] = useState(false);
 
@@ -36,31 +36,37 @@ const Center = ({
 
     const createNewActivity = async (formData) => {
         setLoadingCreateNewActivity(true);
-        if (!text) {
-            toast.error("You must type something...");
+        if (!title && !description) {
+            toast.error("Error. You must type something...");
             return;
         }
         try {
-            let image = null;
-            if (formData) {
-                const {data} = await autoFetch.post(
-                    `/api/post/upload-image`,
-                    formData
-                );
-                image = {url: data.url, public_id: data.public_id};
-            }
+            // let image = null;
+            // if (formData) {
+            //     const {data} = await autoFetch.post(
+            //         `/activities/upload-image`,
+            //         formData
+            //     );
+            //     image = {url: data.url, public_id: data.public_id};
+            // }
 
-            const {data} = await autoFetch.post(`api/post/create-post`, {
-                content: text,
-                image,
+            const {data} = await autoFetch.post(`/activities/`, {
+                title: title,
+                description: description,
+                address: address,
+                category: category,
+                activity_price: price,
+                start_date: startDate,
+                end_date: endDate,
+                total_player_count: totalPlayerCount,
+                image: formData ? formData : null,
             });
-            setActivities([data.post, ...activities]);
+            setActivities([data, ...activities]);
         } catch (error) {
-            console.log(error);
+            toast.error("Error...");
         }
         setLoadingCreateNewActivity(false);
     };
-    console.log(activities)
     const content = () => {
         if (loading) {
             return (
@@ -98,12 +104,12 @@ const Center = ({
                 loader={<LoadingPost />}>
                 {activities.map((activity) => (
                     <Post
-                        key={activity.id}
+                        key={activity?.id}
                         currentActivity={activity}
-                        user_img={activity.avatar}
-                        userId={activity.userId}
+                        user_img={activity?.avatar}
+                        userId={activity?.userId}
                         className={!dark ? "shadow-post" : ""}
-                        userRole={activity.role}
+                        userRole={activity?.role}
                     />
                 ))}
             </InfiniteScroll>
@@ -112,14 +118,21 @@ const Center = ({
 
     const form = () => {
         if (error) {
-            return <></>;
+            return <>{error}</>;
         }
         if (loading) return <LoadingForm />;
         return (
             <FormCreatePost
                 setAttachment={setAttachment}
                 setOpenModal={setOpenModal}
-                text={text}
+                title={title}
+                description={description}
+                totalPlayerCount={totalPlayerCount}
+                startDate={startDate}
+                endDate={endDate}
+                address={address}
+                category={category}
+                price={price}
                 user={user}
             />
         );
@@ -132,8 +145,22 @@ const Center = ({
             {openModal && !isQrCode && (
                 <Modal
                     setOpenModal={setOpenModal}
-                    text={text}
-                    setText={setText}
+                    title={title}
+                    setTitle={setTitle}
+                    description={description}
+                    setDescription={setDescription}
+                    totalPlayerCount={totalPlayerCount}
+                    setTotalPlayerCount={setTotalPlayerCount}
+                    startDate={startDate}
+                    setStartDate={setStartDate}
+                    endDate={endDate}
+                    setEndDate={setEndDate}
+                    address={address}
+                    setAddress={setAddress}
+                    category={category}
+                    setCategory={setCategory}
+                    price={price}
+                    setPrice={setPrice}
                     attachment={attachment}
                     setAttachment={setAttachment}
                     createNewActivity={createNewActivity}

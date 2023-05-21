@@ -186,7 +186,7 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-MEDIA_URL = '/'  # projede resimleri url de göstermemiz için  site-ismi.com/images/1.png diyerek resimlere ulaşırız.
+MEDIA_URL = '/api/v1/'  # projede resimleri url de göstermemiz için  site-ismi.com/api/v1/images/1.png diyerek resimlere ulaşırız.
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static'

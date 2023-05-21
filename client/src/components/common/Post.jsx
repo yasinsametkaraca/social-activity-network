@@ -41,11 +41,18 @@ const Post = ({
     // open model for edit post
     const [openModal, setOpenModal] = useState(false);
     //edit post
-    const [textEdit, setTextEdit] = useState(currentActivity?.title);
+    const [titleEdit, setTitleEdit] = useState(currentActivity?.title);
     const [attachment, setAttachment] = useState(
         currentActivity?.image ? "photo" : ""
     );
     const [imageEdit, setImageEdit] = useState(currentActivity?.image);
+    const [descriptionEdit, setDescriptionEdit] = useState(currentActivity?.description);
+    const [totalPlayerCountEdit, setTotalPlayerCountEdit] = useState(currentActivity?.total_player_count);
+    const [startDateEdit, setStartDateEdit] = useState(currentActivity?.start_date);
+    const [endDateEdit, setEndDateEdit] = useState(currentActivity?.end_date);
+    const [addressEdit, setAddressEdit] = useState(currentActivity?.address);
+    const [categoryEdit, setCategoryEdit] = useState(currentActivity?.category);
+    const [priceEdit, setPriceEdit] = useState(currentActivity?.activity_price);
     const [loadingEdit, setLoadingEdit] = useState(false);
 
     // open modal
@@ -156,19 +163,19 @@ const Post = ({
         }
     };
 
-    const deletePost = async (postId) => {
+    const deletePost = async (activityId) => {
         try {
-            const {data} = await autoFetch.delete(`api/post/${postId}`);
+            const {data} = await autoFetch.delete(`/activities/${activityId}/`);
             setIsDelete(true);
             toast(data.msg);
-            getDeletePostId(postId);
+            getDeletePostId(activityId);
         } catch (error) {
             console.log(error);
         }
     };
 
-    //update post
-    const updatePost = async () => {
+    //update activity
+    const updateActivity = async () => {
         setLoadingEdit(true);
         try {
             let image = imageEdit;
@@ -181,15 +188,30 @@ const Post = ({
                 }
             }
             const {data} = await autoFetch.patch(
-                `api/post/${currentActivity.id}`,
+                `/activities/${currentActivity.id}/`,
                 {
-                    content: textEdit,
+                    title: titleEdit,
+                    description: descriptionEdit,
+                    total_player_count: totalPlayerCountEdit,
+                    start_date: startDateEdit,
+                    end_date: endDateEdit,
+                    address: addressEdit,
+                    category: categoryEdit,
+                    activity_price: priceEdit,
                     image,
                 }
             );
-            setPost(data.post);
-            setTextEdit(data.post.content);
-            setImageEdit(data.post.image);
+            setPost(data);
+            setTitleEdit(data.title);
+            setImageEdit(data.image);
+            setDescriptionEdit(data.description);
+            setTotalPlayerCountEdit(data.total_player_count);
+            setStartDateEdit(data.start_date);
+            setEndDateEdit(data.end_date);
+            setAddressEdit(data.address);
+            setCategoryEdit(data.category);
+            setPriceEdit(data.activity_price);
+
             if (data.post.image) {
                 setAttachment("photo");
             }
@@ -217,27 +239,44 @@ const Post = ({
 
     return (
         <div
+            onClick={() => {
+                navigate(`/activity/detail/${post.id}`);
+            }}
             className={`dark:bg-[#242526] bg-white mb-5 pt-3 pb-2.5 md:pb-3 rounded-lg ${className} `}>
             {/* Model when in mode edit post */}
             {openModal && (
                 <Modal
                     setOpenModal={setOpenModal}
-                    text={textEdit}
-                    setText={setTextEdit}
                     attachment={attachment}
                     setAttachment={setAttachment}
                     isEditPost={true}
                     imageEdit={imageEdit}
                     setFormDataEdit={setFormData}
-                    handleEditPost={updatePost}
+                    handleEditPost={updateActivity}
                     setImageEdit={setImageEdit}
+                    title={titleEdit}
+                    setTitle={setTitleEdit}
+                    description={descriptionEdit}
+                    setDescription={setDescriptionEdit}
+                    totalPlayerCount={totalPlayerCountEdit}
+                    setTotalPlayerCount={setTotalPlayerCountEdit}
+                    startDate={startDateEdit}
+                    setStartDate={setStartDateEdit}
+                    endDate={endDateEdit}
+                    setEndDate={setEndDateEdit}
+                    address={addressEdit}
+                    setAddress={setAddressEdit}
+                    category={categoryEdit}
+                    setCategory={setCategoryEdit}
+                    price={priceEdit}
+                    setPrice={setPriceEdit}
                 />
             )}
             {/* header post */}
             <div className='flex items-center pl-2 pr-3 sm:px-3 md:px-4'>
                 {/* avatar */}
                 <img
-                    src={post.avatar ? "http://127.0.0.1:8000/"+post.avatar : "/images/profile.png"}
+                    src={`${user_img ? "api/v1/" + user_img: "images/profile.png"}`}
                     alt='avatar'
                     className='w-10 h-10 rounded-full object-cover cursor-pointer '
                     onClick={() => {
@@ -291,7 +330,7 @@ const Post = ({
                                             "Do u want delete this post?"
                                         )
                                     ) {
-                                        deletePost(post._id);
+                                        deletePost(post.id);
                                     }
                                 }}>
                                 Delete
@@ -324,7 +363,7 @@ const Post = ({
                         alt='img_content'
                         className='w-full h-auto max-h-[300px] sm:max-h-[350px] object-contain bg-[#F0F2F5] dark:bg-[#18191A]'
                         onClick={() => {
-                            navigate(`/post/information/${post.id}`);
+                            navigate(`/activity/detail/${post.id}`);
                         }}
                     />
                 </div>
@@ -443,7 +482,7 @@ const Post = ({
             {/* form add comment */}
             <div className='flex gap-x-1.5 px-2 sm:px-3 md:px-4 py-1 items-center '>
                 <img
-                    src={user.avatar ? "http://127.0.0.1:8000/"+ user.avatar : "/images/profile.png"}
+                    src={`${user.avatar ? user.avatar : "images/profile.png"}`}
                     alt='user_avatar'
                     className='w-8 sm:w-9 h-8 sm:h-9 object-cover shrink-0 rounded-full '
                 />

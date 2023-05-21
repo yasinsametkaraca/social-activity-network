@@ -33,7 +33,7 @@ const AppProvider = ({children}) => {
 
     const autoFetch = axios.create({
         // @ts-ignore
-        baseURL: "http://127.0.0.1:8000",
+        baseURL: "http://127.0.0.1:8000/api/v1",
     });
 
     // Add a request interceptor
@@ -65,7 +65,6 @@ const AppProvider = ({children}) => {
                 toast.error(
                     "This page is for admin use only. Please log in again."
                 );
-                logOut();
             }
             if (error.response.status === 11000) {
                 toast.error("Something went wrong. Try again!");
