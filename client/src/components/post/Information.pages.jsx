@@ -31,26 +31,11 @@ const Information = () => {
         getCurrentPost(currentActivityId);
     }, []);
 
-    const like = async (postId) => {
+    const likeAndUnlike = async (activityId) => {
         setLikeLoading(true);
         try {
-            const {data} = await autoFetch.put("/api/post/like-post", {
-                postId,
-            });
-            setPost({...post, likes: data.post.likes});
-        } catch (error) {
-            console.log(error);
-        }
-        setLikeLoading(false);
-    };
-
-    const unlike = async (postId) => {
-        setLikeLoading(true);
-        try {
-            const {data} = await autoFetch.put("/api/post/unlike-post", {
-                postId,
-            });
-            setPost({...post, likes: data.post.likes});
+            const {data} = await autoFetch.post(`/activities/${activityId}/addfavourite/`);
+            setPost({...post, add_favourite: data.data.add_favourite});
         } catch (error) {
             console.log(error);
         }
@@ -115,29 +100,23 @@ const Information = () => {
             </>
         );
     }
+    const formatDate = (dateTimeString) => {
+        if (!dateTimeString) return '';
+
+        const dateTime = new Date(dateTimeString);
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false };
+
+        return dateTime.toLocaleString('en-US', options);
+    };
 
     const commentCount = 0  //post.comments?.length
-    const likeCount = 0; //post.likes?.length
-
+    const likeCount = post?.add_favourite?.length;
+    console.log(post)
     return (
         <>
-            <div
-                className={`hidden md:flex fixed w-screen h-screen bg-[#F0F2F5] dark:bg-black dark:text-white pt-[65px] px-[15%] rounded-lg `}>
-                <div
-                    className={`w-full h-[90%] mt-[3%] grid grid-cols-5 relative ${
-                        !dark ? "shadow-post" : ""
-                    } `}>
-                    <div className='col-span-3 bg-white dark:bg-[#242526] relative flex items-center justify-center h-full'>
-                        <div className='absolute h-[95%] w-[95%] flex items-center bg-[#F0F2F5] dark:bg-black  justify-center '>
-                            {post?.image && (
-                                <img
-                                    src={post.image}
-                                    alt=''
-                                    className='object-cover w-full h-auto max-h-full'></img>
-                            )}
-                        </div>
-                    </div>
-                    <div className='col-span-2 dark:bg-[#242526] p-4 h-full bg-white rounded '>
+            <div className={`md:flex sm:fixed sm:w-screen sm:h-screen bg-[#F0F2F5] dark:bg-black dark:text-white pt-[65px] px-[5%] rounded-lg`}>
+                <div className={`w-full h-[90%] mt-[3%] grid grid-cols-5 relative ${!dark & post?.image ? "shadow-post" : ""}`}>
+                    <div className={`${post?.image ? "md:col-span-3" : "md:col-span-20 md:ml-[300px] md:mr-[300px]"} col-span-10 dark:bg-[#242526] p-4 h-full bg-white rounded`}>
                         <div className='flex items-center justify-between '>
                             <div
                                 className='flex items-center gap-x-1 '
@@ -145,43 +124,78 @@ const Information = () => {
                                     navigate(`/profile/${post?.userId}`);
                                 }}>
                                 <img
-                                    src={post?.image}
+                                    src={`${post?.avatar ? "/api/v1/" +post?.avatar : "/images/profile.png"}`}
                                     alt='avatar'
-                                    className='w-10 h-10 rounded-full '
+                                    className='w-12 h-12 rounded-full'
                                 />
                                 <div className=''>
-                                    <div className='font-bold '>
+                                    <div className='font-bold text-[20px]'>
                                         {post?.owner}
                                     </div>
-                                    <div className='text-[13px] '>
-                                        {post?.owner}
+                                    <div className='text-[16px] '>
+                                        {post?.category}
                                     </div>
                                 </div>
                             </div>
                             <div className='flex items-center'>
-                                <div className='text-[13px] opacity-70 '>
+                                <div className='text-[16px] opacity-70 '>
                                     {moment(post?.created_at).fromNow()}
                                 </div>
                             </div>
                         </div>
-                        <div
-                            className={`content my-5  ${
-                                post?.image || post?.title.length > 60
-                                    ? "text-[17px] "
-                                    : "text-4xl "
-                            } `}
-                            dangerouslySetInnerHTML={{
-                                __html: post?.title,
-                            }}></div>
+                        <div className={`content my-5 ${post?.image || post?.title.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
+                            <label className="font-bold">Title</label>
+                            <div dangerouslySetInnerHTML={{ __html: post?.title }}></div>
+                        </div>
+                        <div className={`content my-3 ${post?.image || post?.description.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
+                            <label className="font-bold">Description</label>
+                            <div dangerouslySetInnerHTML={{ __html: post?.description }}></div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-9 max-sm:grid-cols-2">
+                            <div className={`content my-3 ${post?.image || post?.start_date.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
+                                <label className="font-bold">Start Date</label>
+                                <div>{formatDate(post?.start_date)}</div>
+                            </div>
+                            <div className={"max-sm:hidden"}></div>
+                            <div className={`content my-3 ${post?.image || post?.end_date.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
+                                <label className="font-bold">End Date</label>
+                                <div>{formatDate(post?.end_date)}</div>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-9 max-sm:grid-cols-2">
+                            <div className={`content my-3 ${post?.image || post?.total_player_count.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
+                                <label className="font-bold">Total Player</label>
+                                <div dangerouslySetInnerHTML={{ __html: post?.total_player_count }}></div>
+                            </div>
+                            <div className={"max-sm:hidden"}></div>
+                            <div className={`content my-3 ${post?.image || post?.missing_player_count.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
+                                <label className="font-bold">Missing Player</label>
+                                <div dangerouslySetInnerHTML={{ __html: post?.missing_player_count }}></div>
+                            </div>
+                        </div>
+                        <div className="flex">
+                            <div className={`content my-3 ${post?.image || post?.address?.address_line1.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
+                                <label className="font-bold">Address</label>
+                                <div dangerouslySetInnerHTML={{ __html: `${post?.address?.address_line1} ${post?.address?.address_line2 ? post?.address?.address_line2 : ''} ${post?.address?.city} ${post?.address?.country} ${post?.address?.postal_code}` }}></div>
+                            </div>
+                        </div>
+                        <div className={`md:hidden content my-3 ${post?.image || post?.address?.address_line1.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
+                            {post?.image && (
+                                <img
+                                    src={post.image}
+                                    alt=''
+                                    className='object-cover'></img>
+                            )}
+                        </div>
                         {(commentCount > 0 || likeCount > 0) && (
                             <div className=' py-[10px] flex gap-x-[6px] items-center text-[15px] '>
                                 {likeCount > 0 && (
                                     <>
-                                        {!post?.likes?.includes(user.id) ? (
+                                        {!post?.add_favourite?.includes(user.username) ? (
                                             <>
                                                 <AiOutlineHeart className='text-[18px] text-[#65676b] dark:text-[#afb0b1]' />
                                                 <span className='like-count'>
-                                                    {`${likeCount} like${
+                                                    {`${likeCount} favourite${
                                                         likeCount > 1 ? "s" : ""
                                                     }`}
                                                 </span>
@@ -204,7 +218,6 @@ const Information = () => {
                                         )}
                                     </>
                                 )}
-
                                 <span className='text-[14px] ml-auto text-[#65676b] dark:text-[#afb0b1] '>
                                     {commentCount > 0 &&
                                         `${commentCount} ${
@@ -217,10 +230,10 @@ const Information = () => {
                         )}
 
                         <div className=' mt-2 py-1 flex items-center justify-between border-y dark:border-y-[#3E4042] border-y-[#CED0D4] px-[6px]  '>
-                            {post?.likes?.includes(user._id) ? (
+                            {post?.add_favourite?.includes(user.username) ? (
                                 <button
                                     className=' py-[6px] flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#c22727] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#c22727] transition-50 cursor-pointer  '
-                                    onClick={() => unlike(post.id)}
+                                    onClick={() => likeAndUnlike(post.id)}
                                     disabled={likeLoading}>
                                     {likeLoading ? (
                                         <ReactLoading
@@ -232,14 +245,14 @@ const Information = () => {
                                     ) : (
                                         <>
                                             <AiFillHeart className='text-xl translate-y-[1px] text-[#c22727] ' />
-                                            Like
+                                            Favourite
                                         </>
                                     )}
                                 </button>
                             ) : (
                                 <button
                                     className=' py-[6px] flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
-                                    onClick={() => like(post.id)}
+                                    onClick={() => likeAndUnlike(post.id)}
                                     disabled={likeLoading}>
                                     {likeLoading ? (
                                         <ReactLoading
@@ -251,7 +264,7 @@ const Information = () => {
                                     ) : (
                                         <>
                                             <AiOutlineHeart className='text-xl translate-y-[1px] ' />
-                                            Like
+                                            Favourite
                                         </>
                                     )}
                                 </button>
@@ -272,7 +285,6 @@ const Information = () => {
                             <div className='px-4 py-3 style-3 max-h-[38vh] overflow-y-scroll '>
                                 {post.comments.map((comment) => (
                                     <Comment
-                                        // @ts-ignore
                                         key={comment._id}
                                         currentComment={comment}
                                         userId={user._id}
@@ -280,14 +292,14 @@ const Information = () => {
                                         autoFetch={autoFetch}
                                         navigate={navigate}
                                         postId={post.id}
-                                        user_img={user.image.url}
+                                        user_img={user.image}
                                     />
                                 ))}
                             </div>
                         )}
-                        <div className='flex gap-x-1.5 py-1 '>
+                        <div className='flex gap-x-1.5 py-1'>
                             <img
-                                src={user.image}
+                                src={`${user.avatar ? user.avatar : "/images/profile.png"}`}
                                 alt='user_avatar'
                                 className='w-[40px] h-[40px] object-cover shrink-0 rounded-full '
                             />
@@ -324,9 +336,21 @@ const Information = () => {
                             </form>
                         </div>
                     </div>
+                    {post?.image &&
+                        <div className='md:col-span-2 col-span-5 bg-white max-sm:hidden dark:bg-[#242526] relative flex items-center justify-center h-full'>
+                            <div className='absolute h-[95%] w-[95%] flex items-center md:bg-[#F0F2F5] dark:bg-black  justify-center'>
+                                {post?.image && (
+                                    <img
+                                        src={post.image}
+                                        alt=''
+                                        className='object-cover w-auto h-auto max-h-full'></img>
+                                )}
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
-            <div className='md:hidden pt-[65px] px-1 min-h-screen '>
+            <div className='md:hidden pt-[65px] px-1 min-h-screen'>
                 <Post
                     currentPost={post}
                     userId={user._id}

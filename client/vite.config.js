@@ -7,8 +7,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/v1': {
-        target: 'http://127.0.0.1:8000', // Sunucunun adresini buraya girin
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
+        pathRewrite: {
+          '^/api/v1/': '',
+        },
       },
     },
   },

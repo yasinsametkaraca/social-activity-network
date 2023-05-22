@@ -70,6 +70,9 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
     activity_user = serializers.StringRelatedField(many=True, read_only=True)
     start_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
     end_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    role = serializers.CharField(source='owner.role', read_only=True)
+    userId = serializers.CharField(source='owner.id', read_only=True)
+    avatar = serializers.CharField(source='owner.profile.avatar', read_only=True)
 
     class Meta:
         model = Activity

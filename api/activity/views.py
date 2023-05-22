@@ -52,6 +52,13 @@ class ActivityDetail(generics.UpdateAPIView, generics.DestroyAPIView, generics.R
     serializer_class = ActivityCreateUpdateSerializer
     permission_classes = [IsAuthenticated, IsActivityOwner]
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = (IsAuthenticated,)
+        else:
+            self.permission_classes = (IsActivityOwner, IsAuthenticated)
+        return super().get_permissions()
+
 
 class ActivityUserList(generics.ListAPIView):
     serializer_class = ActivityUserSerializer
@@ -127,10 +134,10 @@ class FavouriteActivity(APIView):
 
         if user in activity.add_favourite.all():
             activity.add_favourite.remove(user)
-            response = {'message': f'{activity.title} favorilerden kaldırıldı.'}
+            response = {'message': f'{activity.title} favorilerden kaldırıldı.', "data": ActivitySerializer(activity).data}
         else:
             activity.add_favourite.add(user)
-            response = {'message': f'{activity.title} favorilere eklendi.'}
+            response = {'message': f'{activity.title} favorilere eklendi.', "data": ActivitySerializer(activity).data}
 
         return Response(response, status=status.HTTP_200_OK)
 

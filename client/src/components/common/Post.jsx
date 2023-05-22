@@ -60,7 +60,7 @@ const Post = ({
         setOneState("openModal", openModal);
     }, [openModal]);
 
-    let likeCount = post?.likes?.length;
+    let likeCount = post?.add_favourite?.length;
     let commentCount = post?.comments?.length;
 
     // set image to show in form
@@ -96,7 +96,11 @@ const Post = ({
         }
     };
 
-    const addComment = async (postId) => {
+    // const getComment = async (activityId) => {
+    //
+    // }
+
+    const addComment = async (activityId) => {
         if (!textComment) {
             return;
         }
@@ -112,7 +116,7 @@ const Post = ({
                 }
             }
             const {data} = await autoFetch.put("/api/post/add-comment", {
-                postId,
+                activityId,
                 comment: textComment,
                 image,
             });
@@ -126,30 +130,6 @@ const Post = ({
         setCommentLoading(false);
     };
 
-    const unlike = async (postId) => {
-        setLikeLoading(true);
-        try {
-            const {data} = await autoFetch.put("/api/post/unlike-post", {
-                postId,
-            });
-            setPost({...post, likes: data.post.likes});
-        } catch (error) {
-            console.log(error);
-        }
-        setLikeLoading(false);
-    };
-
-    const like = async (postId) => {
-        setLikeLoading(true);
-        try {
-            const {data} = await autoFetch.put("/api/post/like-post", {postId});
-            setPost({...post, likes: data.post.likes});
-        } catch (error) {
-            console.log(error);
-        }
-        setLikeLoading(false);
-    };
-
     const deleteComment = async (commentId) => {
         try {
             const {data} = await autoFetch.put("/api/post/remove-comment", {
@@ -161,6 +141,17 @@ const Post = ({
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const likeAndUnlike = async (activityId) => {
+        setLikeLoading(true);
+        try {
+            const {data} = await autoFetch.post(`/activities/${activityId}/addfavourite/`);
+            setPost({...post, add_favourite: data.data.add_favourite});
+        } catch (error) {
+            console.log(error);
+        }
+        setLikeLoading(false);
     };
 
     const deletePost = async (activityId) => {
@@ -238,11 +229,7 @@ const Post = ({
     }
 
     return (
-        <div
-            onClick={() => {
-                navigate(`/activity/detail/${post.id}`);
-            }}
-            className={`dark:bg-[#242526] bg-white mb-5 pt-3 pb-2.5 md:pb-3 rounded-lg ${className} `}>
+        <div className={`dark:bg-[#242526] bg-white mb-5 pt-3 pb-2.5 md:pb-3 rounded-lg ${className} `}>
             {/* Model when in mode edit post */}
             {openModal && (
                 <Modal
@@ -295,7 +282,6 @@ const Post = ({
                             <TiTick className='text-[17px] text-white rounded-full bg-sky-500 ' />
                         )}
                     </div>
-
                     <div className='font-[400] text-[13px] dark:text-[#B0B3B8] flex items-center gap-x-1 '>
                         {moment(post.created_at).fromNow()}
                     </div>
@@ -309,12 +295,19 @@ const Post = ({
                         }}>
                         <div className='translate-y-[-6px] z-[100] '>...</div>
                         <ul
-                            className={`text-base absolute top-[110%] text-center ${
+                            className={`text-base absolute top-[110%] text-center mr-9 ${
                                 !showOption ? "hidden" : "flex flex-col"
                             }   `}
                             onMouseLeave={() => {
                                 setShowOption(false);
                             }}>
+                            <li
+                                className='px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60 '
+                                onClick={() => {
+                                    navigate(`/activity/detail/${post.id}`);
+                                }}>
+                                Detail
+                            </li>
                             <li
                                 className='px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60 '
                                 onClick={() => {
@@ -339,17 +332,22 @@ const Post = ({
                     </div>
                 )}
             </div>
-
             {/* post's text */}
             <div
-                className={`content mt-[11px] px-4  ${
+                onClick={() => {
+                    navigate(`/activity/detail/${post.id}`);
+                }}
+                className={`content mt-[11px] cursor-pointer px-4 ${
                     post?.image || post.title.length > 60
                         ? "text-[17px] "
                         : "text-[22px] "
                 } `}
                 dangerouslySetInnerHTML={{__html: post.title}}></div>
             <div
-                className={`content mt-[11px] px-4  ${
+                onClick={() => {
+                    navigate(`/activity/detail/${post.id}`);
+                }}
+                className={`content mt-[11px] px-4 cursor-pointer ${
                     post?.image || post.description.length > 60
                         ? "text-[13px] "
                         : "text-[17px] "
@@ -368,18 +366,17 @@ const Post = ({
                     />
                 </div>
             )}
-
             {/* post's comment and like quantity */}
             {(commentCount > 0 || likeCount > 0) && (
                 <div className='px-4 py-[10px] flex gap-x-[6px] items-center text-[15px] '>
                     {/* like quantity */}
                     {likeCount > 0 && (
                         <>
-                            {!post.likes?.includes(userId) ? (
+                            {!post.add_favourite?.includes(user.username) ? (
                                 <>
                                     <AiOutlineHeart className='text-[18px] text-[#65676b] dark:text-[#afb0b1]' />
                                     <span className='like-count'>
-                                        {`${likeCount} like${
+                                        {`${likeCount} favourite${
                                             likeCount > 1 ? "s" : ""
                                         }`}
                                     </span>
@@ -410,10 +407,10 @@ const Post = ({
 
             {/* button like and comment */}
             <div className='mx-[12px] mt-2 py-1 flex items-center justify-between border-y dark:border-y-[#3E4042] border-y-[#CED0D4] px-[6px]  '>
-                {post.likes?.includes(userId) ? (
+                {post?.add_favourite.includes(user.username) ? (
                     <button
                         className=' py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#c22727] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#c22727] transition-50 cursor-pointer  '
-                        onClick={() => unlike(post._id)}
+                        onClick={() => likeAndUnlike(post.id)}
                         disabled={likeLoading}>
                         {likeLoading ? (
                             <ReactLoading
@@ -425,14 +422,14 @@ const Post = ({
                         ) : (
                             <>
                                 <AiFillHeart className='text-xl translate-y-[1px] text-[#c22727] ' />
-                                Like
+                                Favourite
                             </>
                         )}
                     </button>
                 ) : (
                     <button
                         className=' py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
-                        onClick={() => like(post._id)}
+                        onClick={() => likeAndUnlike(post.id)}
                         disabled={likeLoading}>
                         {likeLoading ? (
                             <ReactLoading
@@ -444,7 +441,7 @@ const Post = ({
                         ) : (
                             <>
                                 <AiOutlineHeart className='text-xl translate-y-[1px] ' />
-                                Like
+                                Favourite
                             </>
                         )}
                     </button>
