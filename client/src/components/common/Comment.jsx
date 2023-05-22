@@ -10,6 +10,7 @@ import {AiOutlineCamera, AiOutlineSend, AiFillHeart} from "react-icons/ai";
 import {TiTick} from "react-icons/ti";
 import {MdCancel} from "react-icons/md";
 import {HiReply} from "react-icons/hi";
+import {useAppContext} from "../../context/useContext.jsx";
 
 const Comment = ({
     currentComment,
@@ -23,7 +24,7 @@ const Comment = ({
     const [showOption, setShowOption] = useState(false);
     const [editComment, setEditComment] = useState(false);
     const [comment, setComment] = useState(currentComment);
-    const [text, setText] = useState(currentComment.text);
+    const [text, setText] = useState(currentComment.comment);
     const [editLoading, setEditLoading] = useState(false);
     const [likeCommentLoading, setLikeCommentLoading] = useState(false);
     const [imageEdit, setImageEdit] = useState(currentComment?.image || null);
@@ -34,9 +35,9 @@ const Comment = ({
     const [replyImage, setReplyImage] = useState(null);
     const [openFormReply, setOpenFormReply] = useState(false);
     const [showReply, setShowReply] = useState(false);
-
-    const cmtHistory = useRef(currentComment.text);
-
+    const cmtHistory = useRef(currentComment.comment);
+    const [isPublic, setIsPublic] = useState(true);
+    const {user} = useAppContext();
     const cancelEdit = () => {
         setEditComment(false);
         setShowOption(false);
@@ -72,23 +73,21 @@ const Comment = ({
     const handleComment = async (text) => {
         setEditLoading(true);
         try {
-            let image = imageEdit;
-            if (imageEdit) {
-                if (imageEdit.url !== comment?.image?.url) {
-                    image = await uploadOtherImage();
-                    // when upload false
-                    if (!image) {
-                        setEditLoading(false);
-                        setImageEdit(comment?.image);
-                        return;
-                    }
-                }
-            }
-            await autoFetch.patch(`/api/post/edit-comment`, {
-                postId,
-                text,
-                commentId: comment._id,
-                image,
+            // let image = imageEdit;
+            // if (imageEdit) {
+            //     if (imageEdit !== comment?.image) {
+            //         image = await uploadOtherImage();
+            //         // when upload false
+            //         if (!image) {
+            //             setEditLoading(false);
+            //             setImageEdit(comment?.image);
+            //             return;
+            //         }
+            //     }
+            // }
+            await autoFetch.patch(`/comments/${comment.id}/`, {
+                isPublic: true,
+                comment: text,
             });
             setEditComment(false);
             cmtHistory.current = text;
@@ -140,7 +139,7 @@ const Comment = ({
 
     const handleDeleteComment = () => {
         if (window.confirm("Do u want delete this comment?")) {
-            deleteComment(comment._id);
+            deleteComment(comment.id);
         }
     };
 
@@ -155,12 +154,9 @@ const Comment = ({
     // add image in reply
     const changeImageReply = (e) => {
         const file = e.target.files[0];
-        // @ts-ignore
         setReplyImage({url: URL.createObjectURL(file)});
-
         let formData = new FormData();
         formData.append("image", file);
-        // @ts-ignore
         setFormData(formData);
     };
 
@@ -208,7 +204,7 @@ const Comment = ({
                 `/api/post/delete-reply-comment`,
                 {
                     postId,
-                    commentId: currentComment._id,
+                    commentId: currentComment.id,
                     replyId,
                 }
             );
@@ -219,7 +215,7 @@ const Comment = ({
         }
     };
 
-    if (!currentComment.postedBy) {
+    if (!currentComment.owner) {
         return (
             <div className=' rounded-xl bg-[#F0F2F5] dark:bg-[#3A3B3C] px-3 py-2 w-auto my-2 relative border border-red-500 opacity-50 '>
                 This comment has been removed because the user is banned.
@@ -232,7 +228,7 @@ const Comment = ({
         return (
             <div className='flex gap-x-1.5 py-1 '>
                 <img
-                    src={comment.postedBy?.image?.url}
+                    src={`${comment.owner_avatar ? "api/v1/"+comment.owner_avatar : "/images/profile.png"}`}
                     alt='user_avatar'
                     className='w-[35px] h-[35px] object-cover shrink-0 rounded-full mt-1  '
                 />
@@ -325,7 +321,7 @@ const Comment = ({
                         } `}
                         disabled={likeCommentLoading}
                         onClick={handleLikeComment}>
-                        Like
+                        {/*Like*/}
                     </button>
                     <button
                         className='cursor-pointer'
@@ -333,14 +329,14 @@ const Comment = ({
                             setOpenFormReply(true);
                             setShowReply(true);
                         }}>
-                        Reply
+                        {/*Reply*/}
                     </button>
 
                     <div className='font-normal '>
                         {moment(comment.created).fromNow()}
                     </div>
                 </div>
-                {comment.reply.length > 0 && (
+                {comment?.reply?.length > 0 && (
                     <button
                         className='cursor-pointer text-[#65676B] dark:text-[#c0c3ca] text-[13px] pl-2 flex font-bold '
                         onClick={() => {
@@ -349,8 +345,8 @@ const Comment = ({
                         <HiReply className='rotate-[180deg] translate-y-[2px] ' />
                         {showReply
                             ? "Hide replies "
-                            : `View more ${comment.reply.length}
-                    ${comment.reply.length > 1 ? " replies" : " reply"} `}
+                            : `View more ${comment?.reply?.length}
+                    ${comment?.reply?.length > 1 ? " replies" : " reply"} `}
                     </button>
                 )}
             </div>
@@ -366,11 +362,11 @@ const Comment = ({
                 )}
                 {/* avatar of own's comment */}
                 <img
-                    src={comment.postedBy?.image?.url}
+                    src={`${comment.owner_avatar ? "/api/v1/"+comment.owner_avatar : "/images/profile.png"}`}
                     alt='own_avt_cmt'
                     className='z-10 object-cover w-10 h-10 rounded-full cursor-pointer '
                     onClick={() => {
-                        navigate(`/profile/${comment.postedBy?._id}`);
+                        navigate(`/profile/${comment.owner_id}`);
                     }}
                 />
                 <div
@@ -380,16 +376,16 @@ const Comment = ({
                     <div className='flex items-center w-full gap-x-1 '>
                         <div className='rounded-xl bg-[#F0F2F5] dark:bg-[#3A3B3C] px-3 py-2 max-w-full relative  '>
                             <div
-                                className='font-bold text-[13px] text-[#050505] dark:text-[#e4e6eb] flex items-center gap-x-1 cursor-pointer '
+                                className='font-bold text-[18px] text-[#050505] dark:text-[#e4e6eb] flex items-center gap-x-1 cursor-pointer '
                                 onClick={() => {
                                     navigate(
-                                        `/profile/${comment.postedBy?._id}`
+                                        `/profile/${comment.owner_id}`
                                     );
                                 }}>
-                                {comment.postedBy?.name}
-                                {comment.postedBy?.role === "ADMIN" && (
-                                    <TiTick className='text-[13px] text-white rounded-full bg-sky-500 ' />
-                                )}
+                                {comment?.owner_username}
+                                {/*{comment.owner?.role === "ADMIN" && (*/}
+                                {/*    <TiTick className='text-[13px] text-white rounded-full bg-sky-500 ' />*/}
+                                {/*)}*/}
                             </div>
                             <div
                                 className={`content text-[15px] text-[#050505] dark:text-[#cecfd1] `}>
@@ -397,14 +393,14 @@ const Comment = ({
                             </div>
                             {imageEdit && (
                                 <img
-                                    src={imageEdit?.url}
+                                    src={imageEdit}
                                     alt='image_comment'
                                     className='max-h-60 w-auto object-contain my-0.5 '
                                 />
                             )}
 
                             {/* edit or delete comment */}
-                            {userId === comment.postedBy?._id && (
+                            {user.username === comment.owner_username && (
                                 <div
                                     className='shrink-1 w-10 h-10 hidden group-hover:flex cursor-pointer text-[23px] font-extrabold hover:bg-[#F0F2F5] items-center justify-center rounded-full transition-50 dark:hover:bg-[#3A3B3C] absolute z-[100]  right-[-45px] top-[50%] translate-y-[-50%] '
                                     onClick={() => {
@@ -435,7 +431,7 @@ const Comment = ({
                                     </ul>
                                 </div>
                             )}
-                            {comment.like.length > 0 && (
+                            {comment?.like?.length > 0 && (
                                 <div
                                     className={`absolute bottom-2 bg-inherit p-1 ${
                                         comment.like && comment.like.length > 1
@@ -443,8 +439,8 @@ const Comment = ({
                                             : "right-[-20px]"
                                     } rounded-full flex items-center gap-x-0.5 border-[1px] border-black/10 dark:border-white/10 text-[13px] `}>
                                     <AiFillHeart className='text-[14px] text-[#c22727] dark:text-[#c22727]' />
-                                    {comment.like.length > 1
-                                        ? comment.like.length
+                                    {comment?.like?.length > 1
+                                        ? comment?.like?.length
                                         : ""}
                                 </div>
                             )}
@@ -456,8 +452,8 @@ const Comment = ({
             {/* Reply comment */}
             <div className='w-full pl-5 '>
                 {showReply &&
-                    comment.reply.length > 0 &&
-                    comment.reply.map((cmt) => (
+                    comment?.reply?.length > 0 &&
+                    comment?.reply?.map((cmt) => (
                         <ReplyComment
                             key={cmt._id}
                             currentComment={cmt}
@@ -489,7 +485,7 @@ const Comment = ({
                             <input
                                 type='text'
                                 className='px-1.5 py-1 border-none focus:ring-0 bg-inherit rounded-full w-full font-medium dark:placeholder:text-[#b0b3b8] text-[15px] '
-                                placeholder={`Reply to "${comment.postedBy?.name}"... `}
+                                placeholder={`Reply to "${comment.owner_username}"... `}
                                 value={textReply}
                                 disabled={replyLoading}
                                 autoFocus={true}
@@ -530,7 +526,6 @@ const Comment = ({
                         <div className='w-full pl-[16%] '>
                             <div className='relative group w-max '>
                                 <img
-                                    // @ts-ignore
                                     src={replyImage.url}
                                     alt='reply_image'
                                     className='object-contain w-auto mt-2 max-h-20 '

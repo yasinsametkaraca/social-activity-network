@@ -31,6 +31,18 @@ const Information = () => {
         getCurrentPost(currentActivityId);
     }, []);
 
+    const getComment = async (activityId) => {
+        setShowComment(!showComment);
+        try {
+            const {data} = await autoFetch.get(`/comments/?activity=${activityId}&is_public=false`);
+            setPost({...post, comments: data});
+            setTextComment("");
+        } catch (error) {
+            console.log(error);
+        }
+        setCommentLoading(false);
+    }
+
     const likeAndUnlike = async (activityId) => {
         setLikeLoading(true);
         try {
@@ -55,31 +67,43 @@ const Information = () => {
             setLoading(false);
         }
     };
-
     const deleteComment = async (commentId) => {
         try {
-            const {data} = await autoFetch.put("/api/post/remove-comment", {
-                postId: post._id,
-                commentId,
-            });
-            setPost({...post, comments: data.comments});
+            const {data} = await autoFetch.delete(`/comments/${commentId}/`);
+            setPost((prevPost) => ({
+                ...prevPost,
+                comments: prevPost.comments.filter((comment) => comment.id !== commentId),
+            }));
             toast("You have deleted comment! ");
         } catch (error) {
-            console.log(error);
+            toast("You have not deleted comment! ");
         }
     };
 
-    const addComment = async (postId) => {
+    const addComment = async (activityId) => {
         if (!textComment) {
             return;
         }
         setCommentLoading(true);
         try {
-            const {data} = await autoFetch.put("/api/post/add-comment", {
-                postId,
+            // let image;
+            // if (imageComment) {
+            //     image = await handleUpImageComment();
+            //     if (!image) {
+            //         setCommentLoading(false);
+            //         setImageComment(null);
+            //         return;
+            //     }
+            // }
+            const {data} = await autoFetch.post("/comments/", {
+                activity: activityId,
+                is_public: true,
                 comment: textComment,
             });
-            setPost({...post, comments: data.post.comments});
+            setPost((prevPost) => ({
+                ...prevPost,
+                comments: [...prevPost.comments, data],
+            }));
             setShowComment(true);
             setTextComment("");
         } catch (error) {
@@ -109,12 +133,12 @@ const Information = () => {
         return dateTime.toLocaleString('en-US', options);
     };
 
-    const commentCount = 0  //post.comments?.length
+    const commentCount = post?.comment_count;
     const likeCount = post?.add_favourite?.length;
     console.log(post)
     return (
         <>
-            <div className={`md:flex sm:fixed sm:w-screen sm:h-screen bg-[#F0F2F5] dark:bg-black dark:text-white pt-[65px] px-[5%] rounded-lg`}>
+            <div className={`md:flex sm:w-screen sm:h-screen bg-[#F0F2F5] dark:bg-black dark:text-white pt-[65px] px-[5%] rounded-lg`}>
                 <div className={`w-full h-[90%] mt-[3%] grid grid-cols-5 relative ${!dark & post?.image ? "shadow-post" : ""}`}>
                     <div className={`${post?.image ? "md:col-span-3" : "md:col-span-20 md:ml-[300px] md:mr-[300px]"} col-span-10 dark:bg-[#242526] p-4 h-full bg-white rounded`}>
                         <div className='flex items-center justify-between '>
@@ -228,8 +252,7 @@ const Information = () => {
                                 </span>
                             </div>
                         )}
-
-                        <div className=' mt-2 py-1 flex items-center justify-between border-y dark:border-y-[#3E4042] border-y-[#CED0D4] px-[6px]  '>
+                        <div className=' mt-2 py-1 flex items-center justify-between border-y dark:border-y-[#3E4042] border-y-[#CED0D4] px-[6px]'>
                             {post?.add_favourite?.includes(user.username) ? (
                                 <button
                                     className=' py-[6px] flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#c22727] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#c22727] transition-50 cursor-pointer  '
@@ -272,26 +295,23 @@ const Information = () => {
 
                             <button
                                 className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
-                                onClick={() => {
-                                    setShowComment(!showComment);
-                                }}
+                                onClick={() => getComment(post.id)}
                                 disabled={!commentCount}>
                                 <FiMessageSquare className='text-xl translate-y-[2px] ' />
                                 Comment
                             </button>
                         </div>
-
-                        {commentCount > 0 && (
+                        {((showComment) && (commentCount > 0)) && (
                             <div className='px-4 py-3 style-3 max-h-[38vh] overflow-y-scroll '>
-                                {post.comments.map((comment) => (
+                                {post?.comments?.map((comment) => (
                                     <Comment
-                                        key={comment._id}
+                                        key={comment.id}
                                         currentComment={comment}
-                                        userId={user._id}
+                                        userId={user?.id}
                                         deleteComment={deleteComment}
                                         autoFetch={autoFetch}
                                         navigate={navigate}
-                                        postId={post.id}
+                                        postId={post?.id}
                                         user_img={user.image}
                                     />
                                 ))}

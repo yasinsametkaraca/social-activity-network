@@ -61,19 +61,16 @@ const Post = ({
     }, [openModal]);
 
     let likeCount = post?.add_favourite?.length;
-    let commentCount = post?.comments?.length;
-
+    let commentCount = post?.comment_count;
     // set image to show in form
     const handleImage = (e) => {
         setImageComment(null);
         const file = e.target.files[0];
-        // @ts-ignore
         setImageComment({url: URL.createObjectURL(file)});
 
         let formData = new FormData();
         formData.append("image", file);
 
-        // @ts-ignore
         setFormData(formData);
     };
 
@@ -95,10 +92,18 @@ const Post = ({
             return null;
         }
     };
-
-    // const getComment = async (activityId) => {
-    //
-    // }
+    const getComment = async (activityId) => {
+        setShowComment(!showComment);
+        try {
+            const {data} = await autoFetch.get(`/comments/?activity=${activityId}&is_public=true`);
+            setPost({...post, comments: data});
+            setTextComment("");
+            setImageComment(null);
+        } catch (error) {
+            console.log(error);
+        }
+        setCommentLoading(false);
+    }
 
     const addComment = async (activityId) => {
         if (!textComment) {
@@ -106,21 +111,24 @@ const Post = ({
         }
         setCommentLoading(true);
         try {
-            let image;
-            if (imageComment) {
-                image = await handleUpImageComment();
-                if (!image) {
-                    setCommentLoading(false);
-                    setImageComment(null);
-                    return;
-                }
-            }
-            const {data} = await autoFetch.put("/api/post/add-comment", {
-                activityId,
+            // let image;
+            // if (imageComment) {
+            //     image = await handleUpImageComment();
+            //     if (!image) {
+            //         setCommentLoading(false);
+            //         setImageComment(null);
+            //         return;
+            //     }
+            // }
+            const {data} = await autoFetch.post("/comments/", {
+                activity: activityId,
+                is_public: true,
                 comment: textComment,
-                image,
             });
-            setPost({...post, comments: data.post.comments});
+            setPost((prevPost) => ({
+                ...prevPost,
+                comments: [...prevPost.comments, data],
+            }));
             setShowComment(true);
             setTextComment("");
             setImageComment(null);
@@ -132,14 +140,14 @@ const Post = ({
 
     const deleteComment = async (commentId) => {
         try {
-            const {data} = await autoFetch.put("/api/post/remove-comment", {
-                postId: post._id,
-                commentId,
-            });
-            setPost({...post, comments: data.post.comments});
+            const {data} = await autoFetch.delete(`/comments/${commentId}/`);
+            setPost((prevPost) => ({
+                ...prevPost,
+                comments: prevPost.comments.filter((comment) => comment.id !== commentId),
+            }));
             toast("You have deleted comment! ");
         } catch (error) {
-            console.log(error);
+            toast("You have not deleted comment! ");
         }
     };
 
@@ -396,7 +404,7 @@ const Post = ({
                         </>
                     )}
                     {/* comment quantity */}
-                    <span className='text-[14px] ml-auto text-[#65676b] dark:text-[#afb0b1] '>
+                    <span className='text-[14px] ml-auto text-[#65676b] dark:text-[#afb0b1]'>
                         {commentCount > 0 &&
                             `${commentCount} ${
                                 commentCount > 1 ? "comments" : "comment"
@@ -446,12 +454,9 @@ const Post = ({
                         )}
                     </button>
                 )}
-
                 <button
                     className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
-                    onClick={() => {
-                        setShowComment(!showComment);
-                    }}
+                    onClick={() => getComment(post.id)}
                     disabled={!commentCount}>
                     <FiMessageSquare className='text-xl translate-y-[2px] ' />
                     Comment
@@ -461,21 +466,20 @@ const Post = ({
             {/* comment box */}
             {showComment && (
                 <div className='px-4 pt-1 '>
-                    {post.comments.map((comment) => (
+                    {post?.comments?.map((comment) => (
                         <Comment
-                            key={comment._id}
+                            key={comment.id}
                             currentComment={comment}
                             userId={userId}
                             deleteComment={deleteComment}
                             autoFetch={autoFetch}
-                            postId={post._id}
+                            postId={post.id}
                             navigate={navigate}
                             user_img={user_img}
                         />
                     ))}
                 </div>
             )}
-
             {/* form add comment */}
             <div className='flex gap-x-1.5 px-2 sm:px-3 md:px-4 py-1 items-center '>
                 <img
@@ -487,7 +491,7 @@ const Post = ({
                     className='flex px-2 rounded-full bg-[#F0F2F5] w-full mt-1 items-center dark:bg-[#3A3B3C]  '
                     onSubmit={(e) => {
                         e.preventDefault();
-                        addComment(post._id);
+                        addComment(post.id);
                     }}>
                     <input
                         type='text'

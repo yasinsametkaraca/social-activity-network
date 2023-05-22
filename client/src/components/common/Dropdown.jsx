@@ -124,7 +124,7 @@ export default function Dropdown() {
             <Menu.Button className='flex items-center justify-center w-full h-full rounded-full md:hover:bg-[#3E3E3E]'>
                 {user ? (
                     <img
-                        src={user?.image?.url}
+                        src={`${user.avatar ? user.avatar : "/images/profile.png"}`}
                         alt='avatar'
                         className='rounded-full w-full h-full object-cover bg-[#3F51B5] pl-[3px] pt- p-[2px] dark:bg-slate-300 shrink-0 '
                     />

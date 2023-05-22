@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from comment.models import Comment
 from .models import Activity, ActivityUser
 from address.serializers import AddressSerializer
 from userprofile.models import Profile
@@ -45,6 +47,7 @@ class ActivitySerializer(serializers.ModelSerializer):
     userId = serializers.CharField(source='owner.id', read_only=True)
     start_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
     end_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    comment_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Activity
@@ -55,6 +58,9 @@ class ActivitySerializer(serializers.ModelSerializer):
             add_favourite.username for add_favourite in obj.add_favourites.get_queryset().only("username")
         )
         return obj.add_favourites
+
+    def get_comment_count(self, obj):
+        return Comment.objects.filter(activity=obj).count()
 
     def get_activity_user(self, obj):
         activity_users = list(
@@ -73,10 +79,14 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
     role = serializers.CharField(source='owner.role', read_only=True)
     userId = serializers.CharField(source='owner.id', read_only=True)
     avatar = serializers.CharField(source='owner.profile.avatar', read_only=True)
+    comment_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Activity
         exclude = ['confirm', ]
+
+    def get_comment_count(self, obj):
+        return Comment.objects.filter(activity=obj).count()
 
     def create(self, validated_data):
         address_data = validated_data.pop('address')

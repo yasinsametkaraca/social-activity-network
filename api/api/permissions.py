@@ -59,12 +59,12 @@ class CanCrudPrivateComments(BasePermission):
             is_public = request.GET.get('is_public', 'true')
         else:
             activity_id = request.data.get('activity')
-            is_public = request.data.get('is_public')
-        if is_public:
+            is_public = request.data.get('is_public', 'true')
+
+        if is_public == 'true':
             return True
         else:
-            return ActivityUser.objects.filter(activity=activity_id, user=request.user,
-                                               participate_status=True).exists()
+            return ActivityUser.objects.filter(activity=activity_id, user=request.user, participate_status=True).exists()
 
 
 class CanCrudPrivateCommentDetail(BasePermission):  # sadece o aktiviteye katılanlar private yorumları görebilir.

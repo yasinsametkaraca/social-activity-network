@@ -4,7 +4,7 @@ from .models import Comment
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'get_activity_title', 'get_activity_owner', 'created_at')
+    list_display = ('owner', 'get_activity_title', 'get_activity_owner', 'created_at', 'comment')
     list_filter = ('is_public', 'created_at', 'last_modified_at')
     search_fields = ('owner__username', 'activity__title', 'activity__owner__username')
     readonly_fields = ('created_at', 'last_modified_at')

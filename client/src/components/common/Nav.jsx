@@ -209,7 +209,7 @@ const Nav = () => {
                 <div className='flex items-center'>
                     {user && (
                         <div className='text-sm md:text-md font-semibold border pl-3 md:pr-5 py-[5px] rounded-l-full translate-x-[16px] bg-[#3F51B5] text-white dark:bg-[#3A3A3A] dark:border-white/30 hidden md:flex '>
-                            {user.name}
+                            {user.username}
                         </div>
                     )}
                     <Dropdown />

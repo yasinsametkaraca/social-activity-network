@@ -2,7 +2,6 @@ from rest_framework import generics, permissions
 from rest_framework.exceptions import PermissionDenied
 from .models import Comment
 from .serializers import CommentReadSerializer, CommentWriteSerializer
-from activity.models import ActivityUser
 from api.permissions import CanCrudPrivateComments, CanCrudPrivateCommentDetail, IsFriend
 
 
