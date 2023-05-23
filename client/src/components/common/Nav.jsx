@@ -123,7 +123,7 @@ const Nav = () => {
                 style={{ flex: "1 1 auto" }}>
                 <NavLink to='/' role='button'>
                     <img
-                        src={`/images/${dark ? "logo-dark.png" : "logo.png"}`}
+                        src={`/images/${"logo.png"}`}
                         alt='logo'
                         className='w-[30px] md:w-[40px] h-auto '
                     />

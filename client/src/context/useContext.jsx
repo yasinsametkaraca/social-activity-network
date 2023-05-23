@@ -57,15 +57,15 @@ const AppProvider = ({children}) => {
         function (error) {
             // Any status codes that falls outside the range of 2xx cause this function to trigger
             // Do something with response error
-            if (error.response.status === 401) {
-                toast.error("Your session has expired. Please log in again.");
-                logOut();
-            }
-            if (error.response.status === 403) {
-                toast.error(
-                    "This page is for admin use only. Please log in again."
-                );
-            }
+            // if (error.response.status === 401) {
+            //     toast.error("Your session has expired. Please log in again.");
+            //     logOut();
+            // }
+            // if (error.response.status === 403) {
+            //     toast.error(
+            //         "This page is for admin use only. Please log in again."
+            //     );
+            // }
             if (error.response.status === 11000) {
                 toast.error("Something went wrong. Try again!");
             }

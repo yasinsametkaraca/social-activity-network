@@ -24,7 +24,7 @@ const FormCreatePost = ({user, setOpenModal, setAttachment, title ,description, 
                         setOpenModal(true);
                     }}>
                     <div className='mr-2 overflow-hidden  text-overflow-ellipsis'>
-                        {title || `What's on your mind, ${user.username}?`}
+                        {title || `What activity would you like to do today?, ${user.username}?`}
                     </div>
                 </div>
             </div>

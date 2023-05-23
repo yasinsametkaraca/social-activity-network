@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import moment from "moment";
-import {AiOutlineHeart, AiFillHeart, AiOutlineSend} from "react-icons/ai";
+import {AiOutlineHeart, AiFillHeart, AiOutlineSend, AiOutlineCamera} from "react-icons/ai";
 import ReactLoading from "react-loading";
 import {FiMessageSquare} from "react-icons/fi";
 import {toast} from "react-toastify";
@@ -12,6 +12,9 @@ import {Comment} from "../";
 import {LoadingPostInformation} from "../";
 import {LoadingPost} from "../";
 import {Post} from "../";
+import {MdCancel} from "react-icons/md";
+import Participant from "../common/Participant.jsx";
+import {SlPeople} from "react-icons/sl";
 
 const Information = () => {
     const navigate = useNavigate();
@@ -26,15 +29,46 @@ const Information = () => {
     const [showComment, setShowComment] = useState(false);
     const [commentLoading, setCommentLoading] = useState(false);
     const [textComment, setTextComment] = useState("");
+    const [imageComment, setImageComment] = useState(null);
+    const [formData, setFormData] = useState(null);
+    const [isPrivate, setIsPrivate] = useState(true);
+    const [showParticipants, setShowParticipants] = useState(false);
+
+
 
     useEffect(() => {
         getCurrentPost(currentActivityId);
     }, []);
 
+    const getParticipants = async (activityId) => {
+        setShowComment(false)
+        if(!showParticipants){
+            try {
+                const {data} = await autoFetch.get(`/activities/${activityId}/user/`);
+                setPost((prevPost) => ({
+                    ...prevPost,
+                    activity_user: data,
+                }));
+                setShowParticipants(!showParticipants);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        setShowParticipants(!showParticipants);
+        setCommentLoading(false);
+    }
+
     const getComment = async (activityId) => {
+        setShowParticipants(false)
         setShowComment(!showComment);
+        let is_public = true;
+        post.activity_user.map((participant_user) => {
+            if(participant_user.username === user.username) {
+                is_public = false;
+            }
+        })
         try {
-            const {data} = await autoFetch.get(`/comments/?activity=${activityId}&is_public=false`);
+            const {data} = await autoFetch.get(`/comments/?activity=${activityId}&is_public=${is_public}`);
             setPost({...post, comments: data});
             setTextComment("");
         } catch (error) {
@@ -97,7 +131,7 @@ const Information = () => {
             // }
             const {data} = await autoFetch.post("/comments/", {
                 activity: activityId,
-                is_public: true,
+                is_public: !isPrivate,
                 comment: textComment,
             });
             setPost((prevPost) => ({
@@ -107,7 +141,9 @@ const Information = () => {
             setShowComment(true);
             setTextComment("");
         } catch (error) {
-            console.log(error);
+            if (error.response.status === 403) {
+                toast.error("You can not make private comments without participating in this activity.");
+            }
         }
         setCommentLoading(false);
     };
@@ -135,7 +171,36 @@ const Information = () => {
 
     const commentCount = post?.comment_count;
     const likeCount = post?.add_favourite?.length;
-    console.log(post)
+
+    const handleImage = (e) => {
+        setImageComment(null);
+        const file = e.target.files[0];
+        setImageComment({url: URL.createObjectURL(file)});
+
+        let formData = new FormData();
+        formData.append("image", file);
+
+        setFormData(formData);
+    };
+
+    // upload image to cloudinary
+    const handleUpImageComment = async () => {
+        try {
+            const {data} = await autoFetch.post(
+                `/api/post/upload-image`,
+                formData
+            );
+            return {url: data.url, public_id: data.public_id};
+        } catch (error) {
+            toast.error("Upload image fail!");
+            return null;
+        }
+    };
+
+    const deleteImageComment = () => {
+        setImageComment(null);
+    };
+
     return (
         <>
             <div className={`md:flex sm:w-screen sm:h-screen bg-[#F0F2F5] dark:bg-black dark:text-white pt-[65px] px-[5%] rounded-lg`}>
@@ -300,6 +365,14 @@ const Information = () => {
                                 <FiMessageSquare className='text-xl translate-y-[2px] ' />
                                 Comment
                             </button>
+                            <button
+                                className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
+                                onClick={() => getParticipants(post.id)}
+                                disabled={!post?.activity_user?.length}
+                            >
+                                <SlPeople className='text-xl translate-y-[2px]' />
+                                Participants
+                            </button>
                         </div>
                         {((showComment) && (commentCount > 0)) && (
                             <div className='px-4 py-3 style-3 max-h-[38vh] overflow-y-scroll '>
@@ -317,11 +390,45 @@ const Information = () => {
                                 ))}
                             </div>
                         )}
+                        {showParticipants && (
+                            <div className='px-4 pt-1'>
+                                {Object.entries(post?.activity_user?.reduce((groups, participant) => {
+                                    const groupKey = participant.participate_status.trim();
+                                    if (!groups[groupKey]) {
+                                        groups[groupKey] = [];
+                                    }
+                                    groups[groupKey].push(participant);
+                                    return groups;
+                                }, {})).map(([status, participants]) => (
+                                    <div key={status}>
+                                        <h2 className="text-[16px] pt-2 pb-[3px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer ">{status} Participants</h2>
+                                        <ul>
+                                            {participants.map((participant) => (
+                                                <Participant
+                                                    key={participant.username}
+                                                    currentParticipant={participant}
+                                                    userId={post.userId}  // aktiviteyi oluşturanın user_idsi
+                                                    deleteComment={deleteComment}
+                                                    autoFetch={autoFetch}
+                                                    activityId={post.id}
+                                                    post={post}
+                                                    navigate={navigate}
+                                                    user_img={post.avatar}  // aktiviteyi oluşturanın user_imgi
+                                                    participate_status={participant.participate_status}
+                                                    avatar={participant.avatar}
+                                                    description={participant.description}
+                                                />
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                         <div className='flex gap-x-1.5 py-1'>
                             <img
                                 src={`${user.avatar ? user.avatar : "/images/profile.png"}`}
                                 alt='user_avatar'
-                                className='w-[40px] h-[40px] object-cover shrink-0 rounded-full '
+                                className='w-[40px] h-[40px] object-cover shrink-0 rounded-full max-sm:w-[25px] max-sm:h-[25px] max-sm:mt-[8px]'
                             />
                             <form
                                 className='flex px-2 rounded-full bg-[#F0F2F5] w-full mt-1 items-center dark:bg-[#3A3B3C]  '
@@ -331,7 +438,7 @@ const Information = () => {
                                 }}>
                                 <input
                                     type='text'
-                                    className='px-2 py-1.5 border-none focus:ring-0 bg-inherit rounded-full w-full font-medium dark:placeholder:text-[#b0b3b8] '
+                                    className='px-2 py-1.5 border-none focus:ring-0 bg-inherit rounded-full w-full font-medium dark:placeholder:text-[#b0b3b8] max-sm:text-sm '
                                     placeholder='Write a comment...'
                                     value={textComment}
                                     disabled={commentLoading}
@@ -339,6 +446,22 @@ const Information = () => {
                                         setTextComment(e.target.value);
                                     }}
                                 />
+                                <div className="flex items-center flex-row mr-1">
+                                    <label htmlFor="inline-2-checkbox" className="ml-0 text-sm font-medium text-gray-900 hover:opacity-100 dark:text-gray-300 mr-1 text-[#707173]">Private</label>
+                                    <input id="inline-2-checkbox" type="checkbox" value="" checked={isPrivate} onChange={() => setIsPrivate(!isPrivate)} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                </div>
+                                {!commentLoading && (
+                                    <label>
+                                        <AiOutlineCamera className='shrink-0 text-[18px] transition-50 mr-2 opacity-60 hover:opacity-100 dark:text-[#b0b3b8] cursor-pointer ' />
+                                        <input
+                                            onChange={handleImage}
+                                            type='file'
+                                            accept='image/*'
+                                            name='avatar'
+                                            hidden
+                                        />
+                                    </label>
+                                )}
                                 <button
                                     type='submit'
                                     disabled={commentLoading || !textComment}>
@@ -354,6 +477,25 @@ const Information = () => {
                                     )}
                                 </button>
                             </form>
+                        </div>
+                        {/* image when comment have image */}
+                        <div className='transition-50 flex items-start justify-start w-full px-20 group '>
+                            {imageComment && (
+                                <div className='relative '>
+                                    <img
+                                        // @ts-ignore
+                                        src={imageComment.url}
+                                        alt='image_comment'
+                                        className='h-20 w-auto object-contain '
+                                    />
+                                    {!commentLoading && (
+                                        <MdCancel
+                                            className='absolute hidden group-hover:flex top-1 right-1 text-xl transition-50 cursor-pointer '
+                                            onClick={deleteImageComment}
+                                        />
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                     {post?.image &&

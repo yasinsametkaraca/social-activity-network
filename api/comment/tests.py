@@ -31,12 +31,12 @@ class CommentTests(TestCase):
         self.activity_user = ActivityUser.objects.create(
             activity=self.activity,
             user=self.user,
-            participate_status=True
+            participate_status="Accepted"
         )
         self.activity_user = ActivityUser.objects.create(
             activity=self.activity,
             user=self.friend,
-            participate_status=True
+            participate_status="Accepted"
         )
         self.private_comment = Comment.objects.create(
             owner=self.user,

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import moment from "moment";
 import ReactLoading from "react-loading";
 import useKeypress from "react-use-keypress";
@@ -7,7 +7,6 @@ import {toast} from "react-toastify";
 import ReplyComment from "./ReplyComment.jsx";
 //icon
 import {AiOutlineCamera, AiOutlineSend, AiFillHeart} from "react-icons/ai";
-import {TiTick} from "react-icons/ti";
 import {MdCancel} from "react-icons/md";
 import {HiReply} from "react-icons/hi";
 import {useAppContext} from "../../context/useContext.jsx";

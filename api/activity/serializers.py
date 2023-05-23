@@ -10,10 +10,12 @@ from userprofile.serializers import ProfileAvatarSerializer
 class ActivityUserSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField(read_only=True)
     profile = serializers.SerializerMethodField(read_only=True)
+    participantId = serializers.CharField(source='user.profile.id', read_only=True)
+    avatar = serializers.CharField(source='user.profile.avatar', read_only=True)
 
     class Meta:
         model = ActivityUser
-        fields = ('username', 'participate_status', 'description', 'profile')
+        fields = ('username', 'participate_status', 'description', 'profile', 'participantId', 'avatar')
 
     def get_username(self, obj):
         return obj.user.username
@@ -28,6 +30,7 @@ class ActivityUserSerializer(serializers.ModelSerializer):
 
 class UserActivitySerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField(read_only=True)
+    participate_status = serializers.CharField(read_only=True)
 
     class Meta:
         model = ActivityUser
@@ -64,7 +67,7 @@ class ActivitySerializer(serializers.ModelSerializer):
 
     def get_activity_user(self, obj):
         activity_users = list(
-            activity_user.username for activity_user in obj.activity_users.get_queryset(filter(participate_status = True))
+            activity_user.username for activity_user in obj.activity_users.get_queryset(filter())
         )
         return obj.activity_users
 
@@ -98,7 +101,7 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
             address=address,
             **validated_data
         )
-        ActivityUser.objects.create(user=self.context['request'].user, activity=activity, participate_status=True)
+        ActivityUser.objects.create(user=self.context['request'].user, activity=activity, participate_status="Accepted")
         return activity
 
     def update(self, instance, validated_data):

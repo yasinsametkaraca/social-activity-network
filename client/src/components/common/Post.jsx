@@ -4,20 +4,18 @@ import {useNavigate} from "react-router-dom";
 import ReactLoading from "react-loading";
 import {toast} from "react-toastify";
 // icon
-import {
-    AiOutlineHeart,
-    AiFillHeart,
-    AiOutlineSend,
-    AiOutlineCamera,
-} from "react-icons/ai";
+import {AiOutlineHeart, AiFillHeart, AiOutlineSend, AiOutlineCamera,} from "react-icons/ai";
 import {FiMessageSquare} from "react-icons/fi";
 import {TiTick} from "react-icons/ti";
 import {MdCancel} from "react-icons/md";
+import {SlPeople} from "react-icons/sl";
 // component
 import Comment from "./Comment.jsx";
 import {useAppContext} from "../../context/useContext.jsx";
 import Modal from "./Modal.jsx";
 import PostLoading from "../loading/Loading.Post.jsx";
+import Participant from "./Participant.jsx";
+
 
 const Post = ({
     currentActivity,
@@ -54,6 +52,7 @@ const Post = ({
     const [categoryEdit, setCategoryEdit] = useState(currentActivity?.category);
     const [priceEdit, setPriceEdit] = useState(currentActivity?.activity_price);
     const [loadingEdit, setLoadingEdit] = useState(false);
+    const [showParticipants, setShowParticipants] = useState(false);
 
     // open modal
     useEffect(() => {
@@ -94,6 +93,7 @@ const Post = ({
     };
     const getComment = async (activityId) => {
         setShowComment(!showComment);
+        setShowParticipants(false);
         try {
             const {data} = await autoFetch.get(`/comments/?activity=${activityId}&is_public=true`);
             setPost({...post, comments: data});
@@ -102,6 +102,23 @@ const Post = ({
         } catch (error) {
             console.log(error);
         }
+        setCommentLoading(false);
+    }
+
+    const getParticipants = async (activityId) => {
+        if(!showParticipants){
+            try {
+                const {data} = await autoFetch.get(`/activities/${activityId}/user/`);
+                setPost((prevPost) => ({
+                    ...prevPost,
+                    activity_user: data,
+                }));
+                setShowParticipants(!showParticipants);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        setShowParticipants(!showParticipants);
         setCommentLoading(false);
     }
 
@@ -436,7 +453,7 @@ const Post = ({
                     </button>
                 ) : (
                     <button
-                        className=' py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
+                        className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
                         onClick={() => likeAndUnlike(post.id)}
                         disabled={likeLoading}>
                         {likeLoading ? (
@@ -461,11 +478,54 @@ const Post = ({
                     <FiMessageSquare className='text-xl translate-y-[2px] ' />
                     Comment
                 </button>
+                <button
+                    className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
+                    onClick={() => getParticipants(post.id)}
+                    disabled={!post?.activity_user?.length}
+                >
+                    <SlPeople className='text-xl translate-y-[2px]' />
+                    Participants
+                </button>
             </div>
+            {/* participants box */}
+            {showParticipants && (
+                <div className='px-4 pt-1'>
+                    {Object.entries(post?.activity_user?.reduce((groups, participant) => {
+                        const groupKey = participant.participate_status.trim();
+                        if (!groups[groupKey]) {
+                            groups[groupKey] = [];
+                        }
+                        groups[groupKey].push(participant);
+                        return groups;
+                    }, {})).map(([status, participants]) => (
+                        <div key={status}>
+                            <h2 className="text-[16px] pt-2 pb-[3px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer ">{status} Participants</h2>
+                            <ul>
+                                {participants.map((participant) => (
+                                    <Participant
+                                        key={participant.username}
+                                        currentParticipant={participant}
+                                        userId={userId}  // aktiviteyi oluşturanın user_idsi
+                                        deleteComment={deleteComment}
+                                        autoFetch={autoFetch}
+                                        activityId={post.id}
+                                        post={post}
+                                        navigate={navigate}
+                                        user_img={user_img}  // aktiviteyi oluşturanın user_imgi
+                                        participate_status={participant.participate_status}
+                                        avatar={participant.avatar}
+                                        description={participant.description}
+                                    />
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* comment box */}
             {showComment && (
-                <div className='px-4 pt-1 '>
+                <div className='px-4 pt-1'>
                     {post?.comments?.map((comment) => (
                         <Comment
                             key={comment.id}

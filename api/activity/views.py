@@ -62,7 +62,7 @@ class ActivityDetail(generics.UpdateAPIView, generics.DestroyAPIView, generics.R
 
 class ActivityUserList(generics.ListAPIView):
     serializer_class = ActivityUserSerializer
-    permission_classes = [IsAuthenticated,  ]
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         activity_id = self.kwargs['activity_id']  # Aktivite ID' sini URL parametresinden alıyoruz
@@ -118,11 +118,14 @@ class ActivityUserStatusUpdate(generics.UpdateAPIView):
 
         activity_user.participate_status = participate_status
         activity_user.save()
-        if participate_status == 0:
+        if participate_status == "Rejected":
             return Response({'status': participate_status, 'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
-                                                          f'iptal ettiniz.'}, status=status.HTTP_200_OK)
-        return Response({'status': participate_status, 'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
+                                                     f'iptal ettiniz.'}, status=status.HTTP_200_OK)
+        elif participate_status == "Accepted":
+            return Response({'status': participate_status, 'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
                                                           f'onayladınız.'}, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class FavouriteActivity(APIView):

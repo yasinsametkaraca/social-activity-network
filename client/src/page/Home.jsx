@@ -16,28 +16,24 @@ const Home = () => {
                         className='fixed w-full h-full bottom-0 left-0 opacity-70 wave object-contain'
                     />
                 )}
-
                 <img
+                    width={dark ? 500 : 1100}
                     src='images/img-home.png'
                     alt='rocket'
-                    className='absolute right-0 top-0 h-full w-auto object-contain wave '
+                    className={`absolute right-0 top-0 h-full object-contain wave`}
                 />
-
-                <div className='top-[13vh] md:top-[15vh] left-10 text-[40px] sm:text-[60px] md:text-[80px] font-semibold z-10 absolute text-[#210028] dark:text-sky-300 raleway '>
-                    Hello World
-                    <div className='text-[25px] sm:text-[35px] md:text-[40px] text-pink-600 font-light raleway-light '>
+                <div className='top-[13vh] md:top-[15vh] left-10 text-[20px] sm:text-[30px] md:text-[40px] font-semibold z-10 absolute text-[#210028] dark:text-sky-300 raleway '>
+                    Do you want to find your social buddy?
+                    <div className='text-[15px] sm:text-[25px] md:text-[30px] text-pink-600 font-light raleway-light '>
                         where start everything!
                     </div>
                 </div>
                 <div className='absolute bottom-16 left-10 md:w-[30%] pr-5 md:pr-0'>
                     <div className='font-bold text-xl sm:text-2xl md:text-3xl md:my-3 '>
-                        Lorem
+                        Social Buddy
                     </div>
                     <div className='text-[13px] sm:text-base md:text-[18px] '>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Eius sit, laudantium cupiditate esse animi ab ex, iure
-                        eveniet provident facilis, similique dignissimos fuga.
-                        Nam ex at ipsum quae placeat voluptates.
+                        You are no longer alone and you will never walk alone. Find your social buddy here!
                     </div>
                     <div className='flex gap-x-3 items-center justify-start mt-6 sm:mt-8 md:mt-10 '>
                         <button

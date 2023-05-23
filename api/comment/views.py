@@ -10,7 +10,7 @@ class CommentList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         activity_id = self.request.GET.get('activity')
-        is_public = self.request.GET.get('is_public', 'true')  # /comments/activity/?is_public=true
+        is_public = self.request.GET.get('is_public', True)  # /comments/activity/?is_public=true
         if is_public.lower() == 'false':
             return Comment.objects.filter(activity_id=activity_id)
         return Comment.objects.filter(activity_id=activity_id, is_public=True)
