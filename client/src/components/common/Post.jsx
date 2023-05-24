@@ -59,6 +59,7 @@ const Post = ({
         setOneState("openModal", openModal);
     }, [openModal]);
 
+
     let likeCount = post?.add_favourite?.length;
     let commentCount = post?.comment_count;
     // set image to show in form
@@ -253,6 +254,28 @@ const Post = ({
         return <PostLoading className='mb-4' />;
     }
 
+    const joinActivity = async (activityId) => {
+        try {
+            const response = await autoFetch.post(`/activities/${activityId}/join/`);
+            const {data} = response;
+            if(response.status === 201){  //yani aktiviteye katılma isteği yollandıysa
+                setPost((prevPost) => ({
+                    ...prevPost,
+                    activity_user: [...prevPost.activity_user, data.data],
+                }));
+            } else if(response.status === 200) {     //yani aktiviteye katılma isteği silindiyse
+                setPost((prevPost) => ({
+                    ...prevPost,
+                    activity_user: prevPost.activity_user.filter((user) => user?.username !== data?.data?.username),
+                }));
+            }
+            toast.success(data.message);
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+    }
+    console.log(post)
+
     return (
         <div className={`dark:bg-[#242526] bg-white mb-5 pt-3 pb-2.5 md:pb-3 rounded-lg ${className} `}>
             {/* Model when in mode edit post */}
@@ -312,7 +335,7 @@ const Post = ({
                     </div>
                 </div>
                 {/* Edit or delete posts */}
-                {(userId === post.userId || userRole === "ADMIN") && (
+                {(userId === post.userId || userRole === "ADMIN") && post.owner === user.username ? (
                     <div
                         className='ml-auto text-[25px] transition-50 cursor-pointer font-bold w-[35px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative '
                         onClick={() => {
@@ -355,7 +378,18 @@ const Post = ({
                             </li>
                         </ul>
                     </div>
-                )}
+                ) : (
+                    <>
+                        <button
+                            className={`mr-0 ml-auto text-[14px] transition-50 cursor-pointer font-bold w-[80px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative ${post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected') ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}`}
+                            onClick={() => joinActivity(post.id)}
+                            disabled={post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected')}
+                        >
+                            {post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Accepted') ? 'Joined' : (post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Wait-listed') ? 'Requested' : 'Join')}
+                        </button>
+                    </>
+                )
+                }
             </div>
             {/* post's text */}
             <div
@@ -434,7 +468,7 @@ const Post = ({
             <div className='mx-[12px] mt-2 py-1 flex items-center justify-between border-y dark:border-y-[#3E4042] border-y-[#CED0D4] px-[6px]  '>
                 {post?.add_favourite.includes(user.username) ? (
                     <button
-                        className=' py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#c22727] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#c22727] transition-50 cursor-pointer  '
+                        className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#c22727] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#c22727] transition-50 cursor-pointer  '
                         onClick={() => likeAndUnlike(post.id)}
                         disabled={likeLoading}>
                         {likeLoading ? (
@@ -503,6 +537,7 @@ const Post = ({
                             <ul>
                                 {participants.map((participant) => (
                                     <Participant
+                                        setPost={setPost}
                                         key={participant.username}
                                         currentParticipant={participant}
                                         userId={userId}  // aktiviteyi oluşturanın user_idsi

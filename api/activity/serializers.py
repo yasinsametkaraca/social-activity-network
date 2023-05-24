@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from comment.models import Comment
 from .models import Activity, ActivityUser
 from address.serializers import AddressSerializer
@@ -9,23 +8,22 @@ from userprofile.serializers import ProfileAvatarSerializer
 
 class ActivityUserSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField(read_only=True)
-    profile = serializers.SerializerMethodField(read_only=True)
     participantId = serializers.CharField(source='user.profile.id', read_only=True)
     avatar = serializers.CharField(source='user.profile.avatar', read_only=True)
 
     class Meta:
         model = ActivityUser
-        fields = ('username', 'participate_status', 'description', 'profile', 'participantId', 'avatar')
+        fields = ('username', 'participate_status', 'description', 'participantId', 'avatar')
 
     def get_username(self, obj):
         return obj.user.username
 
-    def get_profile(self, obj):
-        try:
-            profile = Profile.objects.get(user=obj.user)
-            return ProfileAvatarSerializer(profile).data
-        except Profile.DoesNotExist:
-            return None
+    # def get_profile(self, obj):
+    #     try:
+    #         profile = Profile.objects.get(user=obj.user)
+    #         return ProfileAvatarSerializer(profile).data
+    #     except Profile.DoesNotExist:
+    #         return None
 
 
 class UserActivitySerializer(serializers.ModelSerializer):
@@ -44,13 +42,13 @@ class ActivitySerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
     address = AddressSerializer()
     add_favourite = serializers.StringRelatedField(many=True, read_only=True)
-    activity_user = UserActivitySerializer(many=True, read_only=True)
+    activity_user = serializers.SerializerMethodField(read_only=True)
     avatar = serializers.CharField(source='owner.profile.avatar', read_only=True)
     role = serializers.CharField(source='owner.role', read_only=True)
     userId = serializers.CharField(source='owner.id', read_only=True)
     start_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
     end_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
-    comment_count = serializers.SerializerMethodField()
+    comment_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Activity
@@ -66,10 +64,8 @@ class ActivitySerializer(serializers.ModelSerializer):
         return Comment.objects.filter(activity=obj).count()
 
     def get_activity_user(self, obj):
-        activity_users = list(
-            activity_user.username for activity_user in obj.activity_users.get_queryset(filter())
-        )
-        return obj.activity_users
+        activity_users = ActivityUser.objects.filter(activity=obj)
+        return ActivityUserSerializer(activity_users, many=True).data
 
 
 class ActivityCreateUpdateSerializer(serializers.ModelSerializer):

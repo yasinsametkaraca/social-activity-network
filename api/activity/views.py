@@ -66,36 +66,50 @@ class ActivityUserList(generics.ListAPIView):
 
     def get_queryset(self):
         activity_id = self.kwargs['activity_id']  # Aktivite ID' sini URL parametresinden alıyoruz
-        queryset = ActivityUser.objects.filter(activity_id=activity_id)
+        if Activity.objects.get(id=activity_id).owner == self.request.user:
+            queryset = ActivityUser.objects.filter(activity_id=activity_id)
+        else:
+            queryset = ActivityUser.objects.filter(activity_id=activity_id, participate_status="Accepted")
         return queryset
 
 
-class ActivityJoin(generics.CreateAPIView, generics.RetrieveDestroyAPIView):
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+
+class ActivityJoin(generics.GenericAPIView):
     serializer_class = ActivityUserSerializer
-    queryset = ActivityUser.objects.all()
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        return ActivityUser.objects.filter(activity_id=self.kwargs['activity_id'])
+
     def get_object(self):
-        activity_id = self.kwargs['activity_id']
+        queryset = self.get_queryset()
         user = self.request.user
-        obj, created = ActivityUser.objects.get_or_create(activity_id=activity_id, user=user)
+        obj = get_object_or_404(queryset, user=user)
         return obj
 
-    def create(self, request, *args, **kwargs):
-        activity_id = kwargs['activity_id']
+    def post(self, request, *args, **kwargs):
+        activity_id = self.kwargs['activity_id']
         user = request.user
-        activity_user, created = ActivityUser.objects.get_or_create(activity_id=activity_id, user=user)
+        activity = get_object_or_404(Activity, id=activity_id)
+        activity_user, created = ActivityUser.objects.get_or_create(activity=activity, user=user)
+        serializer = self.get_serializer(activity_user)
 
         if not created:
-            return Response({'error': 'Aktiviteye zaten katılma isteği yolladınız.'}, status=status.HTTP_400_BAD_REQUEST)
+            activity_user.delete()
+            return Response({'message': 'Activity participation successfully canceled.', 'data': serializer.data},
+                            status=status.HTTP_200_OK)
 
-        serializer = self.get_serializer(activity_user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({'message': 'The request to join the activity was successfully received.', 'data': serializer.data}, status=status.HTTP_201_CREATED)
 
-    def destroy(self, request, *args, **kwargs):
+    def delete(self, request, *args, **kwargs):
         instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response({'success': 'Aktivite katılımı başarıyla iptal edildi.'}, status=status.HTTP_204_NO_CONTENT)
+        instance.delete()
+        return Response({'message': 'Activity participation successfully canceled.', 'data': ""},
+                        status=status.HTTP_204_NO_CONTENT)
 
 
 class ActivityUserStatusUpdate(generics.UpdateAPIView):
