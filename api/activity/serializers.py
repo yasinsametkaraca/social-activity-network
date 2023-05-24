@@ -72,7 +72,7 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
     address = AddressSerializer()
     add_favourite = serializers.StringRelatedField(many=True, read_only=True)
-    activity_user = serializers.StringRelatedField(many=True, read_only=True)
+    activity_user = serializers.SerializerMethodField(read_only=True)
     start_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
     end_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
     role = serializers.CharField(source='owner.role', read_only=True)
@@ -86,6 +86,10 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
 
     def get_comment_count(self, obj):
         return Comment.objects.filter(activity=obj).count()
+
+    def get_activity_user(self, obj):
+        activity_users = ActivityUser.objects.filter(activity=obj)
+        return ActivityUserSerializer(activity_users, many=True).data
 
     def create(self, validated_data):
         address_data = validated_data.pop('address')

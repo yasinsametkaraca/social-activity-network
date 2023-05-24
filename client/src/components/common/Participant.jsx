@@ -25,7 +25,6 @@ const Participant = ({
     const [isPublic, setIsPublic] = useState(true);
     const {user} = useAppContext();
 
-
     // if (!currentComment.owner) {
     //     return (
     //         <div className=' rounded-xl bg-[#F0F2F5] dark:bg-[#3A3B3C] px-3 py-2 w-auto my-2 relative border border-red-500 opacity-50 '>
@@ -50,6 +49,7 @@ const Participant = ({
             toast.success(data.message);
         } catch (err) {
             toast.error(err.message);
+            console.log(err)
         }
     }
 

@@ -15,6 +15,8 @@ import {Post} from "../";
 import {MdCancel} from "react-icons/md";
 import Participant from "../common/Participant.jsx";
 import {SlPeople} from "react-icons/sl";
+import PostLoading from "../loading/Loading.Post.jsx";
+import Modal from "../common/Modal.jsx";
 
 const Information = () => {
     const navigate = useNavigate();
@@ -33,8 +35,21 @@ const Information = () => {
     const [formData, setFormData] = useState(null);
     const [isPrivate, setIsPrivate] = useState(true);
     const [showParticipants, setShowParticipants] = useState(false);
-
-
+    const [showOption, setShowOption] = useState(false);
+    const [loadingEdit, setLoadingEdit] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const [imageEdit, setImageEdit] = useState(post?.image);
+    const [descriptionEdit, setDescriptionEdit] = useState(post?.description);
+    const [totalPlayerCountEdit, setTotalPlayerCountEdit] = useState(post?.total_player_count);
+    const [startDateEdit, setStartDateEdit] = useState(post?.start_date);
+    const [endDateEdit, setEndDateEdit] = useState(post?.end_date);
+    const [addressEdit, setAddressEdit] = useState(post?.address);
+    const [categoryEdit, setCategoryEdit] = useState(post?.category);
+    const [priceEdit, setPriceEdit] = useState(post?.activity_price);
+    const [titleEdit, setTitleEdit] = useState(post?.title);
+    const [attachment, setAttachment] = useState(
+        post?.image ? "photo" : ""
+    );
 
     useEffect(() => {
         getCurrentPost(currentActivityId);
@@ -96,11 +111,21 @@ const Information = () => {
             );
             setLoading(false);
             setPost(data);
+            setTitleEdit(data.title);
+            setImageEdit(data.image);
+            setDescriptionEdit(data.description);
+            setTotalPlayerCountEdit(data.total_player_count);
+            setStartDateEdit(data.start_date);
+            setEndDateEdit(data.end_date);
+            setAddressEdit(data.address);
+            setCategoryEdit(data.category);
+            setPriceEdit(data.activity_price);
         } catch (error) {
             console.log(error);
             setLoading(false);
         }
     };
+
     const deleteComment = async (commentId) => {
         try {
             const {data} = await autoFetch.delete(`/comments/${commentId}/`);
@@ -201,12 +226,128 @@ const Information = () => {
         setImageComment(null);
     };
 
+    const updateActivity = async () => {
+        setLoadingEdit(true);
+        try {
+            let image = imageEdit;
+            if (formData) {
+                image = await handleUpImageComment();
+                if (!image) {
+                    toast.error("Upload image fail. Try again!");
+                    setLoadingEdit(false);
+                    return;
+                }
+            }
+            const {data} = await autoFetch.patch(
+                `/activities/${post.id}/`,
+                {
+                    title: titleEdit,
+                    description: descriptionEdit,
+                    total_player_count: totalPlayerCountEdit,
+                    start_date: startDateEdit,
+                    end_date: endDateEdit,
+                    address: addressEdit,
+                    category: categoryEdit,
+                    activity_price: priceEdit,
+                    image,
+                }
+            );
+            setPost(data);
+            setTitleEdit(data.title);
+            setImageEdit(data.image);
+            setDescriptionEdit(data.description);
+            setTotalPlayerCountEdit(data.total_player_count);
+            setStartDateEdit(data.start_date);
+            setEndDateEdit(data.end_date);
+            setAddressEdit(data.address);
+            setCategoryEdit(data.category);
+            setPriceEdit(data.activity_price);
+
+            if (data.post.image) {
+                setAttachment("photo");
+            }
+            toast("Update post success!");
+        } catch (error) {
+            console.log(error);
+        }
+        setLoadingEdit(false);
+        setFormData(null);
+    };
+
+    if (loadingEdit) {
+        return <PostLoading className='mb-4' />;
+    }
+
+
+    const deletePost = async (activityId) => {
+        try {
+            const {data} = await autoFetch.delete(`/activities/${activityId}/`);
+            toast.success(data.message);
+            navigate("/")
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const joinActivity = async (activityId) => {
+        try {
+            const response = await autoFetch.post(`/activities/${activityId}/join/`);
+            const {data} = response;
+            if(response.status === 201){  //yani aktiviteye katılma isteği yollandıysa
+                setPost((prevPost) => ({
+                    ...prevPost,
+                    activity_user: [...prevPost.activity_user, data.data],
+                }));
+            } else if(response.status === 200) {     //yani aktiviteye katılma isteği silindiyse
+                setPost((prevPost) => ({
+                    ...prevPost,
+                    activity_user: prevPost.activity_user.filter((user) => user?.username !== data?.data?.username),
+                }));
+            }
+            toast.success(data.message);
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+    }
+
+
     return (
         <>
             <div className={`md:flex sm:w-screen sm:h-screen bg-[#F0F2F5] dark:bg-black dark:text-white pt-[65px] px-[5%] rounded-lg`}>
                 <div className={`w-full h-[90%] mt-[3%] grid grid-cols-5 relative ${!dark & post?.image ? "shadow-post" : ""}`}>
                     <div className={`${post?.image ? "md:col-span-3" : "md:col-span-20 md:ml-[300px] md:mr-[300px]"} col-span-10 dark:bg-[#242526] p-4 h-full bg-white rounded`}>
-                        <div className='flex items-center justify-between '>
+                        <div className='flex items-center justify-between'>
+                            {openModal && (
+                                <div>
+                                    <Modal
+                                        setOpenModal={setOpenModal}
+                                        attachment={attachment}
+                                        setAttachment={setAttachment}
+                                        isEditPost={true}
+                                        imageEdit={imageEdit}
+                                        setFormDataEdit={setFormData}
+                                        handleEditPost={updateActivity}
+                                        setImageEdit={setImageEdit}
+                                        title={titleEdit}
+                                        setTitle={setTitleEdit}
+                                        description={descriptionEdit}
+                                        setDescription={setDescriptionEdit}
+                                        totalPlayerCount={totalPlayerCountEdit}
+                                        setTotalPlayerCount={setTotalPlayerCountEdit}
+                                        startDate={startDateEdit}
+                                        setStartDate={setStartDateEdit}
+                                        endDate={endDateEdit}
+                                        setEndDate={setEndDateEdit}
+                                        address={addressEdit}
+                                        setAddress={setAddressEdit}
+                                        category={categoryEdit}
+                                        setCategory={setCategoryEdit}
+                                        price={priceEdit}
+                                        setPrice={setPriceEdit}
+                                    />
+                                </div>
+                            )}
                             <div
                                 className='flex items-center gap-x-1 '
                                 onClick={() => {
@@ -221,16 +362,61 @@ const Information = () => {
                                     <div className='font-bold text-[20px]'>
                                         {post?.owner}
                                     </div>
-                                    <div className='text-[16px] '>
-                                        {post?.category}
+                                    <div className='text-[16px] opacity-70 '>
+                                        {moment(post?.created_at).fromNow()}
                                     </div>
                                 </div>
                             </div>
-                            <div className='flex items-center'>
-                                <div className='text-[16px] opacity-70 '>
-                                    {moment(post?.created_at).fromNow()}
-                                </div>
+                            <div className='text-[16px] '>
+                                {post?.category}
                             </div>
+                            {(post?.owner === user?.username) ? (
+                                <div
+                                    className='ml-2 text-[25px] transition-50 cursor-pointer font-bold w-[35px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative '
+                                    onClick={() => {
+                                        setShowOption(!showOption);
+                                    }}>
+                                    <div className='translate-y-[-6px] z-[100] '>...</div>
+                                    <ul
+                                        className={`text-base absolute top-[110%] text-center mr-9 ${
+                                            !showOption ? "hidden" : "flex flex-col"
+                                        }   `}
+                                        onMouseLeave={() => {
+                                            setShowOption(false);
+                                        }}>
+                                        <li
+                                            className='px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60 '
+                                            onClick={() => {
+                                                setOpenModal(true);
+                                            }}>
+                                            Edit
+                                        </li>
+                                        <li
+                                            className='mt-1 px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60'
+                                            onClick={() => {
+                                                if (
+                                                    window.confirm(
+                                                        "Do u want delete this post?"
+                                                    )
+                                                ) {
+                                                    deletePost(post.id);
+                                                }
+                                            }}>
+                                            Delete
+                                        </li>
+                                    </ul>
+                                </div>
+                            ) : (
+                                <>
+                                    <button
+                                        className={`mr-0 ml-2 text-[14px] transition-50 cursor-pointer font-bold w-[80px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative ${post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected') ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}`}
+                                        onClick={() => joinActivity(post.id)}
+                                        disabled={post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected')}
+                                    >
+                                        {post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Accepted') ? 'Joined' : (post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Wait-listed') ? 'Requested' : 'Join')}
+                                    </button>
+                                </>
+                            )}
                         </div>
                         <div className={`content my-5 ${post?.image || post?.title.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
                             <label className="font-bold">Title</label>
@@ -357,7 +543,6 @@ const Information = () => {
                                     )}
                                 </button>
                             )}
-
                             <button
                                 className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
                                 onClick={() => getComment(post.id)}
@@ -412,6 +597,7 @@ const Information = () => {
                                                     autoFetch={autoFetch}
                                                     activityId={post.id}
                                                     post={post}
+                                                    setPost={setPost}
                                                     navigate={navigate}
                                                     user_img={post.avatar}  // aktiviteyi oluşturanın user_imgi
                                                     participate_status={participant.participate_status}

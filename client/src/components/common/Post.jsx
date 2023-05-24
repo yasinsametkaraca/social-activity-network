@@ -274,7 +274,6 @@ const Post = ({
             toast.error(error.response.data.message);
         }
     }
-    console.log(post)
 
     return (
         <div className={`dark:bg-[#242526] bg-white mb-5 pt-3 pb-2.5 md:pb-3 rounded-lg ${className} `}>
@@ -334,7 +333,7 @@ const Post = ({
                         {moment(post.created_at).fromNow()}
                     </div>
                 </div>
-                {/* Edit or delete posts */}
+                {/* Edit or delete activity */}
                 {(userId === post.userId || userRole === "ADMIN") && post.owner === user.username ? (
                     <div
                         className='ml-auto text-[25px] transition-50 cursor-pointer font-bold w-[35px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative '
@@ -388,8 +387,7 @@ const Post = ({
                             {post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Accepted') ? 'Joined' : (post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Wait-listed') ? 'Requested' : 'Join')}
                         </button>
                     </>
-                )
-                }
+                )}
             </div>
             {/* post's text */}
             <div

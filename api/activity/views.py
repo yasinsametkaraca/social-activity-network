@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -72,11 +71,6 @@ class ActivityUserList(generics.ListAPIView):
             queryset = ActivityUser.objects.filter(activity_id=activity_id, participate_status="Accepted")
         return queryset
 
-
-from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 
 class ActivityJoin(generics.GenericAPIView):
     serializer_class = ActivityUserSerializer
