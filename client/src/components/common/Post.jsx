@@ -107,6 +107,7 @@ const Post = ({
     }
 
     const getParticipants = async (activityId) => {
+        setShowComment(false);
         if(!showParticipants){
             try {
                 const {data} = await autoFetch.get(`/activities/${activityId}/user/`);
@@ -148,6 +149,7 @@ const Post = ({
                 comments: [...prevPost.comments, data],
             }));
             setShowComment(true);
+            setShowParticipants(false);
             setTextComment("");
             setImageComment(null);
         } catch (error) {
@@ -522,8 +524,8 @@ const Post = ({
             {/* participants box */}
             {showParticipants && (
                 <div className='px-4 pt-1'>
-                    {Object.entries(post?.activity_user?.reduce((groups, participant) => {
-                        const groupKey = participant.participate_status.trim();
+                    {Object?.entries(post?.activity_user?.reduce((groups, participant) => {
+                        const groupKey = participant?.participate_status?.trim();
                         if (!groups[groupKey]) {
                             groups[groupKey] = [];
                         }
@@ -533,21 +535,21 @@ const Post = ({
                         <div key={status}>
                             <h2 className="text-[16px] pt-2 pb-[3px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer ">{status} Participants</h2>
                             <ul>
-                                {participants.map((participant) => (
+                                {participants?.map((participant) => (
                                     <Participant
                                         setPost={setPost}
-                                        key={participant.username}
+                                        key={participant?.username}
                                         currentParticipant={participant}
                                         userId={userId}  // aktiviteyi oluşturanın user_idsi
                                         deleteComment={deleteComment}
                                         autoFetch={autoFetch}
-                                        activityId={post.id}
+                                        activityId={post?.id}
                                         post={post}
                                         navigate={navigate}
                                         user_img={user_img}  // aktiviteyi oluşturanın user_imgi
-                                        participate_status={participant.participate_status}
-                                        avatar={participant.avatar}
-                                        description={participant.description}
+                                        participate_status={participant?.participate_status}
+                                        avatar={participant?.avatar}
+                                        description={participant?.description}
                                     />
                                 ))}
                             </ul>

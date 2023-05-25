@@ -60,7 +60,7 @@ class CanCrudPrivateComments(BasePermission):
         else:
             activity_id = request.data.get('activity')
             is_public = request.data.get('is_public', 'true')
-        if is_public == "true":
+        if is_public:
             return True
         else:
             return ActivityUser.objects.filter(activity=activity_id, user=request.user,

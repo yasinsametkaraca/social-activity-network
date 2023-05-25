@@ -142,9 +142,9 @@ const Comment = ({
         }
     };
 
-    const cancelReply = () => {
-        setOpenFormReply(false);
-    };
+    // const cancelReply = () => {
+    //     setOpenFormReply(false);
+    // };
 
     useEffect(() => {
         setOpenFormReply(showReply);

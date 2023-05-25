@@ -161,8 +161,9 @@ const Information = () => {
             });
             setPost((prevPost) => ({
                 ...prevPost,
-                comments: [...prevPost.comments, data],
+                comments: prevPost.comments ? [...prevPost.comments, data] : [data],
             }));
+            setShowParticipants(false);
             setShowComment(true);
             setTextComment("");
         } catch (error) {
@@ -229,15 +230,15 @@ const Information = () => {
     const updateActivity = async () => {
         setLoadingEdit(true);
         try {
-            let image = imageEdit;
-            if (formData) {
-                image = await handleUpImageComment();
-                if (!image) {
-                    toast.error("Upload image fail. Try again!");
-                    setLoadingEdit(false);
-                    return;
-                }
-            }
+            // let image = imageEdit;
+            // if (formData) {
+            //     image = await handleUpImageComment();
+            //     if (!image) {
+            //         toast.error("Upload image fail. Try again!");
+            //         setLoadingEdit(false);
+            //         return;
+            //     }
+            // }
             const {data} = await autoFetch.patch(
                 `/activities/${post.id}/`,
                 {
@@ -249,7 +250,7 @@ const Information = () => {
                     address: addressEdit,
                     category: categoryEdit,
                     activity_price: priceEdit,
-                    image,
+
                 }
             );
             setPost(data);
@@ -577,8 +578,8 @@ const Information = () => {
                         )}
                         {showParticipants && (
                             <div className='px-4 pt-1'>
-                                {Object.entries(post?.activity_user?.reduce((groups, participant) => {
-                                    const groupKey = participant.participate_status.trim();
+                                {Object?.entries(post?.activity_user?.reduce((groups, participant) => {
+                                    const groupKey = participant?.participate_status?.trim();
                                     if (!groups[groupKey]) {
                                         groups[groupKey] = [];
                                     }
@@ -588,21 +589,21 @@ const Information = () => {
                                     <div key={status}>
                                         <h2 className="text-[16px] pt-2 pb-[3px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer ">{status} Participants</h2>
                                         <ul>
-                                            {participants.map((participant) => (
+                                            {participants?.map((participant) => (
                                                 <Participant
-                                                    key={participant.username}
+                                                    key={participant?.username}
                                                     currentParticipant={participant}
-                                                    userId={post.userId}  // aktiviteyi oluşturanın user_idsi
+                                                    userId={post?.userId}  // aktiviteyi oluşturanın user_idsi
                                                     deleteComment={deleteComment}
                                                     autoFetch={autoFetch}
-                                                    activityId={post.id}
+                                                    activityId={post?.id}
                                                     post={post}
                                                     setPost={setPost}
                                                     navigate={navigate}
-                                                    user_img={post.avatar}  // aktiviteyi oluşturanın user_imgi
-                                                    participate_status={participant.participate_status}
-                                                    avatar={participant.avatar}
-                                                    description={participant.description}
+                                                    user_img={post?.avatar}  // aktiviteyi oluşturanın user_imgi
+                                                    participate_status={participant?.participate_status}
+                                                    avatar={participant?.avatar}
+                                                    description={participant?.description}
                                                 />
                                             ))}
                                         </ul>
