@@ -47,20 +47,16 @@ const Comment = ({
     const handleImage = (e) => {
         const file = e.target.files[0];
         setImageEdit({url: URL.createObjectURL(file)});
-
         let formData = new FormData();
         formData.append("image", file);
-        // @ts-ignore
         setFormData(formData);
     };
 
     const uploadOtherImage = async () => {
         try {
-            const {data} = await autoFetch.post(
-                `/api/post/upload-image`,
-                formData
-            );
-            return {url: data.url, public_id: data.public_id};
+            const {data} = await autoFetch.post(`/comments/upload-image/`, formData);
+            console.log(data)
+            return data.image;
         } catch (error) {
             toast.error("Upload image fail!");
             return null;
@@ -72,21 +68,22 @@ const Comment = ({
     const handleComment = async (text) => {
         setEditLoading(true);
         try {
-            // let image = imageEdit;
-            // if (imageEdit) {
-            //     if (imageEdit !== comment?.image) {
-            //         image = await uploadOtherImage();
-            //         // when upload false
-            //         if (!image) {
-            //             setEditLoading(false);
-            //             setImageEdit(comment?.image);
-            //             return;
-            //         }
-            //     }
-            // }
+            let image = imageEdit;
+            if (imageEdit) {
+                if (imageEdit !== comment?.image) {
+                    image = await uploadOtherImage();
+                    // when upload false
+                    if (!image) {
+                        setEditLoading(false);
+                        setImageEdit(comment?.image);
+                        return;
+                    }
+                }
+            }
             await autoFetch.patch(`/comments/${comment.id}/`, {
                 isPublic: true,
                 comment: text,
+                image,
             });
             setEditComment(false);
             cmtHistory.current = text;
@@ -191,7 +188,9 @@ const Comment = ({
             }
             setReplyLoading(false);
             setTextReply("");
-        } catch (error) {}
+        } catch (error) {
+            console.log(error)
+        }
     };
 
     const handleDeleteReplyComment = async (replyId) => {
@@ -278,7 +277,7 @@ const Comment = ({
                     {imageEdit && (
                         <div className='relative w-max '>
                             <img
-                                src={imageEdit?.url}
+                                src={"api/v1/" + imageEdit}
                                 alt='image_comment'
                                 className='object-contain w-auto my-1 ml-3 max-h-52 '
                             />
@@ -392,9 +391,9 @@ const Comment = ({
                             </div>
                             {imageEdit && (
                                 <img
-                                    src={imageEdit}
+                                    src={"api/v1/" + imageEdit}
                                     alt='image_comment'
-                                    className='max-h-60 w-auto object-contain my-0.5 '
+                                    className='max-h-60 w-auto object-contain my-0.5'
                                 />
                             )}
 

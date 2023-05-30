@@ -34,5 +34,6 @@ class CommentWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.comment = validated_data.get('comment', instance.comment)
         instance.is_public = validated_data.get('is_public', instance.is_public)
+        instance.image = validated_data.get('image', instance.image)
         instance.save()
         return instance

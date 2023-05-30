@@ -70,7 +70,7 @@ const Post = ({
 
         let formData = new FormData();
         formData.append("image", file);
-
+        formData.append("activity_id", post.id)
         setFormData(formData);
     };
 
@@ -83,10 +83,10 @@ const Post = ({
     const handleUpImageComment = async () => {
         try {
             const {data} = await autoFetch.post(
-                `/api/post/upload-image`,
+                `/comments/upload-image/`,
                 formData
             );
-            return {url: data.url, public_id: data.public_id};
+            return data.image;
         } catch (error) {
             toast.error("Upload image fail!");
             return null;
@@ -130,24 +130,25 @@ const Post = ({
         }
         setCommentLoading(true);
         try {
-            // let image;
-            // if (imageComment) {
-            //     image = await handleUpImageComment();
-            //     if (!image) {
-            //         setCommentLoading(false);
-            //         setImageComment(null);
-            //         return;
-            //     }
-            // }
+            let image;
+            if (imageComment) {
+                image = await handleUpImageComment();
+                if (!image) {
+                    setCommentLoading(false);
+                    setImageComment(null);
+                    return;
+                }
+            }
             const {data} = await autoFetch.post("/comments/", {
                 activity: activityId,
                 is_public: true,
                 comment: textComment,
+                image
             });
-            setPost((prevPost) => ({
-                ...prevPost,
-                comments: [...prevPost.comments, data],
-            }));
+            setPost((prevPost) => {
+                const updatedComments = Array.isArray(prevPost.comments) ? [...prevPost.comments, data] : [data];
+                return {...prevPost, comments: updatedComments,};
+            });
             setShowComment(true);
             setShowParticipants(false);
             setTextComment("");

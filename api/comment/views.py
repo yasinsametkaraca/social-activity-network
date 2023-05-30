@@ -1,5 +1,12 @@
+import uuid
+
+from django.core.files.storage import default_storage
 from rest_framework import generics, permissions
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.parsers import MultiPartParser
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 from .models import Comment
 from .serializers import CommentReadSerializer, CommentWriteSerializer
 from api.permissions import CanCrudPrivateComments, CanCrudPrivateCommentDetail, IsFriend
@@ -43,3 +50,20 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET':
             return CommentReadSerializer
         return CommentWriteSerializer
+
+
+class UploadCommentImageView(APIView):
+    parser_classes = (MultiPartParser,)
+
+    def post(self, request, format=None):
+        image_file = request.FILES.get('image')
+        activity_id = request.POST.get('activity_id')
+        username = request.user.username
+        ext = image_file.name.split('.')[-1]
+        fn = uuid.uuid4().hex
+        file_path = f'activity_files/comment_files/photos_{username}/{activity_id}_{fn}.{ext}'
+
+        # Save the file using default_storage
+        default_storage.save(file_path, image_file)
+
+        return Response({'message': 'Dosya başarıyla yüklendi', 'image': file_path})

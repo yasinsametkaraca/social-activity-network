@@ -56,7 +56,7 @@ class CanCrudPrivateComments(BasePermission):
     def has_permission(self, request, view):
         if request.method == 'GET':
             activity_id = request.GET.get('activity')
-            is_public = request.GET.get('is_public', 'true')
+            is_public = request.GET.get('is_public', True)
         else:
             activity_id = request.data.get('activity')
             is_public = request.data.get('is_public', 'true')

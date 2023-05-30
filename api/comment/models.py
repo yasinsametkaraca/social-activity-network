@@ -15,7 +15,7 @@ class Comment(models.Model):
     owner = models.ForeignKey('account.MyUser', on_delete=models.CASCADE, related_name='owner', null=True)
     activity = models.ForeignKey('activity.Activity', on_delete=models.CASCADE, related_name='activity_id', null=True)
     comment = models.TextField(blank=False, null=False)
-    image = models.ImageField(upload_to=comment_file_directory_path, blank=True, null=True)
+    image = models.CharField(max_length=400, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified_at = models.DateTimeField(auto_now=True)
     is_public = models.BooleanField(default=True)

@@ -48,8 +48,7 @@ const Modal = ({
         try {
             setImage(null);
             const file = e.target.files[0];
-            // @ts-ignore
-            setImage({url: URL.createObjectURL(file)});
+            setImage(URL.createObjectURL(file));
 
             let formData = new FormData();
             formData.append("image", file);
