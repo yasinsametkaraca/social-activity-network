@@ -1,5 +1,4 @@
 import {Menu, Transition} from "@headlessui/react";
-import React from "react";
 import {Fragment} from "react";
 import {NavLink} from "react-router-dom";
 //icon
@@ -59,7 +58,7 @@ export default function Dropdown() {
                         aria-hidden='true'
                     />
                 ),
-                href: `/profile/${user._id}`,
+                href: `/profile/${user.username}`,
             },
             {
                 text: "Update profile",

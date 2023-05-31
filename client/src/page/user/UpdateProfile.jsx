@@ -153,7 +153,7 @@ const UpdateProfile = () => {
                 <label className='relative group w-40 h-40 cursor-pointer '>
                     <img
                         // @ts-ignore
-                        src={image?.url || user.image.url}
+                        src={image?.url || user?.image?.url}
                         alt='avatar'
                         className='w-full h-full rounded-full object-cover '
                     />

@@ -28,7 +28,6 @@ const Comment = ({
     const [likeCommentLoading, setLikeCommentLoading] = useState(false);
     const [imageEdit, setImageEdit] = useState(currentComment?.image || null);
     const [formData, setFormData] = useState(null);
-
     const [textReply, setTextReply] = useState("");
     const [replyLoading, setReplyLoading] = useState(false);
     const [replyImage, setReplyImage] = useState(null);
@@ -37,6 +36,7 @@ const Comment = ({
     const cmtHistory = useRef(currentComment.comment);
     const [isPublic, setIsPublic] = useState(true);
     const {user} = useAppContext();
+
     const cancelEdit = () => {
         setEditComment(false);
         setShowOption(false);
@@ -46,16 +46,18 @@ const Comment = ({
 
     const handleImage = (e) => {
         const file = e.target.files[0];
-        setImageEdit({url: URL.createObjectURL(file)});
+        setImageEdit(URL.createObjectURL(file));
+        console.log(imageEdit)
         let formData = new FormData();
         formData.append("image", file);
+        formData.append("activity_id", currentComment.activity)
         setFormData(formData);
     };
 
     const uploadOtherImage = async () => {
         try {
             const {data} = await autoFetch.post(`/comments/upload-image/`, formData);
-            console.log(data)
+            setImageEdit(data.image);
             return data.image;
         } catch (error) {
             toast.error("Upload image fail!");
@@ -226,7 +228,7 @@ const Comment = ({
         return (
             <div className='flex gap-x-1.5 py-1 '>
                 <img
-                    src={`${comment.owner_avatar ? "api/v1/"+comment.owner_avatar : "/images/profile.png"}`}
+                    src={`${comment.owner_avatar ? "/api/v1/"+comment.owner_avatar : "/images/profile.png"}`}
                     alt='user_avatar'
                     className='w-[35px] h-[35px] object-cover shrink-0 rounded-full mt-1  '
                 />
@@ -277,7 +279,7 @@ const Comment = ({
                     {imageEdit && (
                         <div className='relative w-max '>
                             <img
-                                src={"api/v1/" + imageEdit}
+                                src={(imageEdit[0]=== "b" ?  "" : "/api/v1/") + imageEdit}
                                 alt='image_comment'
                                 className='object-contain w-auto my-1 ml-3 max-h-52 '
                             />
@@ -391,7 +393,7 @@ const Comment = ({
                             </div>
                             {imageEdit && (
                                 <img
-                                    src={"api/v1/" + imageEdit}
+                                    src={"/api/v1/" + imageEdit}
                                     alt='image_comment'
                                     className='max-h-60 w-auto object-contain my-0.5'
                                 />

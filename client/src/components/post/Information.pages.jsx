@@ -86,6 +86,7 @@ const Information = () => {
             const {data} = await autoFetch.get(`/comments/?activity=${activityId}&is_public=${is_public}`);
             setPost({...post, comments: data});
             setTextComment("");
+            setImageComment(null);
         } catch (error) {
             console.log(error);
         }
@@ -145,27 +146,29 @@ const Information = () => {
         }
         setCommentLoading(true);
         try {
-            // let image;
-            // if (imageComment) {
-            //     image = await handleUpImageComment();
-            //     if (!image) {
-            //         setCommentLoading(false);
-            //         setImageComment(null);
-            //         return;
-            //     }
-            // }
+            let image;
+            if (imageComment) {
+                image = await handleUpImageComment();
+                if (!image) {
+                    setCommentLoading(false);
+                    setImageComment(null);
+                    return;
+                }
+            }
             const {data} = await autoFetch.post("/comments/", {
                 activity: activityId,
                 is_public: !isPrivate,
                 comment: textComment,
+                image
             });
-            setPost((prevPost) => ({
-                ...prevPost,
-                comments: prevPost.comments ? [...prevPost.comments, data] : [data],
-            }));
+            setPost((prevPost) => {
+                const updatedComments = Array.isArray(prevPost.comments) ? [...prevPost.comments, data] : [data];
+                return {...prevPost, comments: updatedComments,};
+            });
             setShowParticipants(false);
             setShowComment(true);
             setTextComment("");
+            setImageComment(null);
         } catch (error) {
             if (error.response.status === 403) {
                 toast.error("You can not make private comments without participating in this activity.");
@@ -205,7 +208,7 @@ const Information = () => {
 
         let formData = new FormData();
         formData.append("image", file);
-
+        formData.append("activity_id", currentActivityId)
         setFormData(formData);
     };
 
@@ -213,10 +216,10 @@ const Information = () => {
     const handleUpImageComment = async () => {
         try {
             const {data} = await autoFetch.post(
-                `/api/post/upload-image`,
+                `/comments/upload-image/`,
                 formData
             );
-            return {url: data.url, public_id: data.public_id};
+            return data.image;
         } catch (error) {
             toast.error("Upload image fail!");
             return null;
@@ -230,15 +233,15 @@ const Information = () => {
     const updateActivity = async () => {
         setLoadingEdit(true);
         try {
-            // let image = imageEdit;
-            // if (formData) {
-            //     image = await handleUpImageComment();
-            //     if (!image) {
-            //         toast.error("Upload image fail. Try again!");
-            //         setLoadingEdit(false);
-            //         return;
-            //     }
-            // }
+            let image = imageEdit;
+            if (formData) {
+                image = await handleUpImageComment();
+                if (!image) {
+                    toast.error("Upload image fail. Try again!");
+                    setLoadingEdit(false);
+                    return;
+                }
+            }
             const {data} = await autoFetch.patch(
                 `/activities/${post.id}/`,
                 {

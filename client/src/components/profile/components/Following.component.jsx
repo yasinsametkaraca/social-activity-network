@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import ReactLoading from "react-loading";
 import {toast} from "react-toastify";
 import {LoadingCard} from "../../../components";

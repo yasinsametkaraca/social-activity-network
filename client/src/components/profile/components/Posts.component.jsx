@@ -53,21 +53,20 @@ const Right = ({
         }
         setLoadingCreateNewPost(false);
     };
-
     const PostInRight = () => {
         if (loading) {
             return <LoadingPost />;
         }
-        if (posts.length) {
-            return posts.map((p) => (
+        if (posts?.length) {
+            return posts?.map((p) => (
                 <Post
-                    key={p._id}
-                    currentPost={p}
-                    userId={own._id}
-                    user_img={own.image.url}
+                    key={p.id}
+                    currentActivity={p}
+                    userId={p?.userId}
+                    user_img={p.avatar}
                     getDeletePostId={getDeletePostId}
                     className={!dark ? "shadow-post" : ""}
-                    userRole={own.role}
+                    userRole={own?.role}
                 />
             ));
         }
@@ -105,7 +104,7 @@ const Right = ({
                 />
             )}
 
-            {user._id === own._id && form()}
+            {user?.username === own?.username && form()}
             <div className='mb-4'>
                 {loadingCreateNewPost && <LoadingPost />}
             </div>

@@ -88,7 +88,7 @@ const Left = ({
                     loading && "opacity-60"
                 } `}>
                 {textBio ||
-                    user.about ||
+                    user?.about ||
                     "This user is very nice but don't leave any trace! "}
                 <div className={`${!loading && "hidden"}`}>
                     <ReactLoading
@@ -115,7 +115,7 @@ const Left = ({
                     Intro
                 </div>
                 {about()}
-                {user._id === own._id && !editBio && (
+                {user?._id === own?._id && !editBio && (
                     <button
                         className='mt-3 py-2 w-full bg-[#afb1b5]/30 hover:bg-[#afb1b5]/50 dark:bg-[#4E4F50]/50 dark:hover:bg-[#4E4F50] transition-20 rounded-md font-semibold '
                         onClick={() => {
@@ -151,18 +151,18 @@ const Left = ({
                 </div>
                 <div
                     className={`grid grid-cols-3 grid-rows-${
-                        (images.length - (images.length % 3)) / 3
+                        (images?.length - (images?.length % 3)) / 3
                     } rounded-lg gap-1 mt-3 `}>
-                    {images.length > 0 ? (
-                        images.map((i, k) => (
+                    {images?.length > 0 ? (
+                        images?.map((i, k) => (
                             <div
-                                key={i.image.public_id}
+                                key={i?.image?.public_id}
                                 className='w-full  pt-[100%] relative cursor-pointer '
                                 onClick={() => {
-                                    navigate(`/post/information/${i._id}`);
+                                    navigate(`/post/information/${i?._id}`);
                                 }}>
                                 <img
-                                    src={i.image.url}
+                                    src={i?.image?.url}
                                     alt='aaa'
                                     className={`w-full h-full absolute top-0 left-0 object-cover ${
                                         rounded.includes(k)

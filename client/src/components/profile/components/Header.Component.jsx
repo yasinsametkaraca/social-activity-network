@@ -1,7 +1,6 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {toast} from "react-toastify";
 import ReactLoading from "react-loading";
-
 // icon
 import {FiEdit2} from "react-icons/fi";
 import {GoPrimitiveDot} from "react-icons/go";
@@ -18,7 +17,6 @@ const Header = ({
     token,
 }) => {
     const [loading, setLoading] = useState(false);
-
     const list = ["Posts", "Following", "Follower"];
 
     const handleFollower = async (user) => {
@@ -62,7 +60,7 @@ const Header = ({
                 </div>
             );
         }
-        if (user._id === own._id)
+        if (user?.username === own?.username)
             return (
                 <button
                     className='flex gap-x-1 items-center font-semibold px-3 py-2 bg-[#D8DADF]/50 hover:bg-[#D8DADF] dark:bg-[#4E4F50]/50 dark:hover:bg-[#4E4F50] transition-20 rounded-md '
@@ -73,7 +71,7 @@ const Header = ({
                     Edit profile
                 </button>
             );
-        if (own.following.includes(user._id)) {
+        if (own?.following?.includes(user?._id)) {
             return (
                 <button
                     className='flex gap-x-1 items-center font-semibold px-3 py-2 bg-[#D8DADF]/50 hover:bg-[#D8DADF] dark:bg-[#4E4F50]/50 dark:hover:bg-[#4E4F50] transition-20 rounded-md '
@@ -106,7 +104,7 @@ const Header = ({
             <div className='flex flex-col sm:flex-row mx-10 sm:items-start gap-x-4 border-b-[1px] dark:border-b-white/10 border-b-black/10 items-center '>
                 {/* avatar */}
                 <img
-                    src={user.image.url}
+                    src={user?.avatar}
                     alt='avatar'
                     className='w-[170px] h-[170px] rounded-full object-cover translate-y-[-32px] shrink-0  dark:border-white border-4 border-black/50 '
                 />
@@ -115,24 +113,24 @@ const Header = ({
                         <div className='flex justify-center'>
                             <div className='text-[32px] font-bold md:flex items-center gap-x-1 '>
                                 <div className='text-center flex items-center justify-center '>
-                                    {user.name}
-                                    {user.role === "ADMIN" && (
+                                    {user?.first_name}
+                                    {user?.role === "ADMIN" && (
                                         <TiTick className='text-[20px] text-white rounded-full bg-sky-500 ' />
                                     )}
                                 </div>
 
                                 <div className='ml-1.5 font-normal text-xl md:text-[28px] flex-shrink-0 '>
-                                    ({user.username})
+                                    ({user?.username})
                                 </div>
                             </div>
                         </div>
                         <div className='dark:text-[#b0b3b8] font-semibold text-[17px] flex gap-x-1.5 items-center text-[#65676b] justify-center sm:justify-start'>
                             <span className='cursor-pointer flex-shrink-0 '>
-                                {user.following.length} following
+                                {user?.following?.length} following
                             </span>
                             <GoPrimitiveDot />
                             <span className='cursor-pointer flex-shrink-0 '>
-                                {user.follower.length} follower
+                                {user?.follower?.length} follower
                             </span>
                         </div>
                     </div>

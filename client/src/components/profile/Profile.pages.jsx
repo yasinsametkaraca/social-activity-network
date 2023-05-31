@@ -1,8 +1,6 @@
-import React from "react";
 import {useAppContext} from "../../context/useContext.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-
 //components
 import Header from "./components/Header.Component.jsx";
 import Left from "./components/Details.component.jsx";
@@ -13,7 +11,7 @@ import FollowingPage from "./components/Following.component.jsx";
 
 const Profile = () => {
     const navigate = useNavigate();
-    const currentUserId = window.location.pathname.replace("/profile/", "");
+    const currentUsername = window.location.pathname.replace("/profile/", "");
 
     const {
         dark,
@@ -28,55 +26,51 @@ const Profile = () => {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState({
-        image: {
-            url: "",
-        },
+        image: "",
         name: "",
-        username: "",
+        username: currentUsername,
         about: "",
-        _id: currentUserId,
+        id: "",
         follower: [],
         following: [],
     });
     const [menu, setMenu] = useState("Posts");
 
     useEffect(() => {
-        getCurrentUser(currentUserId);
-        getPostWithUserId(currentUserId);
+        getCurrentUsername(currentUsername);
+        getPostWithUsername(currentUsername);
         setMenu("Posts");
         setImages([]);
     }, [window.location.pathname]);
 
-    const getCurrentUser = async (userId) => {
+    const getCurrentUsername = async (username) => {
         setLoading(true);
         try {
-            const {data} = await autoFetch.get(`/api/auth/${userId}`);
-            setUser(data.user);
+            const {data} = await autoFetch.get(`/profiles/${username}/`);
+            setUser(data);
         } catch (error) {
             console.log(error);
         }
         setLoading(false);
     };
 
-    const getPostWithUserId = async (userId) => {
+    const getPostWithUsername = async (username) => {
         setPostLoading(true);
         try {
             const {data} = await autoFetch.get(
-                `/api/post/getPostWithUser/${userId}`
+                `/activities/${username}/`
             );
-            setPosts(data.posts);
+            setPosts(data);
         } catch (error) {
             console.log(error);
         }
         setPostLoading(false);
     };
     useEffect(() => {
-        if (posts.length) {
+        if (posts?.length) {
             setImages(
-                posts.filter((p) => {
-                    // @ts-ignore
+                posts?.filter((p) => {
                     if (p && p.image) {
-                        // @ts-ignore
                         return p.image;
                     }
                 })
@@ -85,7 +79,7 @@ const Profile = () => {
     }, [posts]);
 
     const getDeletePostId = (postId) => {
-        const newPosts = posts.filter((v) => v.id !== postId);
+        const newPosts = posts.filter((v) => v?.id !== postId);
         setPosts(newPosts);
         console.log("delete post: ", postId);
     };
@@ -95,7 +89,7 @@ const Profile = () => {
             return (
                 <FollowingPage
                     dark={dark}
-                    userId={currentUserId}
+                    userId={user?.id}
                     autoFetch={autoFetch}
                     own={own}
                     navigate={navigate}
@@ -108,7 +102,7 @@ const Profile = () => {
             return (
                 <FollowerPage
                     dark={dark}
-                    userId={user._id}
+                    userId={user?.id}
                     autoFetch={autoFetch}
                     navigate={navigate}
                     own={own}

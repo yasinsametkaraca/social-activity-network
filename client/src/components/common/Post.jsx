@@ -313,11 +313,11 @@ const Post = ({
             <div className='flex items-center pl-2 pr-3 sm:px-3 md:px-4'>
                 {/* avatar */}
                 <img
-                    src={`${user_img ? "api/v1/" + user_img: "images/profile.png"}`}
+                    src={`${user_img ? ("/api/v1/" + user_img) : "/images/profile.png"}`}
                     alt='avatar'
                     className='w-10 h-10 rounded-full object-cover cursor-pointer '
                     onClick={() => {
-                        navigate(`profile/${post.userId}`);
+                        navigate(`profile/${post.owner}`);
                     }}
                 />
                 {/* name and time post */}
