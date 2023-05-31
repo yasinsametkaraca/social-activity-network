@@ -1,8 +1,6 @@
-import React, {useEffect, useState} from "react";
-
+import {useEffect, useState} from "react";
 // icon
 import {toast} from "react-toastify";
-
 // components
 import {LoadingPost, Modal, Post, LoadingForm, FormCreatePost} from "../..";
 
@@ -17,10 +15,23 @@ const Right = ({
     setPosts,
     getDeletePostId,
 }) => {
-    const [text, setText] = useState("");
+    const [title, setTitle] = useState("");
+
     const [attachment, setAttachment] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const [loadingCreateNewPost, setLoadingCreateNewPost] = useState(false);
+    const [description, setDescription] = useState("");
+    const [totalPlayerCount, setTotalPlayerCount] = useState();
+    const [startDate, setStartDate] = useState();
+    const [endDate, setEndDate] = useState();
+    const [address, setAddress] = useState({
+        address_line1: "",
+        city: "",
+        postal_code:"",
+        country: "",
+    });
+    const [category, setCategory] = useState("");
+    const [price, setPrice] = useState();
 
     useEffect(() => {
         setOneState("openModal", openModal);
@@ -28,27 +39,33 @@ const Right = ({
 
     const createNewPost = async (formData) => {
         setLoadingCreateNewPost(true);
-        if (!text) {
+        if (!title) {
             toast.error("You must type something...");
             return;
         }
         try {
-            let image = null;
-            if (formData) {
-                const {data} = await autoFetch.post(
-                    `/api/post/upload-image`,
-                    formData
-                );
-                image = {url: data.url, public_id: data.public_id};
-            }
+            // let image = null;
+            // if (formData) {
+            //     const {data} = await autoFetch.post(
+            //         `/api/post/upload-image`,
+            //         formData
+            //     );
+            //     image = {url: data.url, public_id: data.public_id};
+            // }
 
-            const {data} = await autoFetch.post(`api/post/create-post`, {
-                content: text,
-                image,
+            const {data} = await autoFetch.post(`/activities/`, {
+                title: title,
+                description: description,
+                address: address,
+                category: category,
+                activity_price: price,
+                start_date: startDate,
+                end_date: endDate,
+                total_player_count: totalPlayerCount,
+                image: formData ? formData : null,
             });
-            setPosts([data.post, ...posts]);
+            setPosts([data, ...posts]);
         } catch (error) {
-            console.log(error);
             toast.error("Something went wrong. Try again!");
         }
         setLoadingCreateNewPost(false);
@@ -66,7 +83,7 @@ const Right = ({
                     user_img={p.avatar}
                     getDeletePostId={getDeletePostId}
                     className={!dark ? "shadow-post" : ""}
-                    userRole={own?.role}
+                    userRole={p?.role}
                 />
             ));
         }
@@ -76,7 +93,6 @@ const Right = ({
             </div>
         );
     };
-
     const form = () => {
         if (loading) {
             return <LoadingForm />;
@@ -85,7 +101,14 @@ const Right = ({
             <FormCreatePost
                 setAttachment={setAttachment}
                 setOpenModal={setOpenModal}
-                text={text}
+                title={title}
+                description={description}
+                totalPlayerCount={totalPlayerCount}
+                startDate={startDate}
+                endDate={endDate}
+                address={address}
+                category={category}
+                price={price}
                 user={user}
             />
         );
@@ -96,11 +119,25 @@ const Right = ({
             {openModal && (
                 <Modal
                     setOpenModal={setOpenModal}
-                    text={text}
-                    setText={setText}
+                    title={title}
+                    setTitle={setTitle}
+                    description={description}
+                    setDescription={setDescription}
+                    totalPlayerCount={totalPlayerCount}
+                    setTotalPlayerCount={setTotalPlayerCount}
+                    startDate={startDate}
+                    setStartDate={setStartDate}
+                    endDate={endDate}
+                    setEndDate={setEndDate}
+                    address={address}
+                    setAddress={setAddress}
+                    category={category}
+                    setCategory={setCategory}
+                    price={price}
+                    setPrice={setPrice}
                     attachment={attachment}
                     setAttachment={setAttachment}
-                    createNewPost={createNewPost}
+                    createNewActivity={createNewPost}
                 />
             )}
 

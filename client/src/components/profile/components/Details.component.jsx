@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {HiOutlineLocationMarker} from "react-icons/hi";
 import ReactLoading from "react-loading";
 import {LoadingIntro, LoadingImage} from "../..";

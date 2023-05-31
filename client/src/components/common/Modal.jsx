@@ -168,7 +168,7 @@ const Modal = ({
                     </div>
                     <div className='flex gap-x-2 py-4 items-center'>
                         <img
-                            src={`${user.avatar ? user.avatar : "images/profile.png"}`}
+                            src={`${user.avatar ? user.avatar : "/images/profile.png"}`}
                             alt='userImage'
                             className='w-10 h-10 rounded-full object-cover '
                         />

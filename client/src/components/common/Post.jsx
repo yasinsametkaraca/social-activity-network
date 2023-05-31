@@ -579,7 +579,7 @@ const Post = ({
             {/* form add comment */}
             <div className='flex gap-x-1.5 px-2 sm:px-3 md:px-4 py-1 items-center '>
                 <img
-                    src={`${user.avatar ? user.avatar : "images/profile.png"}`}
+                    src={`${user.avatar ? user.avatar : "/images/profile.png"}`}
                     alt='user_avatar'
                     className='w-8 sm:w-9 h-8 sm:h-9 object-cover shrink-0 rounded-full '
                 />

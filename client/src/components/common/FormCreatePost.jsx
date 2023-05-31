@@ -5,7 +5,7 @@ import {useAppContext} from "../../context/useContext.jsx";
 
 const FormCreatePost = ({user, setOpenModal, setAttachment, title ,description, totalPlayerCount, startDate, endDate, address, category, price }) => {
     const {dark} = useAppContext();
-    const imageUrl =`${user.avatar ? user.avatar : "images/profile.png"}`
+    const imageUrl =`${user.avatar ? user.avatar : "/images/profile.png"}`
 
     return (
         <div
