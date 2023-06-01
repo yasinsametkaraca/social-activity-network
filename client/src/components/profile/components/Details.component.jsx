@@ -5,6 +5,7 @@ import {AiOutlineLinkedin} from "react-icons/ai";
 
 import {FaUniversity} from "react-icons/fa";
 import {AiOutlineInstagram} from "react-icons/ai";
+import {BsGenderFemale, BsGenderMale} from "react-icons/bs";
 
 const Left = ({
     user,
@@ -138,13 +139,36 @@ const Left = ({
                             </div>
                         </div>
                     }
-                    {user?.education_level &&
-                        <div className={"flex flex-col items-center justify-center"}>
-                            <FaUniversity className='text-3xl'/>
-                            <div className='text-xs'>
-                                <strong>{user?.education_level}</strong>
+                    {
+                        user?.education_level && (
+                            <div className="flex flex-col items-center mb-7 justify-center">
+                                <FaUniversity className="text-3xl" />
+                                <div className="text-xs">
+                                    <strong>
+                                        {user.education_level === "ES" ? "Elementary School" :
+                                            user.education_level === "MS" ? "Middle School" :
+                                                user.education_level === "HS" ? "High School" :
+                                                    user.education_level === "AD" ? "Associate's Degree" :
+                                                        user.education_level === "BD" ? "Bachelor's Degree" :
+                                                            user.education_level === "MD" ? "Master's Degree" :
+                                                                user.education_level === "PhD" ? "Doctorate or PhD" : ""}
+                                    </strong>
+                                </div>
                             </div>
-                        </div>
+                        )
+                    }
+                    {
+                        user?.gender && (
+                            <div className="flex flex-col items-center mb-7 justify-center">
+                                {user?.gender==="M" ? <BsGenderMale className="text-3xl" /> : <BsGenderFemale className="text-3xl" />}
+                                <div className="text-xs">
+                                    <strong>
+                                        {user.gender === "M" ? "Male" :
+                                            user.gender === "F" ? "Female" : ""}
+                                    </strong>
+                                </div>
+                            </div>
+                        )
                     }
                 </div>
             </div>

@@ -4,32 +4,26 @@ import {useState} from "react";
 import {toast} from "react-toastify";
 import {TiTick} from "react-icons/ti";
 import ReactLoading from "react-loading";
-import React from "react";
+import profile from "./profile/index.jsx";
 
 const UpdateProfile = () => {
-    const {user, autoFetch, setNameAndToken} = useAppContext();
+    const {user, autoFetch} = useAppContext();
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState(null);
-    const [error, setError] = useState([]);
-    const initValueState = {
-        first_name: "",
-        last_name: "",
-        gender: "",
-        website_url: "",
-        birth_date: "",
-        linkedin_url: "",
-        company_url: "",
-        company_name: "",
-        education_level: "",
-        username: "",
-        email: "",
-        // currentPassword: "",
-        // newPassword: "",
-        // confirmNewPassword: "",
-    };
-
-    const [state, setState] = useState(initValueState);
+    const [profileInfo, setProfileInfo] = useState({
+        first_name: user.first_name,
+        last_name: user.last_name,
+        gender: user.gender,
+        website_url: user.website_url,
+        birth_date: user.birth_date,
+        linkedin_url: user.linkedin_url,
+        company_url: user.company_url,
+        company_name: user.company_name,
+        education_level: user.education_level,
+        username: user.username,
+        email: user.email,
+    });
 
     const handleImage = async (e) => {
         try {
@@ -61,23 +55,6 @@ const UpdateProfile = () => {
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            // const {
-            //     newPassword: password,
-            //     confirmNewPassword: rePassword,
-            //     currentPassword,
-            // } = state;
-            const first_name = state.first_name || user.first_name;
-            const last_name = state.last_name || user.last_name;
-            const gender = state.gender || user.gender
-            const website_url = state.website_url || user.website_url;
-            const birth_date = state.birth_date || user.birth_date;
-            const linkedin_url = state.linkedin_url || user.linkedin_url;
-            const company_url = state.company_url || user.company_url;
-            const company_name = state.company_name || user.company_name;
-            const education_level = state.education_level || user.education_level;
-            const email = state.email || user.email;
-            const username = state.username || user.username;
-
             // let image;
             // if (formData) {
             //     image = await updateImage();
@@ -88,30 +65,24 @@ const UpdateProfile = () => {
             //     }
             // }
             const {data} = await autoFetch.patch(`/profiles/${user.username}/`, {
-                first_name,
-                username,
-                // avatar:image || "",
-                last_name,
-                gender,
-                website_url,
-                birth_date,
-                linkedin_url,
-                company_url,
-                company_name,
-                education_level,
-                email,
+                ...profileInfo,
             });
             //setNameAndToken(data.user, data.token);
             localStorage.setItem("user", JSON.stringify(data));
             toast.success("Update profile success!");
             //setState(initValueState);
         } catch (error) {
-            console.log(error?.response?.data)
             if (error?.response?.data) {
-                toast.error(error?.response?.data);
-            } else {
-                console.log(error);
+                const errorMessages = [];
+                Object.entries(error?.response?.data).forEach(([fieldName, fieldErrors]) => {
+                    const fieldErrorMessages = fieldErrors.map(error => `${fieldName}: ${error}`);
+                    errorMessages.push(...fieldErrorMessages);
+                });
+                errorMessages.forEach(errorMessage => {
+                    toast.error(errorMessage);
+                });
             }
+
         }
         setLoading(false);
     };
@@ -122,21 +93,23 @@ const UpdateProfile = () => {
             type: "text",
             placeholder: "First Name",
             name: "first_name",
-            value: state.first_name || user.first_name,
+            value: profileInfo.first_name || "",
+            required: true
         },
         {
             label: "Last Name",
             type: "text",
             placeholder: "Last Name",
             name: "last_name",
-            value: state.last_name || user.last_name,
+            value: profileInfo.last_name || "",
+            required: true
         },
         {
             label: "Email",
             type: "email",
             placeholder: "mail@mail.com",
             name: "email",
-            value: user.email,
+            value: profileInfo.email || "",
             disabled: true,
         },
         {
@@ -144,7 +117,7 @@ const UpdateProfile = () => {
             type: "text",
             placeholder: "Username",
             name: "username",
-            value: state.username || user.username,
+            value: profileInfo.username || "",
             required: true
         },
         {
@@ -152,8 +125,9 @@ const UpdateProfile = () => {
             type: "select",
             placeholder: "Education Level",
             name: "education_level",
-            value: state.education_level || user.education_level,
+            value: profileInfo.education_level || "",
             options: [
+                { value: "", label: "Education Level" },
                 { value: "ES", label: "Elementary School" },
                 { value: "MS", label: "Middle School" },
                 { value: "HS", label: "High School" },
@@ -169,8 +143,9 @@ const UpdateProfile = () => {
             type: "select",
             placeholder: "Gender",
             name: "gender",
-            value: state.gender || user.gender,
+            value: profileInfo.gender || "",
             options: [
+                { value: "", label: "Gender"},
                 { value: "M", label: "Male" },
                 { value: "F", label: "Female" },
             ],
@@ -181,35 +156,36 @@ const UpdateProfile = () => {
             type: "url",
             placeholder: "Linkedin URL",
             name: "linkedin_url",
-            value: state.linkedin_url || user.linkedin_url,
+            value: profileInfo.linkedin_url || "",
         },
         {
             label: "Website URL",
             type: "url",
             placeholder: "Website URL",
             name: "website_url",
-            value: state.website_url || user.website_url,
+            value: profileInfo.website_url || "",
         },
         {
             label: "Birth Date",
             type: "date",
             placeholder: "Birth Date",
             name: "birth_date",
-            value: state.birth_date || user.birth_date,
+            value: profileInfo.birth_date || "",
+            required: true
         },
         {
             label: "Company Name",
             type: "text",
             placeholder: "Company Name",
             name: "company_name",
-            value: state.company_name || user.company_name,
+            value: profileInfo.company_name || "",
         },
         {
             label: "Company URL",
             type: "url",
             placeholder: "Company URL",
             name: "company_url",
-            value: state.company_url || user.company_url,
+            value: profileInfo.company_url || "",
         },
 
         // {
@@ -236,7 +212,13 @@ const UpdateProfile = () => {
     ];
 
     const handleChange = (event) => {
-        setState({...state, [event.target.name]: event.target.value});
+        const {name,value} = event.target;
+        setProfileInfo((prevState) => {
+            return {
+                ...prevState,
+                [name] : value
+            }
+        })
     };
 
     return (

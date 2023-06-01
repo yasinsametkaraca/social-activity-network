@@ -48,7 +48,7 @@ class UserLogin(GenericAPIView):
         serializer = UserProfileSerializer(user.profile)     #  serializer = UserSerializer(user)
 
         token_serializer = CustomTokenObtainPairSerializer(data={
-            'username': user.username,
+                'username': user.username,
             'role': user.role,
             'id': user.id,
             'password': request.data.get('password')

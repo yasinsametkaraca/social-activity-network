@@ -313,17 +313,15 @@ const Modal = ({
                                 e.target.value >= 0 ? setPrice(e.target.value) : setPrice(0);
                             }}
                         />
-                        <select className={`w-40 w-full mb-2 border-0 outline-none mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]"}`} value={category} onChange={(e) => setCategory(e.target.value)}>
-                            <option value="">Categories</option>
-                            <option value={"Theatre"}>
-                                {"Theatre"}
-                            </option>
-                            <option value={"Music"}>
-                                {"Music"}
-                            </option>
-                            <option value={"Sport"}>
-                                {"Sport"}
-                            </option>
+                        <select className={`w-40 w-full mb-2 border-0 outline-none mt-2 ml-3 p-0 ${category==="" ? "text-[#a0a0a1]" : ""} ${attachment ? "text-[11px]" : "text-[17px]"}`} value={category} onChange={(e) => setCategory(e.target.value)}>
+                            <option className={"text-[#a0a0a1]"} value="">Categories</option>
+                            <option value={"Theatre"}>{"Theatre"}</option>
+                            <option value={"Music"}>{"Music"}</option>
+                            <option value={"Sport"}>{"Sport"}</option>
+                            <option value={"Cinema"}>{"Cinema"}</option>
+                            <option value={"Travel"}>{"Travel"}</option>
+                            <option value={"Game"}>{"Game"}</option>
+                            <option value={"Culture"}>{"Culture"}</option>
                         </select>
                     </div>
                     {attachment && (
