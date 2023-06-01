@@ -11,14 +11,22 @@ const UpdateProfile = () => {
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState(null);
-
+    const [error, setError] = useState([]);
     const initValueState = {
-        name: "",
+        first_name: "",
+        last_name: "",
+        gender: "",
+        website_url: "",
+        birth_date: "",
+        linkedin_url: "",
+        company_url: "",
+        company_name: "",
+        education_level: "",
         username: "",
         email: "",
-        currentPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
+        // currentPassword: "",
+        // newPassword: "",
+        // confirmNewPassword: "",
     };
 
     const [state, setState] = useState(initValueState);
@@ -27,13 +35,10 @@ const UpdateProfile = () => {
         try {
             setImage(null);
             const file = e.target.files[0];
-            // @ts-ignore
-            setImage({url: URL.createObjectURL(file)});
+            setImage(URL.createObjectURL(file));
 
             let formData = new FormData();
             formData.append("image", file);
-
-            // @ts-ignore
             setFormData(formData);
         } catch (error) {
             console.log(error);
@@ -56,38 +61,54 @@ const UpdateProfile = () => {
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            const {
-                newPassword: password,
-                confirmNewPassword: rePassword,
-                currentPassword,
-            } = state;
-            const name = state.name || user.name;
-            const about = state.about || user.about;
+            // const {
+            //     newPassword: password,
+            //     confirmNewPassword: rePassword,
+            //     currentPassword,
+            // } = state;
+            const first_name = state.first_name || user.first_name;
+            const last_name = state.last_name || user.last_name;
+            const gender = state.gender || user.gender
+            const website_url = state.website_url || user.website_url;
+            const birth_date = state.birth_date || user.birth_date;
+            const linkedin_url = state.linkedin_url || user.linkedin_url;
+            const company_url = state.company_url || user.company_url;
+            const company_name = state.company_name || user.company_name;
+            const education_level = state.education_level || user.education_level;
+            const email = state.email || user.email;
             const username = state.username || user.username;
-            let image;
-            if (formData) {
-                image = await updateImage();
-                if (!image) {
-                    setLoading(false);
-                    setImage(null);
-                    return;
-                }
-            }
-            const {data} = await autoFetch.patch(`/api/auth/update-user`, {
-                name,
-                about,
+
+            // let image;
+            // if (formData) {
+            //     image = await updateImage();
+            //     if (!image) {
+            //         setLoading(false);
+            //         setImage(null);
+            //         return;
+            //     }
+            // }
+            const {data} = await autoFetch.patch(`/profiles/${user.username}/`, {
+                first_name,
                 username,
-                image,
-                password,
-                rePassword,
-                currentPassword,
+                // avatar:image || "",
+                last_name,
+                gender,
+                website_url,
+                birth_date,
+                linkedin_url,
+                company_url,
+                company_name,
+                education_level,
+                email,
             });
-            setNameAndToken(data.user, data.token);
-            toast(data.msg);
-            setState(initValueState);
+            //setNameAndToken(data.user, data.token);
+            localStorage.setItem("user", JSON.stringify(data));
+            toast.success("Update profile success!");
+            //setState(initValueState);
         } catch (error) {
-            if (error?.response?.data?.msg) {
-                toast.error(error?.response?.data?.msg);
+            console.log(error?.response?.data)
+            if (error?.response?.data) {
+                toast.error(error?.response?.data);
             } else {
                 console.log(error);
             }
@@ -95,52 +116,123 @@ const UpdateProfile = () => {
         setLoading(false);
     };
 
-    // name, nickname,email, about, current pw, new pw, confirm new pw => btn
-
     const field = [
         {
-            label: "Name",
+            label: "First Name",
             type: "text",
-            placeholder: "John Wick",
-            name: "name",
-            value: state.name || user.name,
+            placeholder: "First Name",
+            name: "first_name",
+            value: state.first_name || user.first_name,
+        },
+        {
+            label: "Last Name",
+            type: "text",
+            placeholder: "Last Name",
+            name: "last_name",
+            value: state.last_name || user.last_name,
         },
         {
             label: "Email",
             type: "email",
-            placeholder: "JohnWick@gmail.com",
-            name: "name",
+            placeholder: "mail@mail.com",
+            name: "email",
             value: user.email,
             disabled: true,
         },
         {
-            label: "Nick name",
+            label: "Username",
             type: "text",
-            placeholder: "Assassin",
+            placeholder: "Username",
             name: "username",
             value: state.username || user.username,
+            required: true
         },
         {
-            label: "Current password",
-            type: "password",
-            placeholder: "Type your current password",
-            name: "currentPassword",
-            value: state.currentPassword,
+            label: "Education Level",
+            type: "select",
+            placeholder: "Education Level",
+            name: "education_level",
+            value: state.education_level || user.education_level,
+            options: [
+                { value: "ES", label: "Elementary School" },
+                { value: "MS", label: "Middle School" },
+                { value: "HS", label: "High School" },
+                { value: "AD", label: "Associate's Degree" },
+                { value: "BD", label: "Bachelor's Degree" },
+                { value: "MD", label: "Master's Degree" },
+                { value: "PhD", label: "Doctorate or PhD" }
+            ],
+            required: true
         },
         {
-            label: "New password",
-            type: "password",
-            placeholder: "Type new password",
-            name: "newPassword",
-            value: state.newPassword,
+            label: "Gender",
+            type: "select",
+            placeholder: "Gender",
+            name: "gender",
+            value: state.gender || user.gender,
+            options: [
+                { value: "M", label: "Male" },
+                { value: "F", label: "Female" },
+            ],
+            required: true
         },
         {
-            label: "Confirm new password",
-            type: "password",
-            placeholder: "Confirm new password",
-            name: "confirmNewPassword",
-            value: state.confirmNewPassword,
+            label: "Linkedin URL",
+            type: "url",
+            placeholder: "Linkedin URL",
+            name: "linkedin_url",
+            value: state.linkedin_url || user.linkedin_url,
         },
+        {
+            label: "Website URL",
+            type: "url",
+            placeholder: "Website URL",
+            name: "website_url",
+            value: state.website_url || user.website_url,
+        },
+        {
+            label: "Birth Date",
+            type: "date",
+            placeholder: "Birth Date",
+            name: "birth_date",
+            value: state.birth_date || user.birth_date,
+        },
+        {
+            label: "Company Name",
+            type: "text",
+            placeholder: "Company Name",
+            name: "company_name",
+            value: state.company_name || user.company_name,
+        },
+        {
+            label: "Company URL",
+            type: "url",
+            placeholder: "Company URL",
+            name: "company_url",
+            value: state.company_url || user.company_url,
+        },
+
+        // {
+        //     label: "Current password",
+        //     type: "password",
+        //     placeholder: "Type your current password",
+        //     name: "currentPassword",
+        //     value: state.currentPassword,
+        // },
+        // {
+        //     label: "New password",
+        //     type: "password",
+        //     placeholder: "Type new password",
+        //     name: "newPassword",
+        //     value: state.newPassword,
+        // },
+        // {
+        //     label: "Confirm new password",
+        //     type: "password",
+        //     placeholder: "Confirm new password",
+        //     name: "confirmNewPassword",
+        //     value: state.confirmNewPassword,
+        // },
     ];
 
     const handleChange = (event) => {
@@ -153,7 +245,7 @@ const UpdateProfile = () => {
                 <label className='relative group w-40 h-40 cursor-pointer '>
                     <img
                         // @ts-ignore
-                        src={image?.url || user?.image?.url}
+                        src={image || (user?.avatar ? user?.avatar : "/images/profile.png")}
                         alt='avatar'
                         className='w-full h-full rounded-full object-cover '
                     />
@@ -193,20 +285,41 @@ const UpdateProfile = () => {
                             <div
                                 className={`text-sm md:text-[17px] font-bold ml-3 mb-2 ${
                                     v.disabled ? "opacity-70" : ""
-                                } `}>
+                                } `}
+                            >
                                 {v.label}
                             </div>
-                            <input
-                                type={v.type}
-                                className={`input-login ${
-                                    v.disabled ? "opacity-70" : ""
-                                } w-full `}
-                                placeholder={v.placeholder}
-                                name={v.name}
-                                value={v.value}
-                                onChange={(event) => handleChange(event)}
-                                disabled={v.disabled || loading}
-                            />
+                            {v.type === "select" ? (
+                                <select
+                                    className={`input-login ${
+                                        v.disabled ? "opacity-70" : ""
+                                    } w-full `}
+                                    name={v.name}
+                                    value={v.value}
+                                    onChange={(event) => handleChange(event)}
+                                    disabled={v.disabled || loading}
+                                    required={v.required}
+                                >
+                                    {v.options.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <input
+                                    type={v.type}
+                                    className={`input-login ${
+                                        v.disabled ? "opacity-70" : ""
+                                    } w-full `}
+                                    placeholder={v.placeholder}
+                                    name={v.name}
+                                    value={v.value}
+                                    onChange={(event) => handleChange(event)}
+                                    disabled={v.disabled || loading}
+                                    required={v.required}
+                                />
+                            )}
                         </div>
                     ))}
                     <div className='col-span-2 flex justify-center items-center  '>

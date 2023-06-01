@@ -1,3 +1,4 @@
+from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, \
     RetrieveAPIView, get_object_or_404
@@ -5,7 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Profile
-from .serializers import ProfileSerializer, ProfileDetailSerializer, ProfileAvatarSerializer, UserProfileSerializer
+from .serializers import ProfileSerializer, ProfileDetailSerializer, ProfileAvatarSerializer, UserProfileSerializer, \
+    ProfileAboutSerializer
 from account.models import MyUser
 from notification.models import Notification
 
@@ -98,6 +100,14 @@ class FollowingListAPIView(APIView):
         } for following in followings]
 
         return Response(data)
+
+
+class UserAboutAPIView(generics.UpdateAPIView):
+    serializer_class = ProfileAboutSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user.profile
 
 
 class UserAvatarAPIView(RetrieveUpdateAPIView):

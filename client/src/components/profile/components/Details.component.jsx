@@ -1,7 +1,10 @@
 import {useState} from "react";
-import {HiOutlineLocationMarker} from "react-icons/hi";
 import ReactLoading from "react-loading";
 import {LoadingIntro, LoadingImage} from "../..";
+import {AiOutlineLinkedin} from "react-icons/ai";
+
+import {FaUniversity} from "react-icons/fa";
+import {AiOutlineInstagram} from "react-icons/ai";
 
 const Left = ({
     user,
@@ -14,23 +17,16 @@ const Left = ({
     postLoading,
 }) => {
     const [editBio, setEditBio] = useState(false);
-    const [textBio, setTextBio] = useState("");
+    const [textBio, setTextBio] = useState(user?.about);
     const [loading, setLoading] = useState(false);
-    const rounded = [
-        0,
-        2,
-        images.length - (images.length % 3 || 3),
-        images.length % 3 === 0 ? images.length - 1 : 99999999,
-    ];
+    const rounded = [0, 2, images.length - (images.length % 3 || 3), images.length % 3 === 0 ? images.length - 1 : 99999999,];
     const positionRounded = ["tl", "tr", "bl", "br"];
 
     const updateUser = async () => {
         setLoading(true);
         try {
-            await autoFetch.patch(`/api/auth/update-user`, {
-                name: user.name,
-                about: textBio,
-                username: user.username,
+            await autoFetch.patch(`/profiles/about/`, {
+                about: textBio || "",
             });
         } catch (error) {
             console.log(error);
@@ -55,10 +51,10 @@ const Left = ({
                         e.preventDefault();
                         handleSubmitBio();
                     }}>
-                    <input
-                        type='text'
+                    <textarea
                         autoFocus
-                        className='bg-inherit border-[1px] rounded-full px-4 py-2 w-[70%] my-3 '
+                        value={textBio}
+                        className='bg-inherit border-[1px] rounded-lg px-4 py-2 w-[70%] my-3 '
                         placeholder='Type your bio... '
                         onChange={(e) => {
                             setTextBio(e.target.value);
@@ -115,21 +111,41 @@ const Left = ({
                     Intro
                 </div>
                 {about()}
-                {user?._id === own?._id && !editBio && (
+                {user?.username === own?.username && !editBio && (
                     <button
                         className='mt-3 py-2 w-full bg-[#afb1b5]/30 hover:bg-[#afb1b5]/50 dark:bg-[#4E4F50]/50 dark:hover:bg-[#4E4F50] transition-20 rounded-md font-semibold '
                         onClick={() => {
                             setEditBio(true);
                         }}
                         disabled={loading}>
-                        Edit bio
+                        Edit Biography
                     </button>
                 )}
-                <div className='mt-5 flex gap-x-2 items-center '>
-                    <HiOutlineLocationMarker className='text-xl ' />
-                    <div>
-                        From <strong>somewhere</strong>
-                    </div>
+                <div className='mt-5 flex gap-x-2 items-center flex-col'>
+                    {user?.linkedin_url &&
+                        <div className={"flex flex-col mb-7 items-center justify-center"}>
+                            <a href={user?.linkedin_url} target="_blank" rel="noopener noreferrer"><AiOutlineLinkedin className='text-3xl'/></a>
+                            <div className='text-xs' >
+                                <strong><a href={user?.linkedin_url} target="_blank" rel="noopener noreferrer">{user?.linkedin_url}</a></strong>
+                            </div>
+                        </div>
+                    }
+                    {user?.website_url &&
+                        <div className={"flex flex-col mb-7 items-center justify-center"}>
+                            <a href={user?.website_url} target="_blank" rel="noopener noreferrer"><AiOutlineInstagram className='text-3xl'/></a>
+                            <div className='text-xs'>
+                                <strong><a href={user?.website_url} target="_blank" rel="noopener noreferrer">{user?.website_url}</a></strong>
+                            </div>
+                        </div>
+                    }
+                    {user?.education_level &&
+                        <div className={"flex flex-col items-center justify-center"}>
+                            <FaUniversity className='text-3xl'/>
+                            <div className='text-xs'>
+                                <strong>{user?.education_level}</strong>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         );

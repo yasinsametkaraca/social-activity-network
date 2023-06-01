@@ -104,7 +104,7 @@ const Header = ({
             <div className='flex flex-col sm:flex-row mx-10 sm:items-start gap-x-4 border-b-[1px] dark:border-b-white/10 border-b-black/10 items-center '>
                 {/* avatar */}
                 <img
-                    src={user?.avatar}
+                    src={user?.avatar ? user?.avatar : "/images/profile.png"}
                     alt='avatar'
                     className='w-[170px] h-[170px] rounded-full object-cover translate-y-[-32px] shrink-0  dark:border-white border-4 border-black/50 '
                 />

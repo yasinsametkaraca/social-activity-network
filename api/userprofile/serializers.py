@@ -47,6 +47,12 @@ class ProfileAvatarSerializer(serializers.ModelSerializer):
         fields = ("avatar",)
 
 
+class ProfileAboutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ("about",)
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     email = serializers.EmailField(source='user.email')
@@ -84,7 +90,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'identification_number': {'write_only': True}
         }
-
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})

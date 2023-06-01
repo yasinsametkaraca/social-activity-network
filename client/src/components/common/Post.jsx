@@ -325,7 +325,7 @@ const Post = ({
                     <div
                         className='flex items-center gap-x-1 cursor-pointer '
                         onClick={() => {
-                            navigate(`profile/${post.userId}`);
+                            navigate(`profile/${post.owner}`);
                         }}>
                         {post.owner}
                         {post.role === "ADMIN" && (
