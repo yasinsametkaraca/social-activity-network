@@ -32,7 +32,6 @@ const AppProvider = ({children}) => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${state.token.access}`;
 
     const autoFetch = axios.create({
-        // @ts-ignore
         baseURL: "http://127.0.0.1:8000/api/v1",
     });
 
@@ -57,10 +56,10 @@ const AppProvider = ({children}) => {
         function (error) {
             // Any status codes that falls outside the range of 2xx cause this function to trigger
             // Do something with response error
-            // if (error.response.status === 401) {
-            //     toast.error("Your session has expired. Please log in again.");
-            //     logOut();
-            // }
+            if (error.response.status === 401) {
+                toast.error("Your session has expired. Please log in again.");
+                logOut();
+            }
             // if (error.response.status === 403) {
             //     toast.error(
             //         "This page is for admin use only. Please log in again."

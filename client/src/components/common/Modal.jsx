@@ -183,50 +183,63 @@ const Modal = ({
                             </button>
                         </div>
                     </div>
-                    <textarea
-                        value={title}
-                        className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
-                            title?.length > 40 || attachment
-                                ? "text-[11px] "
-                                : "text-[17px]"
-                        } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
-                        placeholder={`Title`}
-                        onChange={(e) => {
-                            setTitle(e.target.value);
-                        }}
-                        required
-                    />
-                    <textarea
-                        value={description}
-                        className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
-                            description?.length > 40 || attachment
-                                ? "text-[11px] "
-                                : "text-[17px]"
-                        } ${attachment ? "h-[50px]" : "h-[60px]"} relative`}
-                        placeholder={`Description`}
-                        onChange={(e) => {
-                            setDescription(e.target.value);
-                        }}
-                        required
-                    />
-                    <input
-                        type={"number"}
-                        max="1000"
-                        value={totalPlayerCount}
-                        className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
-                            totalPlayerCount?.length > 40 || attachment
-                                ? "text-[11px] "
-                                : "text-[17px]"
-                        } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
-                        placeholder={`Total Player Count`}
-                        onChange={(e) => {
-                           e.target.value >= 2 ? setTotalPlayerCount(e.target.value) : setTotalPlayerCount(2);
-                        }}
+                    <div className='flex'>
+                        <label htmlFor="title" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : " mt-2 ml-0 text-[17px]" }`}>Title</label>
+                        <textarea
+                            id="title"
+                            value={title}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                                title?.length > 40 || attachment
+                                    ? "text-[11px] "
+                                    : "text-[17px]"
+                            } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
 
-                    />
+                            onChange={(e) => {
+                                setTitle(e.target.value);
+                            }}
+                            required
+                        />
+                    </div>
                     <div className={"flex"}>
-                        <label className={`w-40 mt-3 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}>Start Date</label>
+                        <label htmlFor="description" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Description</label>
+                        <textarea
+                            id="description"
+                            value={description}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                                description?.length > 40 || attachment
+                                    ? "text-[11px] "
+                                    : "text-[17px]"
+                            } ${attachment ? "h-[50px]" : "h-[60px]"} relative`}
+
+                            onChange={(e) => {
+                                setDescription(e.target.value);
+                            }}
+                            required
+                        />
+                    </div>
+                    <div className={"flex"}>
+                        <label htmlFor="totalPlayerCount" className={`w-40 mt-3 ml-0 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}>Total Player</label>
                         <input
+                            type={"number"}
+                            max="1000"
+                            id="totalPlayerCount"
+                            value={totalPlayerCount}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                                totalPlayerCount?.length > 40 || attachment
+                                    ? "text-[11px] "
+                                    : "text-[17px]"
+                            } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+
+                            onChange={(e) => {
+                               e.target.value >= 2 ? setTotalPlayerCount(e.target.value) : setTotalPlayerCount(2);
+                            }}
+                            required
+                        />
+                    </div>
+                    <div className={"flex"}>
+                        <label htmlFor="startDate" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Start Date</label>
+                        <input
+                            id="startDate"
                             type="datetime-local"
                             value={startDate}
                             className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] w-40 mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}
@@ -236,9 +249,10 @@ const Modal = ({
                             }}
                         />
                     </div>
-                    <div className={"flex"}>
-                        <label className={`w-40 mt-5 mb-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}>End Date</label>
+                    <div className={"flex mt-2"}>
+                        <label htmlFor="endDate" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>End Date</label>
                         <input
+                            id="endDate"
                             type="datetime-local"
                             value={endDate}
                             className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] w-40 mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}
@@ -248,72 +262,91 @@ const Modal = ({
                             }}
                         />
                     </div>
-                    <textarea
-                        value={address.address_line1}
-                        className={`input-modal style-3 mt-1 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
-                            address.address_line1?.length > 40 || attachment
-                                ? "text-[11px] "
-                                : "text-[17px]"
-                        } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
-                        placeholder={`Address line 1`}
-                        onChange={(e) => {
-                            setAddress({...address, address_line1: e.target.value});
-                        }}
-                    />
-                    <div className={"flex flex-row"}>
+                    <div className={"flex mt-2"}>
+                        <label htmlFor="address_line1" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Address</label>
                         <textarea
-                            value={address.city}
+                            id="address_line1"
+                            value={address.address_line1}
                             className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
-                                address.city?.length > 40 || attachment
+                                address.address_line1?.length > 40 || attachment
                                     ? "text-[11px] "
                                     : "text-[17px]"
                             } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
-                            placeholder={`City`}
                             onChange={(e) => {
-                                setAddress({...address, city: e.target.value});
-                            }}
-                        />
-                        <textarea
-                            value={address.country}
-                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
-                                address.country?.length > 40 || attachment
-                                    ? "text-[11px] "
-                                    : "text-[17px]"
-                            } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
-                            placeholder={`Country`}
-                            onChange={(e) => {
-                                setAddress({...address, country: e.target.value});
-                            }}
-                        />
-                        <textarea
-                            value={address.postal_code}
-                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
-                                address.postal_code?.length > 40 || attachment
-                                    ? "text-[11px] "
-                                    : "text-[17px]"
-                            } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
-                            placeholder={`Postal Code`}
-                            onChange={(e) => {
-                                setAddress({...address, postal_code: e.target.value});
+                                setAddress({...address, address_line1: e.target.value});
                             }}
                         />
                     </div>
-                    <div className={"flex flex-row mt-3"}>
-                        <input
-                            type={"number"}
-                            max="10000000"
-                            value={price}
-                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
-                                price?.length > 40 || attachment
-                                    ? "text-[11px] "
-                                    : "text-[17px]"
-                            } ${attachment ? "h-[30px]" : "h-[40px]"} relative`}
-                            placeholder={`Price`}
-                            onChange={(e) => {
-                                e.target.value >= 0 ? setPrice(e.target.value) : setPrice(0);
-                            }}
-                        />
-                        <select className={`w-40 w-full mb-2 border-0 outline-none mt-2 ml-3 p-0 ${category==="" ? "text-[#a0a0a1]" : ""} ${attachment ? "text-[11px]" : "text-[17px]"}`} value={category} onChange={(e) => setCategory(e.target.value)}>
+                    <div className={"grid gap-1 grid-cols-2"}>
+                        <div className={"flex "}>
+                            <label htmlFor="city" className={`text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>City</label>
+                            <textarea
+                                id={"city"}
+                                value={address.city}
+                                className={`input-modal style-3 w-full mr-1 bg-inherit focus:ring-0 border-0 placeholder:text-[#a0a0a1] ${
+                                    address.city?.length > 40 || attachment
+                                        ? "text-[11px] "
+                                        : "text-[17px]"
+                                } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                                onChange={(e) => {
+                                    setAddress({...address, city: e.target.value});
+                                }}
+                            />
+                        </div>
+                        <div className={"flex"}>
+                            <label htmlFor="country" className={`text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Country</label>
+                            <textarea
+                                id={"country"}
+                                value={address.country}
+                                className={`input-modal style-3 w-full bg-inherit focus:ring-0 border-0 placeholder:text-[#a0a0a1] ${
+                                    address.country?.length > 40 || attachment
+                                        ? "text-[11px] "
+                                        : "text-[17px]"
+                                } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                                onChange={(e) => {
+                                    setAddress({...address, country: e.target.value});
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <div className={"grid gap-1 grid-cols-2 mt-2"}>
+                        {/*<div className={"flex"}>*/}
+                        {/*    <label htmlFor="postal_code" className={`w-40 mt-3 ml-0 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}>Postal Code</label>*/}
+                        {/*    <input*/}
+                        {/*        type={"number"}*/}
+                        {/*        max="1000"*/}
+                        {/*        id="postal_code"*/}
+                        {/*        value={address.postal_code}*/}
+                        {/*        className={`px-0 input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${*/}
+                        {/*            address.postal_code?.length > 40 || attachment*/}
+                        {/*                ? "text-[11px] "*/}
+                        {/*                : "text-[17px]"*/}
+                        {/*        } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}*/}
+
+                        {/*        onChange={(e) => {*/}
+                        {/*            setAddress({...address, postal_code: e.target.value});*/}
+                        {/*        }}*/}
+                        {/*        required*/}
+                        {/*    />*/}
+                        {/*</div>*/}
+                        <div className={"flex"}>
+                            <label htmlFor="price" className={`p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-3 ml-0 text-[17px]" }`}>Price</label>
+                            <input
+                                id={"price"}
+                                type={"number"}
+                                max="10000000"
+                                value={price}
+                                className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
+                                    price?.length > 40 || attachment
+                                        ? "text-[11px] "
+                                        : "text-[17px]"
+                                } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                                onChange={(e) => {
+                                    e.target.value >= 0 ? setPrice(e.target.value) : setPrice(0);
+                                }}
+                            />
+                        </div>
+                        <select className={`w-40 w-full mb-2 border-0 outline-none mt-1 ml-0 p-0 dark:bg-[#3A3B3C] ${category==="" ? "text-[#a0a0a1]" : ""} ${attachment ? "text-[11px]" : "text-[17px]"}`} value={category} onChange={(e) => setCategory(e.target.value)}>
                             <option className={"text-[#a0a0a1]"} value="">Categories</option>
                             <option value={"Theatre"}>{"Theatre"}</option>
                             <option value={"Music"}>{"Music"}</option>
@@ -324,6 +357,7 @@ const Modal = ({
                             <option value={"Culture"}>{"Culture"}</option>
                         </select>
                     </div>
+
                     {attachment && (
                         <div className='relative flex w-full h-[200px] p-2 rounded-md border dark:border-white/20 group '>
                             {uploadImage()}
