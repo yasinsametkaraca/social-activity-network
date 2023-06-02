@@ -8,14 +8,20 @@ from django.utils.translation import gettext_lazy as _
 class UserManager(BaseUserManager):
 
     def create_user(self, username, password=None, is_superuser=False, is_staff=False,
-                    is_active=True, role='FRIEND', **kwargs):
+                    is_active=True, role='FRIEND', first_name=None, last_name=None, **kwargs):
         if not username:
             raise ValueError('Users must have a username')
         if not password:
             raise ValueError("User must have a password")
+        if not first_name:
+            raise ValueError('Users must have a first name')
+        if not last_name:
+            raise ValueError("User must have a last name")
 
         user = self.model(
             username=username,
+            first_name=first_name,
+            last_name=last_name,
             **kwargs
         )
         if role == 'ADMIN' or role == 'SYSTEM_STAFF' or is_superuser or is_staff:
@@ -30,13 +36,18 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, username, password=None, **kwargs):
+    def create_superuser(self, username, password=None, first_name="A", last_name="A", **kwargs):
         if not username:
             raise ValueError('Users must have a username')
         if not password:
             raise ValueError('Users must have a password')
 
-        user = self.model(username=username, **kwargs)
+        user = self.model(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            **kwargs
+        )
         user.set_password(password)
         user.is_staff = True
         user.is_superuser = True
@@ -63,8 +74,8 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True, blank=False, null=False)
     role = models.CharField(max_length=50, null=False, blank=True, choices=ROLE_CHOICES)
     identification_number = models.CharField(max_length=20, blank=True, null=True, unique=True)
-    first_name = models.CharField(max_length=50, blank=True, null=True)
-    last_name = models.CharField(max_length=50, blank=True, null=True)
+    first_name = models.CharField(max_length=50, blank=False, null=False)
+    last_name = models.CharField(max_length=50, blank=False, null=False)
     email = models.EmailField(max_length=50, blank=True, null=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

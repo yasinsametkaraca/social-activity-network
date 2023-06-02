@@ -1,15 +1,16 @@
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, \
-    RetrieveAPIView, get_object_or_404
+    get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Profile
-from .serializers import ProfileSerializer, ProfileDetailSerializer, ProfileAvatarSerializer, UserProfileSerializer, \
-    ProfileAboutSerializer
+from .serializers import ProfileDetailSerializer, ProfileAvatarSerializer, UserProfileSerializer, \
+    ProfileAboutSerializer, ProfileSuggestionSerializer
 from account.models import MyUser
 from notification.models import Notification
+from random import sample
 
 
 class ProfileList(ListAPIView):
@@ -63,7 +64,7 @@ class FollowAndUnfollowView(APIView):
             notification.save()
             message = "Followed user successfully."
 
-        return Response({"message": message})
+        return Response({"message": message, "user": UserProfileSerializer(request.user.profile).data})
 
 
 class FollowerListAPIView(APIView):
@@ -117,3 +118,17 @@ class UserAvatarAPIView(RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.profile
+
+
+class GetSuggestionProfiles(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ProfileSuggestionSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        following_profiles = user.profile.following.all()
+
+        suggested_profiles = Profile.objects.exclude(user=user.profile.user).exclude(user__in=following_profiles).filter(user__role='FRIEND', education_level=user.profile.education_level)
+        random_profiles = sample(list(suggested_profiles), min(10, suggested_profiles.count()))
+
+        return random_profiles

@@ -6,6 +6,8 @@ import {AiOutlineLinkedin} from "react-icons/ai";
 import {FaUniversity} from "react-icons/fa";
 import {AiOutlineInstagram} from "react-icons/ai";
 import {BsGenderFemale, BsGenderMale} from "react-icons/bs";
+import moment from "moment";
+import {RiCake2Line} from "react-icons/ri";
 
 const Left = ({
     user,
@@ -42,6 +44,8 @@ const Left = ({
         updateUser();
         setEditBio(false);
     };
+
+    const formattedDate = moment(user.birth_date).format('DD.MM.YYYY');
 
     const about = () => {
         if (editBio) {
@@ -123,22 +127,6 @@ const Left = ({
                     </button>
                 )}
                 <div className='mt-5 flex gap-x-2 items-center flex-col'>
-                    {user?.linkedin_url &&
-                        <div className={"flex flex-col mb-7 items-center justify-center"}>
-                            <a href={user?.linkedin_url} target="_blank" rel="noopener noreferrer"><AiOutlineLinkedin className='text-3xl'/></a>
-                            <div className='text-xs' >
-                                <strong><a href={user?.linkedin_url} target="_blank" rel="noopener noreferrer">{user?.linkedin_url}</a></strong>
-                            </div>
-                        </div>
-                    }
-                    {user?.website_url &&
-                        <div className={"flex flex-col mb-7 items-center justify-center"}>
-                            <a href={user?.website_url} target="_blank" rel="noopener noreferrer"><AiOutlineInstagram className='text-3xl'/></a>
-                            <div className='text-xs'>
-                                <strong><a href={user?.website_url} target="_blank" rel="noopener noreferrer">{user?.website_url}</a></strong>
-                            </div>
-                        </div>
-                    }
                     {
                         user?.education_level && (
                             <div className="flex flex-col items-center mb-7 justify-center">
@@ -170,6 +158,30 @@ const Left = ({
                             </div>
                         )
                     }
+                    {user?.birth_date &&
+                        <div className={"flex flex-col mb-7 items-center justify-center"}>
+                            <RiCake2Line className='text-3xl'/>
+                            <div className='text-xs'>
+                                <strong>{formattedDate}</strong>
+                            </div>
+                        </div>
+                    }
+                    {user?.linkedin_url &&
+                        <div className={"flex flex-col mb-7 items-center justify-center"}>
+                            <a href={user?.linkedin_url} target="_blank" rel="noopener noreferrer"><AiOutlineLinkedin className='text-3xl'/></a>
+                            <div className='text-xs' >
+                                <strong><a href={user?.linkedin_url} target="_blank" rel="noopener noreferrer">{user?.linkedin_url}</a></strong>
+                            </div>
+                        </div>
+                    }
+                    {user?.website_url &&
+                        <div className={"flex flex-col mb-7 items-center justify-center"}>
+                            <a href={user?.website_url} target="_blank" rel="noopener noreferrer"><AiOutlineInstagram className='text-3xl'/></a>
+                            <div className='text-xs'>
+                                <strong><a href={user?.website_url} target="_blank" rel="noopener noreferrer">{user?.website_url}</a></strong>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         );
@@ -196,13 +208,13 @@ const Left = ({
                     {images?.length > 0 ? (
                         images?.map((i, k) => (
                             <div
-                                key={i?.image?.public_id}
+                                key={i?.image}
                                 className='w-full  pt-[100%] relative cursor-pointer '
                                 onClick={() => {
-                                    navigate(`/post/information/${i?._id}`);
+                                    navigate(`/activity/detail/${i?.id}`);
                                 }}>
                                 <img
-                                    src={i?.image?.url}
+                                    src={i?.image}
                                     alt='aaa'
                                     className={`w-full h-full absolute top-0 left-0 object-cover ${
                                         rounded.includes(k)

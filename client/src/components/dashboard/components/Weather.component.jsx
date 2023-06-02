@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {AiOutlineCloseCircle} from "react-icons/ai";
 import {BiRadioCircle} from "react-icons/bi";
 import {FaSearchLocation} from "react-icons/fa";
@@ -45,7 +45,7 @@ const initWeather = {
 
 const Left = ({dark, autoFetch}) => {
     const [wLoading, setWLoading] = useState(false);
-    const [cityName, setCityName] = useState("Ho Chi Minh");
+    const [cityName, setCityName] = useState("Kayseri");
     const [weather, setWeather] = useState(initWeather);
     const [wError, setWError] = useState(false);
     const [cityHistory, setCityHistory] = useState([]);
@@ -62,15 +62,12 @@ const Left = ({dark, autoFetch}) => {
             const {data} = await autoFetch.get(`/api/weather/${cityName}`);
             setWError(false);
             setWeather(data.data);
-            // @ts-ignore
             if (!cityHistory.includes(data.data.name)) {
                 if (cityHistory.length === 5) {
                     setCityHistory(
-                        // @ts-ignore
                         [...cityHistory, data.data.name].splice(1, 4)
                     );
                 } else {
-                    // @ts-ignore
                     setCityHistory([...cityHistory, data.data.name]);
                 }
             }

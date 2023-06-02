@@ -2,9 +2,11 @@ import {useEffect, useState} from "react";
 import ReactLoading from "react-loading";
 import {toast} from "react-toastify";
 import {LoadingCard} from "../../../components";
+import {useAppContext} from "../../../context/useContext.jsx";
+
 const FollowingPage = ({
     dark,
-    userId,
+    username,
     autoFetch,
     own,
     navigate,
@@ -31,9 +33,9 @@ const FollowingPage = ({
         setLoading(true);
         try {
             const {data} = await autoFetch.get(
-                `/api/auth/user-following/${userId}`
+                `/profiles/following/${username}/`
             );
-            setListFollowing(data.following);
+            setListFollowing(data);
         } catch (error) {
             console.log(error);
         }
@@ -52,9 +54,9 @@ const FollowingPage = ({
                 Following
             </div>
 
-            {listFollowing.length > 0 ? (
+            {listFollowing?.length > 0 ? (
                 <div className='md:grid grid-cols-2 my-4 gap-1 '>
-                    {listFollowing.map((p) => (
+                    {listFollowing?.map((p) => (
                         <People
                             autoFetch={autoFetch}
                             navigate={navigate}
@@ -62,8 +64,8 @@ const FollowingPage = ({
                             p={p}
                             setNameAndToken={setNameAndToken}
                             token={token}
-                            userId={userId}
-                            key={p._id + "asdqweqw"}
+                            username={username}
+                            key={p.username + "asdqweqw"}
                         />
                     ))}
                 </div>
@@ -81,40 +83,39 @@ export default FollowingPage;
 export function People({
     p,
     navigate,
-    userId,
+    username,
     own,
     setNameAndToken,
     token,
     autoFetch,
 }) {
+    const {setName} = useAppContext();
     const [loading, setLoading] = useState(false);
 
-    const navigateToUserPage = (peopleId) => {
-        navigate(`/profile/${peopleId}`);
+    const navigateToUserPage = (username) => {
+        navigate(`/profile/${username}`);
     };
-
-    const handleFollower = async (user) => {
+    const handleFollower = async (username) => {
         setLoading(true);
         try {
-            const {data} = await autoFetch.put(`/api/auth/user-follow`, {
-                userId: user._id,
-            });
-            setNameAndToken(data.user, token);
-            toast(`Follow ${user.name} success`);
+            const {data} = await autoFetch.post(`/profiles/follow/${username}/`);
+            // setNameAndToken(data.user, token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            setName(data.user);
+            toast(`Follow ${username} success`);
         } catch (error) {
             console.log(error);
         }
         setLoading(false);
     };
-    const handleUnFollow = async (user) => {
+    const handleUnFollow = async (username) => {
         setLoading(true);
         try {
-            const {data} = await autoFetch.put(`/api/auth/user-unfollow`, {
-                userId: user._id,
-            });
+            const {data} = await autoFetch.post(`/profiles/follow/${username}/`);
             localStorage.setItem("user", JSON.stringify(data.user));
-            setNameAndToken(data.user, token);
-            toast.error(`U have unfollowed ${user.name}!`);
+            //setNameAndToken(data.user, token);
+            setName(data.user);
+            toast.info(`You have unfollowed ${username}!`);
         } catch (error) {
             console.log(error);
         }
@@ -134,8 +135,8 @@ export function People({
                 </div>
             );
         }
-        if (userId === own._id) {
-            if (own.following.includes(p._id)) {
+        if (p.username !== own.username) {
+            if (own.following.includes(p.username)) {
                 return (
                     <button
                         className='px-3 sm:px-4 py-1 md:py-2 ml-auto hover:bg-[#3C4D63] bg-[#3C4D63]/50 transition-20 text-white rounded-md text-[14px] sm:text-base '
@@ -143,7 +144,7 @@ export function People({
                             if (
                                 window.confirm("Do u want unfollow this user?")
                             ) {
-                                handleUnFollow(p);
+                                handleUnFollow(p.username);
                             }
                         }}>
                         Unfollow
@@ -153,7 +154,7 @@ export function People({
             return (
                 <button
                     className=' px-3 sm:px-4 py-1 md:py-2 ml-auto hover:bg-[#3C4D63] bg-[#3C4D63]/50 transition-20 text-white rounded-md text-[14px] sm:text-base  '
-                    onClick={() => handleFollower(p)}>
+                    onClick={() => handleFollower(p.username)}>
                     Follow
                 </button>
             );
@@ -163,22 +164,22 @@ export function People({
 
     return (
         <div
-            key={`${p._id}daskfhqw`}
+            key={`${p.username}adada`}
             className='col-span-1 flex items-center gap-x-3 px-4 py-5 '>
             <img
-                src={p.image.url}
+                src={`${p.avatar ? (p.avatar) : "/images/profile.png"}`}
                 alt=''
                 className='w-10 sm:w-16 md:w-20 h-10 sm:h-16 md:h-20 rounded-md object-cover cursor-pointer '
-                onClick={() => navigateToUserPage(p._id)}
+                onClick={() => navigateToUserPage(p.username)}
             />
             <div className=''>
                 <div
                     className='text-[14px] sm:text-[17px]  font-semibold cursor-pointer '
-                    onClick={() => navigateToUserPage(p._id)}>
-                    {p.name}
+                    onClick={() => navigateToUserPage(p.username)}>
+                    {p.first_name}{" "}{p.last_name}
                 </div>
                 <div className='text-[12px] sm:text-[14px] dark:text-[#b0b3b8]  '>
-                    {p.about}
+                    {p.username}
                 </div>
             </div>
             {btn(p)}

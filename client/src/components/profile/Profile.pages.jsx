@@ -89,7 +89,7 @@ const Profile = () => {
             return (
                 <FollowingPage
                     dark={dark}
-                    userId={user?.id}
+                    username={user?.username}
                     autoFetch={autoFetch}
                     own={own}
                     navigate={navigate}
@@ -102,7 +102,7 @@ const Profile = () => {
             return (
                 <FollowerPage
                     dark={dark}
-                    userId={user?.id}
+                    username={user?.username}
                     autoFetch={autoFetch}
                     navigate={navigate}
                     own={own}

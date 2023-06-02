@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {TiTick} from "react-icons/ti";
 import {toast} from "react-toastify";
 import {LoadingSuggestion} from "../..";
+import {useAppContext} from "../../../context/useContext.jsx";
 
 const Right = ({
     navigate,
@@ -15,6 +16,8 @@ const Right = ({
 }) => {
     const [pLoading, setPLoading] = useState(false);
     const [listPeople, setListPeople] = useState([]);
+    const {setName} = useAppContext();
+
     useEffect(() => {
         if (token) {
             getListPeople();
@@ -23,33 +26,31 @@ const Right = ({
     const getListPeople = async () => {
         setPLoading(true);
         try {
-            const {data} = await autoFetch.get(`/api/auth/find-people`);
-            setListPeople(data.people);
+            const {data} = await autoFetch.get(`/profiles/suggestions/`);
+            setListPeople(data);
         } catch (error) {
             console.log(error);
         }
         setPLoading(false);
     };
 
-    const handleFollower = async (user) => {
+    const handleFollower = async (username) => {
         try {
-            const {data} = await autoFetch.put(`/api/auth/user-follow`, {
-                userId: user._id,
-            });
-            setNameAndToken(data.user, token);
-            // @ts-ignore
-            let filtered = listPeople.filter((p) => p._id !== user._id);
-            // @ts-ignore
+            const {data} = await autoFetch.post(`/profiles/follow/${username}/`);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            setName(data.user);
+
+            let filtered = listPeople.filter((p) => p.username !== username);
             setListPeople(filtered);
             getAllActivities();
-            toast(`Follow ${user.name} success`);
+            toast(`Follow ${username} success`);
         } catch (error) {
             console.log(error);
         }
     };
 
     const content = () => {
-        if (error) {
+        if (error || listPeople.length === 0) {
             return (
                 <div className='w-full text-center text-xl font-semibold '>
                     <div>No suggestion found!</div>
@@ -71,27 +72,27 @@ const Right = ({
                     </div>
                     {listPeople.map((p) => {
                         // @ts-ignore
-                        if (p._id === user._id) {
+                        if (p.username === user.username) {
                             // @ts-ignore
-                            return <div key={p._id}></div>;
+                            return <div key={p.username}></div>;
                         }
                         return (
                             <div
                                 className='flex items-center  py-1.5 '
                                 key={
                                     // @ts-ignore
-                                    p._id
+                                    p.username
                                 }>
                                 <div
                                     className='flex items-center gap-x-1.5 '
                                     role='button'
                                     onClick={() => {
                                         // @ts-ignore
-                                        navigate(`profile/${p._id}`);
+                                        navigate(`profile/${p.username}`);
                                     }}>
                                     <img
                                         // @ts-ignore
-                                        src={p.image.url}
+                                        src={`${p.avatar ? p.avatar : "/images/profile.png"}`}
                                         alt='avatar'
                                         className='w-9 h-9 object-cover rounded-full  '
                                     />
@@ -100,7 +101,7 @@ const Right = ({
                                             <span>
                                                 {
                                                     // @ts-ignore
-                                                    p.name
+                                                    p.username
                                                 }
                                             </span>
                                             {
@@ -121,7 +122,7 @@ const Right = ({
 
                                 <button
                                     className='text-sky-600 ml-auto text-[13px] font-semibold '
-                                    onClick={() => handleFollower(p)}>
+                                    onClick={() => handleFollower(p.username)}>
                                     Follow
                                 </button>
                             </div>

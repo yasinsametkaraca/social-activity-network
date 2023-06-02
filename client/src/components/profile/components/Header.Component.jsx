@@ -5,6 +5,7 @@ import ReactLoading from "react-loading";
 import {FiEdit2} from "react-icons/fi";
 import {GoPrimitiveDot} from "react-icons/go";
 import {TiTick} from "react-icons/ti";
+import {useAppContext} from "../../../context/useContext.jsx";
 
 const Header = ({
     user,
@@ -18,29 +19,29 @@ const Header = ({
 }) => {
     const [loading, setLoading] = useState(false);
     const list = ["Posts", "Following", "Follower"];
+    const {setName} = useAppContext();
 
-    const handleFollower = async (user) => {
+    const handleUnFollow = async (username) => {
         setLoading(true);
         try {
-            const {data} = await autoFetch.put(`/api/auth/user-follow`, {
-                userId: user._id,
-            });
-            setNameAndToken(data.user, token);
-            toast(`Follow ${user.name} success`);
+            const {data} = await autoFetch.post(`/profiles/follow/${username}/`);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            //setNameAndToken(data.user, token);
+            setName(data.user);
+            toast.info(`You have unfollowed ${username}!`);
         } catch (error) {
             console.log(error);
         }
         setLoading(false);
     };
-    const handleUnFollow = async (user) => {
+    const handleFollower = async (username) => {
         setLoading(true);
         try {
-            const {data} = await autoFetch.put(`/api/auth/user-unfollow`, {
-                userId: user._id,
-            });
+            const {data} = await autoFetch.post(`/profiles/follow/${username}/`);
+            // setNameAndToken(data.user, token);
             localStorage.setItem("user", JSON.stringify(data.user));
-            setNameAndToken(data.user, token);
-            toast.error(`U have unfollowed ${user.name}!`);
+            setName(data.user);
+            toast(`Follow ${username} success`);
         } catch (error) {
             console.log(error);
         }
@@ -71,13 +72,13 @@ const Header = ({
                     Edit profile
                 </button>
             );
-        if (own?.following?.includes(user?._id)) {
+        if (own?.following?.includes(user?.username)) {
             return (
                 <button
                     className='flex gap-x-1 items-center font-semibold px-3 py-2 bg-[#D8DADF]/50 hover:bg-[#D8DADF] dark:bg-[#4E4F50]/50 dark:hover:bg-[#4E4F50] transition-20 rounded-md '
                     onClick={() => {
                         if (window.confirm("Do u want unfollow this user?")) {
-                            handleUnFollow(user);
+                            handleUnFollow(user.username);
                         }
                     }}>
                     Unfollow
@@ -87,7 +88,7 @@ const Header = ({
         return (
             <button
                 className='flex gap-x-1 items-center font-semibold px-3 py-2 bg-[#D8DADF]/50 hover:bg-[#D8DADF] dark:bg-[#4E4F50]/50 dark:hover:bg-[#4E4F50] transition-20 rounded-md '
-                onClick={() => handleFollower(user)}>
+                onClick={() => handleFollower(user.username)}>
                 Follow
             </button>
         );
@@ -113,7 +114,7 @@ const Header = ({
                         <div className='flex justify-center'>
                             <div className='text-[32px] font-bold md:flex items-center gap-x-1 '>
                                 <div className='text-center flex items-center justify-center '>
-                                    {user?.first_name}
+                                    {user?.first_name}{" "}{user?.last_name}
                                     {user?.role === "ADMIN" && (
                                         <TiTick className='text-[20px] text-white rounded-full bg-sky-500 ' />
                                     )}

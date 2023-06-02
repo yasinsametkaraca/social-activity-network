@@ -68,6 +68,7 @@ const AppProvider = ({children}) => {
             // }
             if (error.response.status === 11000) {
                 toast.error("Something went wrong. Try again!");
+                logOut();
             }
             return Promise.reject(error);
         }
@@ -91,6 +92,13 @@ const AppProvider = ({children}) => {
         addToLocalStorage(userValue, tokenValue);
     };
 
+    const setName = (userValue) => {
+        const token = localStorage.getItem("token")
+        const parsedToken = JSON.parse(token);
+        setStateContext({...state, user: userValue});
+        addToLocalStorage(userValue, parsedToken);
+    };
+
     const logOut = () => {
         removeFromLocalStorage();
         setStateContext({...state, user: "", token: ""});
@@ -112,6 +120,7 @@ const AppProvider = ({children}) => {
                 setOneState,
                 logOut,
                 setNameAndToken,
+                setName,
                 addToLocalStorage,
                 openQrCode,
                 closeQrCode,
