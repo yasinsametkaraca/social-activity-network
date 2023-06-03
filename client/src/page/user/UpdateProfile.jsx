@@ -7,7 +7,7 @@ import ReactLoading from "react-loading";
 import profile from "./profile/index.jsx";
 
 const UpdateProfile = () => {
-    const {user, autoFetch} = useAppContext();
+    const {user, autoFetch, setName} = useAppContext();
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState(null);
@@ -23,6 +23,7 @@ const UpdateProfile = () => {
         education_level: user.education_level,
         username: user.username,
         email: user.email,
+        spotify_playlist: user.spotify_playlist,
     });
 
     const handleImage = async (e) => {
@@ -69,6 +70,7 @@ const UpdateProfile = () => {
             });
             //setNameAndToken(data.user, data.token);
             localStorage.setItem("user", JSON.stringify(data));
+            setName(data);
             toast.success("Update profile success!");
             //setState(initValueState);
         } catch (error) {
@@ -89,7 +91,7 @@ const UpdateProfile = () => {
 
     const field = [
         {
-            label: "First Name",
+            label: "First Name*",
             type: "text",
             placeholder: "First Name",
             name: "first_name",
@@ -97,7 +99,7 @@ const UpdateProfile = () => {
             required: true
         },
         {
-            label: "Last Name",
+            label: "Last Name*",
             type: "text",
             placeholder: "Last Name",
             name: "last_name",
@@ -105,15 +107,15 @@ const UpdateProfile = () => {
             required: true
         },
         {
-            label: "Email",
+            label: "Email*",
             type: "email",
             placeholder: "mail@mail.com",
             name: "email",
             value: profileInfo.email || "",
-            disabled: true,
+            required: true
         },
         {
-            label: "Username",
+            label: "Username*",
             type: "text",
             placeholder: "Username",
             name: "username",
@@ -121,7 +123,7 @@ const UpdateProfile = () => {
             required: true
         },
         {
-            label: "Education Level",
+            label: "Education Level*",
             type: "select",
             placeholder: "Education Level",
             name: "education_level",
@@ -139,7 +141,7 @@ const UpdateProfile = () => {
             required: true
         },
         {
-            label: "Gender",
+            label: "Gender*",
             type: "select",
             placeholder: "Gender",
             name: "gender",
@@ -159,14 +161,21 @@ const UpdateProfile = () => {
             value: profileInfo.linkedin_url || "",
         },
         {
-            label: "Website URL",
+            label: "Instagram URL",
             type: "url",
             placeholder: "Website URL",
             name: "website_url",
             value: profileInfo.website_url || "",
         },
         {
-            label: "Birth Date",
+            label: "Spotify Playlist URL",
+            type: "url",
+            placeholder: "Spotify Playlist URL",
+            name: "spotify_playlist",
+            value: profileInfo.spotify_playlist || "",
+        },
+        {
+            label: "Birth Date*",
             type: "date",
             placeholder: "Birth Date",
             name: "birth_date",

@@ -5,6 +5,8 @@ from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, \
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from api.permissions import IsFriend
 from .models import Profile
 from .serializers import ProfileDetailSerializer, ProfileAvatarSerializer, UserProfileSerializer, \
     ProfileAboutSerializer, ProfileSuggestionSerializer
@@ -43,7 +45,7 @@ class UserProfileByUsername(RetrieveUpdateAPIView):
 
 
 class FollowAndUnfollowView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def post(self, request, username):
         my_profile = Profile.objects.get(user=request.user)
@@ -68,7 +70,7 @@ class FollowAndUnfollowView(APIView):
 
 
 class FollowerListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsFriend]
 
     def get(self, request, username):
         user = get_object_or_404(MyUser, username=username)
@@ -132,3 +134,14 @@ class GetSuggestionProfiles(generics.ListAPIView):
         random_profiles = sample(list(suggested_profiles), min(10, suggested_profiles.count()))
 
         return random_profiles
+
+
+class GetSearchProfiles(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ProfileSuggestionSerializer
+
+    def get_queryset(self):
+        query = self.request.GET.get('username', '')
+        print(query)
+        results = Profile.objects.filter(user__username__icontains=query, user__role='FRIEND')
+        return results

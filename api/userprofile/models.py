@@ -31,6 +31,7 @@ class Profile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     linkedin_url = models.URLField(max_length=200, blank=True, null=True)
     website_url = models.URLField(max_length=200, blank=True, null=True)
+    spotify_playlist = models.URLField(max_length=250, blank=True, null=True)
     following = models.ManyToManyField(AUTH_USER_MODEL, related_name="following", blank=True)  # who I follow
     follower = models.ManyToManyField(AUTH_USER_MODEL, related_name='follower', blank=True)  # who follow me
     friends = models.ManyToManyField(AUTH_USER_MODEL, related_name='friends', blank=True)

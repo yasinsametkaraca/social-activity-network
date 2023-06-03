@@ -52,6 +52,7 @@ const Dashboard = () => {
             <div className='w-screen grid grid-cols-11 md:gap-x-12 px-3 sm:px-7 md:px-10 relative '>
                 <div className='col-span-11 md:col-span-3 relative order-1 '>
                     {/*<Left autoFetch={autoFetch} dark={dark} />*/}
+
                 </div>
                 <div className='col-span-11 md:col-span-5 shrink-0 order-3 md:order-2 '>
                     <Center

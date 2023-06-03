@@ -53,7 +53,7 @@ const Right = ({
         if (error || listPeople.length === 0) {
             return (
                 <div className='w-full text-center text-xl font-semibold '>
-                    <div>No suggestion found!</div>
+                    <div>No suggestion found! Please fulfill your profile!</div>
                 </div>
             );
         }

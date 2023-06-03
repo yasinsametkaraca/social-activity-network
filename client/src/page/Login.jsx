@@ -33,7 +33,7 @@ const Login = () => {
             setLoading(false);
         } catch (error) {
             console.log(error);
-            toast.error(error?.response?.data?.msg || "Something went wrong!");
+            toast.error("Username or password incorrect.");
             setLoading(false);
         }
     };

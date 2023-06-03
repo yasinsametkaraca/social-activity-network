@@ -20,6 +20,13 @@ class UserRegister(GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        if not request.data.get('role'):
+            return Response({'error': 'Role field is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.data.get('role') == 'ADMIN' or request.data.get('role') == 'SYSTEM_STAFF' or request.data.get('is_superuser') or request.data.get('is_staff'):
+            return Response({'error': 'You are not allowed to register with this role.'}, status=status.HTTP_400_BAD_REQUEST)
+
         user = serializer.save(role=request.data.get('role'))
         login(request, user)
         token_serializer = CustomTokenObtainPairSerializer(data={
@@ -32,7 +39,7 @@ class UserRegister(GenericAPIView):
         token = token_serializer.validated_data
         refresh = RefreshToken.for_user(user)
         return Response(
-            {'user': serializer.data, 'token': token},
+            {'user': UserProfileSerializer(user.profile).data, 'token': token},
             status=status.HTTP_201_CREATED)
 
 

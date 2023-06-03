@@ -53,13 +53,13 @@ const Nav = () => {
             return;
         }
         try {
-            const { data } = await autoFetch.get(`/api/auth/search-user/${text}`);
-            if (data.search.length === 0) {
+            const { data } = await autoFetch.get(`/profiles/search/?username=${text}`);
+            if (data.length === 0) {
                 setIsEmpty(true);
                 setListSearchResult([]);
             } else {
                 setIsEmpty(false);
-                setListSearchResult(data.search);
+                setListSearchResult(data);
             }
         } catch (error) {
             console.log(error);
@@ -152,7 +152,7 @@ const Nav = () => {
                                                 No user found!
                                             </div>
                                         )}
-                                        {listSearchResult.length > 0 && (
+                                        {listSearchResult.length > 0 && text.length !==0 && (
                                             <ItemsList
                                                 dataSource={listSearchResult}
                                                 searchInNav={true}

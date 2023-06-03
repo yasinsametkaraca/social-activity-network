@@ -1,4 +1,3 @@
-import * as React from "react";
 import {useNavigate} from "react-router-dom";
 // MUI
 import List from "@mui/material/List";
@@ -18,7 +17,7 @@ export default function ItemsList({
     state = {
         listResultByPeopleSearch: [
             {
-                _id: "",
+                username: "",
             },
         ],
     },
@@ -35,12 +34,11 @@ export default function ItemsList({
                 {dataSource.length > 0 &&
                     dataSource.map((v, index) => (
                         <div
-                            key={v._id + "listResult"}
+                            key={v.username + "listResult"}
                             className='cursor-pointer hover:bg-black/20 '
                             onClick={() => {
                                 if (!searchInNav) {
-                                    if (user && v._id === user._id) {
-                                        // @ts-ignore
+                                    if (user && v.username === user.username) {
                                         dispatch({type: CLEAR_WHEN_DUPLICATE});
                                         return;
                                     }
@@ -48,13 +46,12 @@ export default function ItemsList({
                                         state.listResultByPeopleSearch.length >
                                         0
                                     ) {
-                                        let id =
+                                        let username =
                                             state.listResultByPeopleSearch.find(
-                                                (i) => i._id === v._id
+                                                (i) => i.username === v.username
                                             );
-                                        // @ts-ignore
                                         dispatch({type: CLEAR_WHEN_DUPLICATE});
-                                        if (id) return;
+                                        if (username) return;
                                     }
                                     // @ts-ignore
                                     dispatch({
@@ -67,20 +64,20 @@ export default function ItemsList({
                                         },
                                     });
                                 } else {
-                                    navigate(`/profile/${v._id}`);
+                                    navigate(`/profile/${v.username}`);
                                     clearList();
                                 }
                             }}>
                             <ListItem className='flex items-center flex-start '>
                                 <ListItemAvatar>
                                     <Avatar
-                                        alt={v.name}
-                                        src={v.image.url}
+                                        alt={v.username}
+                                        src={v.avatar}
                                         className='border-[1px] border-black/30 dark:bg-white bg-black/30 '
                                     />
                                 </ListItemAvatar>
                                 <div className='text-[18px] font-medium flex items-center gap-x-0.5 '>
-                                    {v.name}
+                                    {v.username}
                                     {v.role === "ADMIN" && (
                                         <TiTick className='text-[14px] text-white rounded-full bg-sky-500 ' />
                                     )}

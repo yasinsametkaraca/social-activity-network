@@ -15,7 +15,7 @@ class ProfileAdmin(admin.ModelAdmin):
             'fields': ('user', 'avatar')
         }),
         ('Profile Info', {
-            'fields': ('about', 'birth_date', 'gender', 'education_level', 'website_url', 'linkedin_url', 'company_name', 'company_url', 'address')
+            'fields': ('about', 'birth_date', 'gender', 'education_level', 'website_url', 'linkedin_url', 'spotify_playlist', 'company_name', 'company_url', 'address')
         }),
         ('Friends', {
             'fields': ('following', 'follower', 'friends')

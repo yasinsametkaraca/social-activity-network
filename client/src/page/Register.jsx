@@ -1,24 +1,30 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 import {Nav} from "../components";
 import {useAppContext} from "../context/useContext.jsx";
 import {Navigate, NavLink} from "react-router-dom";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
+import {GrValidate} from "react-icons/gr";
 
 const Register = () => {
     const navigate = useNavigate();
     const [eye, setEye] = useState(false);
     const [reEye, setReEye] = useState(false);
-    const {dark, user, autoFetch} = useAppContext();
+    const {dark, user, autoFetch, setNameAndToken} = useAppContext();
 
     const [loading, setLoading] = useState(false);
     const initState = {
         name: "",
         email: "",
+        username: "",
         password: "",
         rePassword: "",
-        secret: "",
+        first_name: "",
+        last_name: "",
+        secret_question: 1,
+        secret_answer: "",
+        role:"FRIEND",
     };
     const [state, setState] = useState(initState);
 
@@ -29,36 +35,47 @@ const Register = () => {
     const register = async () => {
         setLoading(true);
         try {
-            const {name, password, rePassword, secret} = state;
+            const {name, password, rePassword,first_name,last_name,  secret_question,secret_answer, role, username} = state;
             if (name.includes("admin")) {
                 toast.error(`Name cannot include "admin"`);
                 setLoading(false);
                 return;
             }
+            if (password !== rePassword) {
+                toast.error("Password and re-password not match!");
+                setLoading(false);
+                return;
+            }
             const email = state.email.toLowerCase();
-            const {data} = await autoFetch.post("/api/auth/register", {
+            const {data} = await autoFetch.post("/accounts/register", {
                 name,
                 email,
+                username,
                 password,
-                rePassword,
-                secret,
+                first_name,
+                last_name,
+                secret_question,
+                secret_answer,
+                role: "FRIEND"
             });
-            toast.success(data?.msg || "Register success!");
+            setNameAndToken(data.user, data.token);
+            toast.success("Register success!");
             setState(initState);
             setLoading(false);
-            setTimeout(() => {
-                navigate("/login");
-            }, 3000);
+            // setTimeout(() => {
+            //     navigate("/login");
+            // }, 3000);
         } catch (error) {
             setLoading(false);
             console.log(error);
-            toast.error(error?.response?.data?.msg || "Something went wrong!");
+            toast.error("Please Fill In The Required Fields!");
         }
     };
 
     if (user) {
         return <Navigate to='/' />;
     }
+    console.log(state.secret_question)
     return (
         <div>
             <Nav />
@@ -117,17 +134,34 @@ const Register = () => {
                             <div className='grid grid-cols-2 gap-x-2 md:gap-x-3 '>
                                 <div className='col-span-1'>
                                     <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
-                                        Name
+                                        First Name*
                                     </div>
                                     <input
                                         disabled={loading}
                                         type='text'
                                         className='input-register '
-                                        placeholder='Jack Frost'
-                                        name='name'
+                                        placeholder='Jack'
+                                        name='first_name'
                                         onChange={(e) => handleChangeInput(e)}
+                                        required
                                     />
                                 </div>
+                                <div className='col-span-1'>
+                                    <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
+                                        Last Name*
+                                    </div>
+                                    <input
+                                        disabled={loading}
+                                        type='text'
+                                        className='input-register '
+                                        placeholder='Frost'
+                                        name='last_name'
+                                        onChange={(e) => handleChangeInput(e)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className='grid grid-cols-2 gap-x-2 md:gap-x-3 mt-4'>
                                 <div className='col-span-1'>
                                     <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
                                         Email
@@ -136,9 +170,23 @@ const Register = () => {
                                         disabled={loading}
                                         type='email'
                                         className=' input-register'
-                                        placeholder='User@gmail.com'
+                                        placeholder='user@gmail.com'
                                         name='email'
                                         onChange={(e) => handleChangeInput(e)}
+                                    />
+                                </div>
+                                <div className='col-span-1'>
+                                    <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
+                                        Username*
+                                    </div>
+                                    <input
+                                        disabled={loading}
+                                        type='text'
+                                        className=' input-register'
+                                        placeholder='jackfrost'
+                                        name='username'
+                                        onChange={(e) => handleChangeInput(e)}
+                                        required={true}
                                     />
                                 </div>
                             </div>
@@ -147,7 +195,7 @@ const Register = () => {
                                 {/* Password */}
                                 <div className='col-span-1'>
                                     <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
-                                        Password
+                                        Password*
                                     </div>
                                     <div className='flex items-center relative'>
                                         <input
@@ -159,6 +207,7 @@ const Register = () => {
                                             onChange={(e) =>
                                                 handleChangeInput(e)
                                             }
+                                            required
                                         />
                                         {eye ? (
                                             <AiOutlineEye
@@ -176,7 +225,7 @@ const Register = () => {
                                 {/* Confirm password */}
                                 <div className='col-span-1'>
                                     <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
-                                        Confirm password
+                                        Confirm password*
                                     </div>
                                     <div className='flex items-center relative'>
                                         <input
@@ -188,6 +237,7 @@ const Register = () => {
                                             onChange={(e) =>
                                                 handleChangeInput(e)
                                             }
+                                            required={true}
                                         />
                                         {reEye ? (
                                             <AiOutlineEye
@@ -208,12 +258,14 @@ const Register = () => {
                                 {/* Question */}
                                 <div className='col-span-1'>
                                     <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
-                                        Question{" "}
+                                        Question*{" "}
                                         <span className='font-normal text-[14.5px] '>
                                             (use when reset password)
                                         </span>
                                     </div>
                                     <select
+                                        name='secret_question'
+                                        onChange={(e) => handleChangeInput(e)}
                                         className='appearance-none
                                                 md:h-[50px]
                                                 w-full
@@ -230,28 +282,29 @@ const Register = () => {
                                                 '
                                         aria-label='Default select example'>
                                         <option value={1}>
-                                            What is ur favorite color?
+                                            What is your favorite color?
                                         </option>
                                         <option value={2}>
-                                            Where are u born?
+                                            What is your favorite animal?
                                         </option>
                                         <option value={3}>
-                                            When was the last time you cried?
+                                            What is your favorite food?
                                         </option>
                                     </select>
                                 </div>
                                 {/* Answer */}
                                 <div className='col-span-1 mt-4 sm:mt-5 md:mt-0'>
                                     <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
-                                        Answer
+                                        Answer*
                                     </div>
                                     <input
                                         disabled={loading}
                                         type='text'
                                         className=' input-register '
                                         placeholder='Something...'
-                                        name='secret'
+                                        name='secret_answer'
                                         onChange={(e) => handleChangeInput(e)}
+                                        required={true}
                                     />
                                 </div>
                             </div>
@@ -272,7 +325,7 @@ const Register = () => {
 
                         <div className='mt-[8px] md:mt-[16px] text-[13px] md:text-[15px] text-center '>
                             <span className='block md:inline '>
-                                If u have an account,{" "}
+                                If you have an account,{" "}
                             </span>
                             <NavLink
                                 to='/login'

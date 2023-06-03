@@ -16,17 +16,22 @@ class MyUserAdmin(UserAdmin):
     list_filter = ('role', 'is_staff', 'is_superuser', 'is_active')
     search_fields = ('username', 'email')
     ordering = ('username',)
+
+    # Updated fieldsets to include secret_question and secret_answer
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'identification_number', 'email')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'is_active', 'role', 'groups', 'user_permissions')}),
+        ('Secret Information', {'fields': ('secret_question', 'secret_answer')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
+
+    # Updated add_fieldsets to include secret_question and secret_answer
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2', 'role', 'is_staff', 'is_superuser', 'is_active')}
+            'fields': ('username', 'email', 'password1', 'password2', 'role', 'is_staff', 'is_superuser', 'is_active', 'secret_question', 'secret_answer')}
          ),
     )
-    inlines = (ProfileInline,)
 
+    inlines = (ProfileInline,)
