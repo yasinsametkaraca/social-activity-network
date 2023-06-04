@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework.generics import ListAPIView
+from api.pagination import CustomPagination
 from .serializers import AdvertisementPostSerializer, AdvertisementGetSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Advertisement
@@ -7,6 +8,8 @@ from api.permissions import IsCompanyStaff
 
 
 class AdvertisementList(generics.ListCreateAPIView):
+    pagination_class = CustomPagination
+
     def get_queryset(self):
         if self.request.method == 'GET':
             category = self.request.GET.get('category')
@@ -57,4 +60,5 @@ class AdvertisementListByUsername(ListAPIView):
         username = self.kwargs['username']
         queryset = Advertisement.objects.get_advertisement_by_username(username)
         return queryset
+
 

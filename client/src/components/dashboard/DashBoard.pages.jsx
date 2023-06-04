@@ -20,6 +20,7 @@ const Dashboard = () => {
     const [page, setPage] = useState(1);
     const [activities, setActivities] = useState([]);
     const [error, setError] = useState(false);
+    const [advertisiment, setAdvertisiment] = useState({});
 
     const getAllActivities = async () => {
         setLoading(true);
@@ -47,12 +48,20 @@ const Dashboard = () => {
         }
     };
 
+    const getOneAdvertisement = async () => {
+        try {
+            const {data} = await autoFetch.get(`/advertisements/highlights}`);
+            setAdvertisiment(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <div className='overflow-x-hidden min-h-screen pt-16 md:pt-[85px]  '>
             <div className='w-screen grid grid-cols-11 md:gap-x-12 px-3 sm:px-7 md:px-10 relative '>
                 <div className='col-span-11 md:col-span-3 relative order-1 '>
                     {/*<Left autoFetch={autoFetch} dark={dark} />*/}
-
                 </div>
                 <div className='col-span-11 md:col-span-5 shrink-0 order-3 md:order-2 '>
                     <Center
