@@ -31,4 +31,3 @@ class AdvertisementConfirmation(models.Model):
 
     def __str__(self):
         return self.advertisement.title
-
