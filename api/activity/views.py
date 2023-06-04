@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.pagination import CustomPagination
-from api.permissions import CanChangeActivityParticipateStatus, IsActivityOwner
+from api.permissions import CanChangeActivityParticipateStatus, IsActivityOwner, IsFriend
 from .models import ActivityUser, Activity
 from .serializers import ActivitySerializer, ActivityCreateUpdateSerializer, ActivityUserSerializer
 from account.models import MyUser
@@ -33,7 +33,7 @@ class ActivityList(generics.ListCreateAPIView):
 
     def get_permissions(self):
         if self.request.method == 'POST':
-            self.permission_classes = (IsAuthenticated,)
+            self.permission_classes = (IsAuthenticated, IsFriend)
         else:
             self.permission_classes = (AllowAny,)
         return super().get_permissions()
@@ -61,7 +61,7 @@ class ActivityDetail(generics.UpdateAPIView, generics.DestroyAPIView, generics.R
 
 class ActivityUserList(generics.ListAPIView):
     serializer_class = ActivityUserSerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsFriend]
 
     def get_queryset(self):
         activity_id = self.kwargs['activity_id']  # Aktivite ID' sini URL parametresinden alıyoruz
@@ -74,7 +74,7 @@ class ActivityUserList(generics.ListAPIView):
 
 class ActivityJoin(generics.GenericAPIView):
     serializer_class = ActivityUserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsFriend]
 
     def get_queryset(self):
         return ActivityUser.objects.filter(activity_id=self.kwargs['activity_id'])
