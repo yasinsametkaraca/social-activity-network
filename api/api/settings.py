@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'confirmation',
     'comment',
     'advertisement',
+    'company',
     'dirtyfields',
     'corsheaders',
     'drf_yasg',

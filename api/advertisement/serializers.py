@@ -1,20 +1,30 @@
 from rest_framework import serializers
 from advertisement.models import Advertisement
 from address.serializers import AddressSerializer
+from company.models import Company
+from company.serializers import CompanyAdvertisementSerializer
 
 
 class AdvertisementGetSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
-    employer = serializers.StringRelatedField(read_only=True)
+    company = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Advertisement
-        exclude = ['confirm', ]
+        exclude = ['confirm', 'employer']
+
+    def get_company(self, obj):
+        employer = obj.employer
+        if employer:
+            company = Company.objects.filter(employer=employer).first()
+            if company:
+                return CompanyAdvertisementSerializer(company).data
+        return None
 
 
 class AdvertisementPostSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
-    employer = serializers.StringRelatedField(read_only=True)
+    company = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Advertisement

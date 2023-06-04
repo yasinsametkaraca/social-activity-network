@@ -43,6 +43,8 @@ class UserRegister(GenericAPIView):
             status=status.HTTP_201_CREATED)
 
 
+#class CompanyStaffRegister(GenericAPIView):
+
 class UserLogin(GenericAPIView):
     serializer_class = UserLoginSerializer
     authentication_classes = []
@@ -77,6 +79,7 @@ class UserLogout(GenericAPIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class UserAPI(RetrieveUpdateAPIView):  # Bir Kullanıcı bilgisini güncelleme ve görüntüleme
