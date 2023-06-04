@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework.generics import ListAPIView
+
 from api.pagination import CustomPagination
 from .serializers import AdvertisementPostSerializer, AdvertisementGetSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -62,3 +63,7 @@ class AdvertisementListByUsername(ListAPIView):
         return queryset
 
 
+class GetRandomAdvertisement(generics.ListAPIView):
+    queryset = Advertisement.objects.order_by('?')[:1]
+    serializer_class = AdvertisementGetSerializer
+    permission_classes = [IsAuthenticated]

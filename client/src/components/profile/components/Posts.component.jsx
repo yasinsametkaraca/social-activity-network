@@ -89,7 +89,7 @@ const Right = ({
         }
         return (
             <div className='text-center w-full text-4xl dark:bg-[#242526] py-5 rounded-lg '>
-                No post found
+                No activity found
             </div>
         );
     };

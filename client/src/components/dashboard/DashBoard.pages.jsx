@@ -3,7 +3,8 @@ import {useNavigate} from "react-router-dom";
 import Left from "./components/Weather.component.jsx";
 import Center from "./components/Main.component.jsx";
 import Right from "./components/Sugestion.component.jsx";
-import {useState} from "react";
+import { useState} from "react";
+import AdvertisementDetail from "../advertisement/AdvertisementDetail.jsx";
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Dashboard = () => {
     const [page, setPage] = useState(1);
     const [activities, setActivities] = useState([]);
     const [error, setError] = useState(false);
-    const [advertisiment, setAdvertisiment] = useState({});
+    const [advertisement, setAdvertisement] = useState();
 
     const getAllActivities = async () => {
         setLoading(true);
@@ -48,10 +49,10 @@ const Dashboard = () => {
         }
     };
 
-    const getOneAdvertisement = async () => {
+    const getHighlightAdvertisement = async () => {
         try {
-            const {data} = await autoFetch.get(`/advertisements/highlights}`);
-            setAdvertisiment(data);
+            const {data} = await autoFetch.get(`/advertisements/highlight/`);
+            setAdvertisement(...data);
         } catch (error) {
             console.log(error);
         }
@@ -62,6 +63,13 @@ const Dashboard = () => {
             <div className='w-screen grid grid-cols-11 md:gap-x-12 px-3 sm:px-7 md:px-10 relative '>
                 <div className='col-span-11 md:col-span-3 relative order-1 '>
                     {/*<Left autoFetch={autoFetch} dark={dark} />*/}
+                    <AdvertisementDetail
+                        autoFetch={autoFetch}
+                        dark={dark}
+                        advertisement={advertisement}
+                        setAdvertisement={setAdvertisement}
+                        getHighlightAdvertisement={getHighlightAdvertisement}
+                    ></AdvertisementDetail>
                 </div>
                 <div className='col-span-11 md:col-span-5 shrink-0 order-3 md:order-2 '>
                     <Center
