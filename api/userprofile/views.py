@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.permissions import IsFriend
+from api.permissions import IsFriend, IsCompanyStaff
 from .models import Profile
 from .serializers import ProfileDetailSerializer, ProfileAvatarSerializer, UserProfileSerializer, \
     ProfileAboutSerializer, ProfileSuggestionSerializer
@@ -18,7 +18,7 @@ from random import sample
 class ProfileList(ListAPIView):
     serializer_class = ProfileDetailSerializer
     queryset = Profile.objects.filter(user__is_superuser=False, user__is_staff=False, user__role='FRIEND')
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ]
 
 
 class UserProfileByUsername(RetrieveUpdateAPIView):
@@ -26,7 +26,7 @@ class UserProfileByUsername(RetrieveUpdateAPIView):
     queryset = Profile.objects.filter(user__role='FRIEND')
     lookup_field = 'user__username'
     lookup_url_kwarg = 'username'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -45,7 +45,7 @@ class UserProfileByUsername(RetrieveUpdateAPIView):
 
 
 class FollowAndUnfollowView(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsFriend)
 
     def post(self, request, username):
         my_profile = Profile.objects.get(user=request.user)
@@ -70,7 +70,7 @@ class FollowAndUnfollowView(APIView):
 
 
 class FollowerListAPIView(APIView):
-    permission_classes = [IsAuthenticated, IsFriend]
+    permission_classes = [IsAuthenticated, ]
 
     def get(self, request, username):
         user = get_object_or_404(MyUser, username=username)
@@ -88,7 +88,7 @@ class FollowerListAPIView(APIView):
 
 
 class FollowingListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ]
 
     def get(self, request, username):
         user = get_object_or_404(MyUser, username=username)
@@ -107,7 +107,7 @@ class FollowingListAPIView(APIView):
 
 class UserAboutAPIView(generics.UpdateAPIView):
     serializer_class = ProfileAboutSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def get_object(self):
         return self.request.user.profile
@@ -116,14 +116,14 @@ class UserAboutAPIView(generics.UpdateAPIView):
 class UserAvatarAPIView(RetrieveUpdateAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileAvatarSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def get_object(self):
         return self.request.user.profile
 
 
 class GetSuggestionProfiles(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
     serializer_class = ProfileSuggestionSerializer
 
     def get_queryset(self):
@@ -137,7 +137,7 @@ class GetSuggestionProfiles(generics.ListAPIView):
 
 
 class GetSearchProfiles(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
     serializer_class = ProfileSuggestionSerializer
 
     def get_queryset(self):
