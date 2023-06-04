@@ -32,7 +32,7 @@ class CommentList(generics.ListCreateAPIView):
 
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticated, CanCrudPrivateCommentDetail]
+    permission_classes = [permissions.IsAuthenticated, CanCrudPrivateCommentDetail, IsFriend]
     queryset = Comment.objects.all()
 
     def perform_update(self, serializer):

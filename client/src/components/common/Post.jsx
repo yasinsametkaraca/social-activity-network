@@ -198,15 +198,15 @@ const Post = ({
     const updateActivity = async () => {
         setLoadingEdit(true);
         try {
-            let image = imageEdit;
-            if (formData) {
-                image = await handleUpImageComment();
-                if (!image) {
-                    toast.error("Upload image fail. Try again!");
-                    setLoadingEdit(false);
-                    return;
-                }
-            }
+            // let image = imageEdit;
+            // if (formData) {
+            //     image = await handleUpImageComment();
+            //     if (!image) {
+            //         toast.error("Upload image fail. Try again!");
+            //         setLoadingEdit(false);
+            //         return;
+            //     }
+            // }
             const {data} = await autoFetch.patch(
                 `/activities/${currentActivity.id}/`,
                 {
@@ -218,7 +218,7 @@ const Post = ({
                     address: addressEdit,
                     category: categoryEdit,
                     activity_price: priceEdit,
-                    image,
+
                 }
             );
             setPost(data);

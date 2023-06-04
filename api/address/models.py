@@ -1,8 +1,6 @@
 from django.db import models
 
 
-
-
 class Address(models.Model):
     address_line1 = models.CharField(max_length=100, null=True, blank=True)
     address_line2 = models.CharField(max_length=100, null=True, blank=True)

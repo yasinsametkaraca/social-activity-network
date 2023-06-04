@@ -242,6 +242,16 @@ const Information = () => {
                     return;
                 }
             }
+            // let image = imageEdit;
+            // if (formData) {
+            //     image = await handleUpImageComment();
+            //     if (!image) {
+            //         toast.error("Upload image fail. Try again!");
+            //         setLoadingEdit(false);
+            //         return;
+            //     }
+            // }
+            q
             const {data} = await autoFetch.patch(
                 `/activities/${post.id}/`,
                 {
