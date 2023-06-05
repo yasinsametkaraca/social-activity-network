@@ -13,6 +13,7 @@ import {MdAdminPanelSettings} from "react-icons/md";
 // components
 import {useAppContext} from "../../context/useContext.jsx";
 import {FiLogOut} from "react-icons/fi";
+import {RiAdvertisementFill} from "react-icons/ri";
 
 export default function Dropdown() {
     const {logOut, dark, user} = useAppContext();
@@ -31,6 +32,12 @@ export default function Dropdown() {
             bgColor: "#26A69A",
             icon: <SiMessenger className='w-5 h-5 mr-2' aria-hidden='true' />,
             href: "/messenger",
+        },
+        {
+            text: "Advertisement",
+            bgColor: "#3d59cc",
+            icon: <RiAdvertisementFill className='w-5 h-5 mr-2' aria-hidden='true' />,
+            href: "/advertisement",
         },
     ];
 

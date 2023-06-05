@@ -17,7 +17,6 @@ class MyUserAdmin(UserAdmin):
     search_fields = ('username', 'email')
     ordering = ('username',)
 
-    # Updated fieldsets to include secret_question and secret_answer
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'identification_number', 'email')}),
@@ -26,7 +25,6 @@ class MyUserAdmin(UserAdmin):
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
-    # Updated add_fieldsets to include secret_question and secret_answer
     add_fieldsets = (
         (None, {
             'classes': ('wide',),

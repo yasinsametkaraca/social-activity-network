@@ -683,7 +683,6 @@ const Information = () => {
                             {imageComment && (
                                 <div className='relative '>
                                     <img
-                                        // @ts-ignore
                                         src={imageComment.url}
                                         alt='image_comment'
                                         className='h-20 w-auto object-contain '

@@ -12,7 +12,6 @@ import FollowingPage from "./components/Following.component.jsx";
 const Profile = () => {
     const navigate = useNavigate();
     const currentUsername = window.location.pathname.replace("/profile/", "");
-
     const {
         dark,
         autoFetch,

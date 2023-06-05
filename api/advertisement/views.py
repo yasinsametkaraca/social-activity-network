@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListAPIView
 
 from api.pagination import CustomPagination
@@ -40,18 +41,31 @@ class AdvertisementList(generics.ListCreateAPIView):
 
 
 class AdvertisementDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated, IsCompanyStaff]
-
-    def get_queryset(self):
-        return Advertisement.objects.get_advertisement_by_username(self.request.user.username)
+    queryset = Advertisement.objects.all()
 
     def perform_update(self, serializer):
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.instance
+        if instance.employer != self.request.user:
+            raise PermissionDenied("You do not have permission to update this advertisement.")
         serializer.save(employer=self.request.user)
+
+    def perform_destroy(self, instance):
+        if instance.employer != self.request.user:
+            raise PermissionDenied("You do not have permission to delete this advertisement.")
+        instance.delete()
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return AdvertisementGetSerializer
         return AdvertisementPostSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = (IsAuthenticated,)
+        else:
+            self.permission_classes = (IsAuthenticated, IsCompanyStaff)
+        return super().get_permissions()
 
 
 class AdvertisementListByUsername(ListAPIView):
@@ -67,3 +81,5 @@ class GetRandomAdvertisement(generics.ListAPIView):
     queryset = Advertisement.objects.order_by('?')[:1]
     serializer_class = AdvertisementGetSerializer
     permission_classes = [IsAuthenticated]
+
+

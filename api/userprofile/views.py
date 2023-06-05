@@ -6,10 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.permissions import IsFriend, IsCompanyStaff
+from api.permissions import IsFriend
 from .models import Profile
 from .serializers import ProfileDetailSerializer, ProfileAvatarSerializer, UserProfileSerializer, \
-    ProfileAboutSerializer, ProfileSuggestionSerializer
+    ProfileAboutSerializer, ProfileSuggestionSerializer, CompanyStaffProfileSerializer
 from account.models import MyUser
 from notification.models import Notification
 from random import sample
@@ -22,8 +22,7 @@ class ProfileList(ListAPIView):
 
 
 class UserProfileByUsername(RetrieveUpdateAPIView):
-    serializer_class = UserProfileSerializer
-    queryset = Profile.objects.filter(user__role='FRIEND')
+    queryset = Profile.objects.filter()
     lookup_field = 'user__username'
     lookup_url_kwarg = 'username'
     permission_classes = (IsAuthenticated, )
@@ -42,6 +41,11 @@ class UserProfileByUsername(RetrieveUpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+
+    def get_serializer_class(self):
+        if self.request.user.role == 'FRIEND':
+            return UserProfileSerializer
+        return CompanyStaffProfileSerializer
 
 
 class FollowAndUnfollowView(APIView):

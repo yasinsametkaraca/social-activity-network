@@ -1,8 +1,8 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from company.models import Company
 from company.serializers import CompanySerializer
 from .models import MyUser
 
@@ -31,23 +31,37 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return MyUser.objects.create_user(**validated_data)
 
 
-class CompanyStaffRegisterSerializer(serializers.ModelSerializer):
+class CompanyRegisterSerializer(serializers.ModelSerializer):
+    company = CompanySerializer()
 
     class Meta:
         model = MyUser
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'password', 'secret_question', 'secret_answer']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'password', 'secret_question', 'secret_answer', 'company']
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
     def create(self, validated_data):
         company_data = validated_data.pop('company')
-        company_serializer = CompanySerializer(data=company_data)
-        company_serializer.is_valid(raise_exception=True)
-        company_serializer.save()
-
         user = MyUser.objects.create_user(**validated_data)
+        company = Company.objects.create(employer=user, **company_data)
         return user
+
+    def update(self, instance, validated_data):
+        company_data = validated_data.pop('company')
+        company_serializer = self.fields['company']
+        company_instance = instance.company
+
+        if 'employer' in company_data:
+            del company_data['employer']
+
+        company_serializer.update(company_instance, company_data)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
 
 
 class UserLoginSerializer(serializers.Serializer):

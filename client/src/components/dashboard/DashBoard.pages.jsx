@@ -4,7 +4,7 @@ import Left from "./components/Weather.component.jsx";
 import Center from "./components/Main.component.jsx";
 import Right from "./components/Sugestion.component.jsx";
 import { useState} from "react";
-import AdvertisementDetail from "../advertisement/AdvertisementDetail.jsx";
+import AdvertisementItem from "../advertisement/AdvertisementItem.jsx";
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -21,7 +21,6 @@ const Dashboard = () => {
     const [page, setPage] = useState(1);
     const [activities, setActivities] = useState([]);
     const [error, setError] = useState(false);
-    const [advertisement, setAdvertisement] = useState();
 
     const getAllActivities = async () => {
         setLoading(true);
@@ -49,29 +48,18 @@ const Dashboard = () => {
         }
     };
 
-    const getHighlightAdvertisement = async () => {
-        try {
-            const {data} = await autoFetch.get(`/advertisements/highlight/`);
-            setAdvertisement(...data);
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     return (
-        <div className='overflow-x-hidden min-h-screen pt-16 md:pt-[85px]  '>
-            <div className='w-screen grid grid-cols-11 md:gap-x-12 px-3 sm:px-7 md:px-10 relative '>
+        <div className='overflow-x-hidden min-h-screen pt-16 md:pt-[85px]'>
+            <div className='w-screen grid grid-cols-11 md:gap-x-12 px-3 sm:px-7 md:px-10 relative'>
                 <div className='col-span-11 md:col-span-3 relative order-1 '>
                     {/*<Left autoFetch={autoFetch} dark={dark} />*/}
-                    <AdvertisementDetail
+                    <AdvertisementItem
                         autoFetch={autoFetch}
                         dark={dark}
-                        advertisement={advertisement}
-                        setAdvertisement={setAdvertisement}
-                        getHighlightAdvertisement={getHighlightAdvertisement}
-                    ></AdvertisementDetail>
+                    ></AdvertisementItem>
                 </div>
-                <div className='col-span-11 md:col-span-5 shrink-0 order-3 md:order-2 '>
+                <div className='col-span-11 md:col-span-5 shrink-0 order-3 md:order-2'>
                     <Center
                         autoFetch={autoFetch}
                         dark={dark}

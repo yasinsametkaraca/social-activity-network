@@ -86,9 +86,9 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     )
 
     QUESTION_CHOICES = (
-        (1, 'What is your favorite color?'),
-        (2, 'What is your favorite animal?'),
-        (3, 'What is your favorite food?'),
+        ("1", 'What is your favorite color?'),
+        ("2", 'What is your favorite animal?'),
+        ("3", 'What is your favorite food?'),
     )
     username = models.CharField(max_length=50, unique=True, blank=False, null=False)
     role = models.CharField(max_length=50, null=False, blank=True, choices=ROLE_CHOICES, default=FRIEND)

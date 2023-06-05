@@ -2,12 +2,11 @@ from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import MyUser
-from .serializers import UserSerializer, UserRegisterSerializer, UserLoginSerializer
+from .serializers import UserSerializer, UserRegisterSerializer, UserLoginSerializer, CompanyRegisterSerializer
 from rest_framework import status
 from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from api.permissions import IsFriend
 from api.serializers import CustomTokenObtainPairSerializer
 from userprofile.serializers import UserProfileSerializer
 
@@ -24,7 +23,7 @@ class UserRegister(GenericAPIView):
         if not request.data.get('role'):
             return Response({'error': 'Role field is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if request.data.get('role') == 'ADMIN' or request.data.get('role') == 'SYSTEM_STAFF' or request.data.get('is_superuser') or request.data.get('is_staff'):
+        if request.data.get('role') == 'ADMIN' or request.data.get('role') == 'SYSTEM_STAFF' or request.data.get('role') == 'COMPANY_STAFF' or request.data.get('is_superuser') or request.data.get('is_staff'):
             return Response({'error': 'You are not allowed to register with this role.'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.save(role=request.data.get('role'))
@@ -43,7 +42,34 @@ class UserRegister(GenericAPIView):
             status=status.HTTP_201_CREATED)
 
 
-#class CompanyStaffRegister(GenericAPIView):
+class CompanyRegister(GenericAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = CompanyRegisterSerializer
+    authentication_classes = []
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if not request.data.get('role'):
+            return Response({'error': 'Role field is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.data.get('role') == 'ADMIN' or request.data.get('role') == 'SYSTEM_STAFF' or request.data.get('role') == 'FRIEND' or request.data.get(
+                'is_superuser') or request.data.get('is_staff'):
+            return Response({'error': 'You are not allowed to register with this role.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = serializer.save(role=request.data.get('role'))
+        login(request, user)
+        token_serializer = CustomTokenObtainPairSerializer(data={
+            'username': user.username,
+            'role': user.role,
+            'id': user.id,
+            'password': request.data.get('password')
+        })
+        token_serializer.is_valid(raise_exception=True)
+        token = token_serializer.validated_data
+        return Response({'user': UserProfileSerializer(user.profile).data, 'token': token}, status=status.HTTP_201_CREATED)
+
 
 class UserLogin(GenericAPIView):
     serializer_class = UserLoginSerializer
@@ -57,7 +83,7 @@ class UserLogin(GenericAPIView):
         serializer = UserProfileSerializer(user.profile)     #  serializer = UserSerializer(user)
 
         token_serializer = CustomTokenObtainPairSerializer(data={
-                'username': user.username,
+            'username': user.username,
             'role': user.role,
             'id': user.id,
             'password': request.data.get('password')

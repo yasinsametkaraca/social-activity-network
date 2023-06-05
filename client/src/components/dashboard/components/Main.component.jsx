@@ -100,7 +100,12 @@ const Center = ({activities, loading, token, autoFetch, setOneState, dark, user,
             <InfiniteScroll
                 dataLength={activities?.length}
                 next={getNewActivities}
-                hasMore={true}
+                // hasMore={true}
+                endMessage={
+                    <p style={{ textAlign: 'center' }}>
+                        <b>You have seen it all</b>
+                    </p>
+                }
                 loader={<LoadingPost />}>
                 {activities.map((activity) => (
                     <Post

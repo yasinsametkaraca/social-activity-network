@@ -22,7 +22,7 @@ const Register = () => {
         rePassword: "",
         first_name: "",
         last_name: "",
-        secret_question: 1,
+        secret_question: "1",
         secret_answer: "",
         role:"FRIEND",
     };
@@ -281,13 +281,13 @@ const Register = () => {
                                                 dark:text-white/70
                                                 '
                                         aria-label='Default select example'>
-                                        <option value={1}>
+                                        <option value={"1"}>
                                             What is your favorite color?
                                         </option>
-                                        <option value={2}>
+                                        <option value={"2"}>
                                             What is your favorite animal?
                                         </option>
-                                        <option value={3}>
+                                        <option value={"3"}>
                                             What is your favorite food?
                                         </option>
                                     </select>

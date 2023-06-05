@@ -1,19 +1,16 @@
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { NavLink } from "react-router-dom";
-
 // icon
 import { AiFillHome, AiOutlineQrcode } from "react-icons/ai";
 import { BiSearchAlt } from "react-icons/bi";
 import { SiMessenger } from "react-icons/si";
-import { RiSpaceShipFill } from "react-icons/ri";
+import {RiAdvertisementFill, RiSpaceShipFill} from "react-icons/ri";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { BsFillSunFill, BsMoon } from "react-icons/bs";
-
 // components
 import { useAppContext } from "../../context/useContext.jsx";
 import { Dropdown, ItemsList } from "../";
-
-// hocks
+// hooks
 import useDebounce from "../../hooks/useDebounce";
 import useOnClickOutside from "../../hooks/useOnClickOutside";
 import ReactLoading from "react-loading";
@@ -80,10 +77,18 @@ const Nav = () => {
             {
                 text: "#26A69A",
                 hover: "#00897B",
-                bgAfter: "#26A69A",
+                bgAfter: "#c24269",
                 link: "/messenger",
                 icon: <SiMessenger className='text-[22px] ' />,
                 className: "messenger",
+            },
+            {
+                text: "#3d59cc",
+                hover: "#2645c7",
+                bgAfter: "#c24269",
+                link: "/advertisement",
+                icon: <RiAdvertisementFill className='text-[26px] p-0' />,
+                className: "advertisement",
             },
         ];
 

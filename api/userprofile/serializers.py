@@ -1,4 +1,7 @@
 from rest_framework import serializers
+
+from company.models import Company
+from company.serializers import CompanySerializer, CompanyAdvertisementSerializer
 from .models import Profile, Friendship
 from address.serializers import AddressSerializer
 from account.serializers import UserSerializer
@@ -122,3 +125,53 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class CompanyStaffProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email')
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+    identification_number = serializers.CharField(source='user.identification_number')
+    role = serializers.CharField(source='user.role', read_only=True)
+    follower = serializers.StringRelatedField(many=True, read_only=True)
+    company = serializers.SerializerMethodField(read_only=True)
+    following = serializers.StringRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = [
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'identification_number',
+            'role',
+            'avatar',
+            'about',
+            'birth_date',
+            'linkedin_url',
+            'website_url',
+            'friends',
+            'gender',
+            'education_level',
+            'created_at',
+            'last_modified_at',
+            'company_url',
+            'company_name',
+            'follower',
+            'following',
+            'spotify_playlist',
+            'company',
+        ]
+        extra_kwargs = {
+            'identification_number': {'write_only': True}
+        }
+
+    def get_company(self, obj):
+        employer = obj.user
+        if employer:
+            company = Company.objects.filter(employer=employer).first()
+            if company:
+                return CompanyAdvertisementSerializer(company).data
+        return None

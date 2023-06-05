@@ -41,6 +41,9 @@
     .messenger {
         @apply text-[#26A69A] hover:text-[#00897B] after:bg-[#26A69A];
     }
+    .advertisement {
+        @apply text-[#3d59cc] hover:text-[#2645c7] after:bg-[#2645c7];
+    }
     .admin {
         @apply text-[#607D8B] hover:text-[#455A64] after:bg-[#607D8B];
     }

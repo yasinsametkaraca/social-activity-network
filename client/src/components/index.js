@@ -27,8 +27,10 @@ import LoadingMessenger from "./loading/Loading.Messenger.jsx";
 import Messenger from "./messenger/messenger.pages.jsx";
 import Dashboard from "./dashboard/DashBoard.pages.jsx";
 import Profile from "./profile/Profile.pages.jsx";
+import Company from "./company/Company.pages.jsx";
 import Admin from "./admin/Admin.page.jsx";
 import Information from "./post/Information.pages.jsx";
+import Advertisement from "./advertisement/Advertisement.pages.jsx";
 
 // function
 import colorGeneration from "./common/colorGeneration.jsx";
@@ -64,4 +66,6 @@ export {
     colorGeneration,
     Admin,
     Information,
+    Advertisement,
+    Company,
 };
