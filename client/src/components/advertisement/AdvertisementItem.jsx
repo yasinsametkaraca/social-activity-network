@@ -43,7 +43,7 @@ const AdvertisementItem = ({dark, autoFetch, isAdvertisementList = false, advert
                         navigate(`/company/${advertisement?.company.employer}`);
                     }}>
                     <img
-                        src={`${advertisement?.image ? advertisement?.company?.company_logo: "/images/company.png"}`}
+                        src={`${advertisement?.company?.company_logo ? advertisement?.company?.company_logo: "/images/company.png"}`}
                         alt='advertisement company'
                         className='w-12 h-12 rounded-full'
                     />

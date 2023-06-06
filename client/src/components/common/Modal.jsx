@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {useAppContext} from "../../context/useContext.jsx";
 import {GiEarthAmerica} from "react-icons/gi";
 import {
@@ -37,6 +37,9 @@ const Modal = ({
     setStartDate = (event) => {},
     endDate = "",
     setEndDate = (event) => {},
+    advertisementUrl = "",
+    setAdvertisementUrl = (event) => {},
+    isAdvertisement = false,
 }) => {
     const {user} = useAppContext();
     const [image, setImage] = useState(imageEdit);
@@ -80,6 +83,7 @@ const Modal = ({
         setTotalPlayerCount("");
         setStartDate("");
         setEndDate("");
+        setAdvertisementUrl("")
         setOpenModal(false);
         setAttachment("");
         setFormData(null);
@@ -147,7 +151,7 @@ const Modal = ({
         );
     };
     return (
-        <div className='fixed flex items-center justify-center w-screen h-screen dark:bg-black/50 bg-white/50 z-[200] top-0 left-0 h-full'>
+        <div className='fixed flex items-center md:h-full justify-center w-screen h-screen dark:bg-black/50 bg-white/50 z-[200] top-0 left-0 h-full'>
             <div
                 className='z-[201] bg-none fixed w-full h-full top-0 right-0 '
                 onClick={() => {
@@ -155,7 +159,7 @@ const Modal = ({
                         setOpenModal(false);
                     }
                 }}></div>
-            <div className='mx-auto w-[90%] sm:w-[66%] md:w-[33%] bg-white dark:bg-[#242526] rounded-xl px-4 z-[202] box-shadow relative '>
+            <div className='mx-auto w-[98%] sm:w-[60%] md:w-[40%] md:h-[80%] bg-white dark:bg-[#242526] rounded-xl px-3 z-[202] box-shadow relative '>
                 <MdCancel
                     className='absolute top-4 right-6 text-[30px] opacity-50 hover:opacity-100 cursor-pointer transition-50 '
                     onClick={() => {
@@ -164,17 +168,17 @@ const Modal = ({
                 />
                 <div className='POST'>
                     <div className='font-extrabold py-4 text-xl text-center border-b-[1px] border-black/20 dark:border-white/20 '>
-                        {isEditPost ? "Edit activity" : "Create Activity"}
+                        {isEditPost ? `${isAdvertisement ? "Edit advertisement" : "Edit activity"}` : `${isAdvertisement ? "Create advertisement" : "Create activity"}`}
                     </div>
                     <div className='flex gap-x-2 py-4 items-center'>
                         <img
-                            src={`${user.avatar ? user.avatar : "/images/profile.png"}`}
+                            src={isAdvertisement ? `${user?.company?.company_logo ? user?.company?.company_logo : "/images/company.png"}` : `${user.avatar ? user.avatar : "/images/profile.png"}`}
                             alt='userImage'
                             className='w-10 h-10 rounded-full object-cover '
                         />
                         <div>
                             <div className='text-[15px] font-semibold '>
-                                {user?.username}
+                                {isAdvertisement ? user?.company?.name : user?.username}
                             </div>
                             <button className='px-2 py-1 flex gap-x-0.5 items-center text-[12px] bg-[#E4E6EB] dark:bg-[#3A3B3C] rounded-lg mt-0.5 font-semibold scrollbar scrollbar-thumb-sky-200 scrollbar-track-gray-100 '>
                                 <GiEarthAmerica className=' ' />
@@ -357,7 +361,23 @@ const Modal = ({
                             <option value={"Culture"}>{"Culture"}</option>
                         </select>
                     </div>
-
+                    {isAdvertisement &&
+                       <div className={"flex"}>
+                           <label htmlFor="advertisementUrl" className={`w-45 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Advertisement URL</label>
+                             <textarea
+                                 id={"advertisementUrl"}
+                                 value={advertisementUrl}
+                                 className={`input-modal style-3 w-[78.5%] bg-inherit focus:ring-0 border-0 placeholder:text-[#a0a0a1] ${
+                                     address.country?.length > 40 || attachment
+                                         ? "text-[11px] "
+                                         : "text-[17px]"
+                                 } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
+                                 onChange={(e) => {
+                                     setAdvertisementUrl(e.target.value);
+                                 }}
+                             />
+                         </div>
+                    }
                     {attachment && (
                         <div className='relative flex w-full h-[200px] p-2 rounded-md border dark:border-white/20 group '>
                             {uploadImage()}
@@ -366,7 +386,7 @@ const Modal = ({
                     {!attachment && (
                         <div className='flex items-center justify-between px-4 mt-3 border rounded-md dark:border-white/20 border-black/20 '>
                             <div className='text-[15px] font-semibold '>
-                                Add to your activity
+                                Add to your {isAdvertisement ? "advertisement" : "activity"}
                             </div>
                             <div className='flex gap-x-4 items-center py-2  '>
                                 <div

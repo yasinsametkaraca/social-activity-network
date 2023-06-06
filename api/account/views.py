@@ -8,7 +8,7 @@ from django.contrib.auth import login
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from api.serializers import CustomTokenObtainPairSerializer
-from userprofile.serializers import UserProfileSerializer
+from userprofile.serializers import UserProfileSerializer, CompanyStaffProfileSerializer
 
 
 class UserRegister(GenericAPIView):
@@ -59,6 +59,7 @@ class CompanyRegister(GenericAPIView):
             return Response({'error': 'You are not allowed to register with this role.'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.save(role=request.data.get('role'))
+
         login(request, user)
         token_serializer = CustomTokenObtainPairSerializer(data={
             'username': user.username,
@@ -68,7 +69,7 @@ class CompanyRegister(GenericAPIView):
         })
         token_serializer.is_valid(raise_exception=True)
         token = token_serializer.validated_data
-        return Response({'user': UserProfileSerializer(user.profile).data, 'token': token}, status=status.HTTP_201_CREATED)
+        return Response({'user': CompanyStaffProfileSerializer(user.profile).data, 'token': token}, status=status.HTTP_201_CREATED)
 
 
 class UserLogin(GenericAPIView):
@@ -80,8 +81,11 @@ class UserLogin(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-        serializer = UserProfileSerializer(user.profile)     #  serializer = UserSerializer(user)
-
+        print(user.role)
+        if user.role == 'FRIEND':
+            serializer = UserProfileSerializer(user.profile)     #  serializer = UserSerializer(user)
+        else:
+            serializer = CompanyStaffProfileSerializer(user.profile)
         token_serializer = CustomTokenObtainPairSerializer(data={
             'username': user.username,
             'role': user.role,

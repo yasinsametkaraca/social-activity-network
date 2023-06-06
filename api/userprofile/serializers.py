@@ -175,3 +175,26 @@ class CompanyStaffProfileSerializer(serializers.ModelSerializer):
             if company:
                 return CompanyAdvertisementSerializer(company).data
         return None
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        user = instance.user
+
+        user.email = user_data.get('email', user.email)
+        user.first_name = user_data.get('first_name', user.first_name)
+        user.last_name = user_data.get('last_name', user.last_name)
+        user.identification_number = user_data.get('identification_number', user.identification_number)
+        user.save()
+
+        # TODO instance.about = validated_data.get('about', instance.about)
+        instance.birth_date = validated_data.get('birth_date', instance.birth_date)
+        instance.linkedin_url = validated_data.get('linkedin_url', instance.linkedin_url)
+        instance.website_url = validated_data.get('website_url', instance.website_url)
+        instance.gender = validated_data.get('gender', instance.gender)
+        instance.education_level = validated_data.get('education_level', instance.education_level)
+        instance.spotify_playlist = validated_data.get('spotify_playlist', instance.spotify_playlist)
+        instance.company_url = validated_data.get('company_url', instance.company_url)
+        instance.company_name = validated_data.get('company_name', instance.company_name)
+
+        instance.save()
+        return instance

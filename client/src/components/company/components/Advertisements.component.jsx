@@ -16,8 +16,8 @@ const Right = ({
                    setAdvertisements,
                    getDeletePostId,
                }) => {
-    const [title, setTitle] = useState("");
 
+    const [title, setTitle] = useState("");
     const [attachment, setAttachment] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const [loadingcreateNewAdvertisement, setLoadingcreateNewAdvertisement] = useState(false);
@@ -33,6 +33,8 @@ const Right = ({
     });
     const [category, setCategory] = useState("");
     const [price, setPrice] = useState();
+    const [advertisementUrl, setAdvertisementUrl] = useState("");
+
 
     useEffect(() => {
         setOneState("openModal", openModal);
@@ -58,13 +60,15 @@ const Right = ({
                 description: description,
                 address: address,
                 category: category,
-                activity_price: price,
+                advertisement_price: price,
                 start_date: startDate,
                 end_date: endDate,
-                total_player_count: totalPlayerCount,
+                total_user_count: totalPlayerCount,
                 image: formData ? formData : null,
+                advertisement_url: advertisementUrl,
+                advertisement_company: user?.company?.name,
             });
-            setAdvertisements([data, ...advertisements]);
+            toast.success("Your ad will be approved by the system staff.!");
         } catch (error) {
             toast.error("Something went wrong. Try again!");
         }
@@ -100,14 +104,8 @@ const Right = ({
                 setAttachment={setAttachment}
                 setOpenModal={setOpenModal}
                 title={title}
-                description={description}
-                totalPlayerCount={totalPlayerCount}
-                startDate={startDate}
-                endDate={endDate}
-                address={address}
-                category={category}
-                price={price}
                 user={user}
+                isAdvertisement={true}
             />
         );
     };
@@ -136,6 +134,9 @@ const Right = ({
                     attachment={attachment}
                     setAttachment={setAttachment}
                     createNewActivity={createNewAdvertisement}
+                    isAdvertisement={true}
+                    advertisementUrl={advertisementUrl}
+                    setAdvertisementUrl={setAdvertisementUrl}
                 />
             )}
 

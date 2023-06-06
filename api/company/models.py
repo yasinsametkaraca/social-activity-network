@@ -12,7 +12,7 @@ def company_file_directory_path(self, filename):
 
 class Company(models.Model):
 
-    employer = models.ForeignKey('account.MyUser', on_delete=models.CASCADE)
+    employer = models.OneToOneField('account.MyUser', on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=False, null=False, unique=True)
     description = models.TextField(blank=True, null=True)
     address = models.OneToOneField('address.Address', on_delete=models.CASCADE, blank=True, null=True)

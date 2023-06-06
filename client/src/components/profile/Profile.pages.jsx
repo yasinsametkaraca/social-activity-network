@@ -122,6 +122,7 @@ const Profile = () => {
                         dark={dark}
                         profileLoading={loading}
                         postLoading={postLoading}
+                        setUser={setUser}
                     />
                 </div>
                 <div className='col-span-3 '>

@@ -61,7 +61,7 @@ const Center = ({activities, loading, token, autoFetch, setOneState, dark, user,
                 total_player_count: totalPlayerCount,
                 image: formData ? formData : null,
             });
-            setActivities([data, ...activities]);
+            toast.success("Your activity will be approved by the system staff.!");
         } catch (error) {
             toast.error("Error...");
         }
@@ -100,7 +100,7 @@ const Center = ({activities, loading, token, autoFetch, setOneState, dark, user,
             <InfiniteScroll
                 dataLength={activities?.length}
                 next={getNewActivities}
-                // hasMore={true}
+                hasMore={true}
                 endMessage={
                     <p style={{ textAlign: 'center' }}>
                         <b>You have seen it all</b>
@@ -126,21 +126,18 @@ const Center = ({activities, loading, token, autoFetch, setOneState, dark, user,
             return <>{error}</>;
         }
         if (loading) return <LoadingForm />;
-        return (
-            <FormCreatePost
-                setAttachment={setAttachment}
-                setOpenModal={setOpenModal}
-                title={title}
-                description={description}
-                totalPlayerCount={totalPlayerCount}
-                startDate={startDate}
-                endDate={endDate}
-                address={address}
-                category={category}
-                price={price}
-                user={user}
-            />
-        );
+
+        if(user?.role === 'FRIEND'){
+            return (
+                <FormCreatePost
+                    setAttachment={setAttachment}
+                    setOpenModal={setOpenModal}
+                    title={title}
+                    user={user}
+                    isAdvertisement={user?.role === 'COMPANY_STAFF'}
+                />
+            );
+        }
     };
 
     return (
@@ -169,6 +166,7 @@ const Center = ({activities, loading, token, autoFetch, setOneState, dark, user,
                     attachment={attachment}
                     setAttachment={setAttachment}
                     createNewActivity={createNewActivity}
+                    isAdvertisement={false}
                 />
             )}
             {loadingCreateNewActivity && <LoadingPost className='mb-4' />}

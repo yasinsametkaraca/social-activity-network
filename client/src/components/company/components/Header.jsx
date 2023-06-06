@@ -58,18 +58,20 @@ const Header = ({
                 />
                 <div className='flex flex-col sm:flex-row w-full justify-between items-center sm:items-end pt-4 translate-y-[-32px] sm:translate-y-[0] '>
                     <div>
-                        <div className='flex justify-center'>
+                        <div className='flex justify-start  max-sm:justify-center '>
                             <div className='text-[32px] font-bold md:flex items-center gap-x-1 '>
                                 <div className='text-center flex items-center justify-center '>
-                                    {user?.company?.name}
-                                    {user?.role === "ADMIN" && (
+                                    {user?.company?.name}{" "}
+                                    {user?.role === "COMPANY_STAFF" && (
                                         <TiTick className='text-[20px] text-white rounded-full bg-sky-500 ' />
                                     )}
                                 </div>
-                                <div className='ml-1.5 font-normal text-xl md:text-[28px] flex-shrink-0 '>
-                                    {/*({user?.username})*/}
-                                </div>
                             </div>
+                        </div>
+                        <div className='font-normal md:text-[18px] flex-shrink-0 '>
+                            {user?.first_name && user?.last_name &&
+                                `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1)} ${user.last_name.charAt(0).toUpperCase()}${user.last_name.slice(1)}`
+                            }
                         </div>
                     </div>
                     <div className='flex mt-4 sm:mt-0 flex-shrink-0 '>

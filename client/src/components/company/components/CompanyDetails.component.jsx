@@ -1,27 +1,21 @@
 import {useState} from "react";
 import ReactLoading from "react-loading";
 import {LoadingIntro, LoadingImage} from "../..";
-import {AiOutlineLinkedin} from "react-icons/ai";
+import {AiOutlineMail, AiOutlinePhone} from "react-icons/ai";
+import {CgWebsite} from "react-icons/cg";
 
-import {FaUniversity} from "react-icons/fa";
-import {AiOutlineInstagram} from "react-icons/ai";
-import {BsGenderFemale, BsGenderMale} from "react-icons/bs";
-import moment from "moment";
-import {RiCake2Line, RiSpotifyLine} from "react-icons/ri";
-
-const Left = ({
-    user,
-    images,
-    navigate,
-    own,
-    autoFetch,
-    dark,
-    profileLoading,
-    postLoading,
-    setUser
-}) => {
+const Left = ({user,
+              images,
+              navigate,
+              own,
+              autoFetch,
+              dark,
+              profileLoading,
+              postLoading,
+              setUser,
+              }) => {
     const [editBio, setEditBio] = useState(false);
-    const [textBio, setTextBio] = useState(user?.about || "");
+    const [textDescription, setTextDescription] = useState(user?.company?.description);
     const [loading, setLoading] = useState(false);
     const rounded = [0, 2, images.length - (images.length % 3 || 3), images.length % 3 === 0 ? images.length - 1 : 99999999,];
     const positionRounded = ["tl", "tr", "bl", "br"];
@@ -29,10 +23,10 @@ const Left = ({
     const updateUser = async () => {
         setLoading(true);
         try {
-            await autoFetch.patch(`/profiles/about/`, {
-                about: textBio || "",
+            await autoFetch.patch(`/companies/`, {
+                description: textDescription || "",
             });
-            setUser({...user, about: textBio})
+            setUser({...user, company: {...user.company, description: textDescription}});
         } catch (error) {
             console.log(error);
         }
@@ -40,14 +34,13 @@ const Left = ({
     };
 
     const handleSubmitBio = () => {
-        if (!textBio) {
+        if (!textDescription) {
             setEditBio(false);
         }
         updateUser();
         setEditBio(false);
     };
 
-    const formattedDate = moment(user.birth_date).format('DD.MM.YYYY');
 
     const about = () => {
         if (editBio) {
@@ -60,11 +53,11 @@ const Left = ({
                     }}>
                     <textarea
                         autoFocus
-                        value={textBio}
+                        value={textDescription}
                         className='bg-inherit border-[1px] rounded-lg px-4 py-2 w-[70%] my-3 '
-                        placeholder='Type your bio... '
+                        placeholder='Type your description... '
                         onChange={(e) => {
-                            setTextBio(e.target.value);
+                            setTextDescription(e.target.value);
                         }}
                     />
                     <div className='flex gap-x-1.5 '>
@@ -77,7 +70,7 @@ const Left = ({
                             className=' w-[80px] bg-red-300 hover:text-white dark:bg-red-800 rounded-lg hover:bg-red-600 transition-50 '
                             onClick={() => {
                                 setEditBio(false);
-                                setTextBio(user?.about);
+                                setTextDescription(user?.company?.description);
                             }}
                             type='reset'>
                             Cancel
@@ -91,9 +84,9 @@ const Left = ({
                 className={`text-center mt-4 px-[20%] text-[15px] flex items-center justify-center gap-x-1 ${
                     loading && "opacity-60"
                 } `}>
-                {textBio ||
-                    user?.about ||
-                    "This user is very nice but don't leave any trace! "}
+                {textDescription ||
+                    user?.company?.description ||
+                    "This company is very nice but don't leave any trace! "}
                 <div className={`${!loading && "hidden"}`}>
                     <ReactLoading
                         type='bubbles'
@@ -116,7 +109,7 @@ const Left = ({
                     !dark ? "shadow-post" : ""
                 } `}>
                 <div className='text-2xl font-extrabold dark:text-[#e4e6eb] '>
-                    Intro
+                    Company
                 </div>
                 {about()}
                 {user?.username === own?.username && !editBio && (
@@ -124,73 +117,45 @@ const Left = ({
                         className='mt-3 py-2 w-full bg-[#afb1b5]/30 hover:bg-[#afb1b5]/50 dark:bg-[#4E4F50]/50 dark:hover:bg-[#4E4F50] transition-20 rounded-md font-semibold '
                         onClick={() => {
                             setEditBio(true);
-                            setTextBio(user?.about);
+                            setTextDescription(user?.company?.description)
                         }}
                         disabled={loading}>
-                        Edit Biography
+                        Edit Description
                     </button>
                 )}
+
                 <div className='mt-5 flex gap-x-2 items-center flex-col'>
                     {
-                        user?.education_level && (
+                        user?.company?.company_mail && (
                             <div className="flex flex-col items-center mb-7 justify-center">
-                                <FaUniversity className="text-3xl" />
+                                <AiOutlineMail className="text-3xl" />
                                 <div className="text-xs">
                                     <strong>
-                                        {user.education_level === "ES" ? "Elementary School" :
-                                            user.education_level === "MS" ? "Middle School" :
-                                                user.education_level === "HS" ? "High School" :
-                                                    user.education_level === "AD" ? "Associate's Degree" :
-                                                        user.education_level === "BD" ? "Bachelor's Degree" :
-                                                            user.education_level === "MD" ? "Master's Degree" :
-                                                                user.education_level === "PhD" ? "Doctorate or PhD" : ""}
+                                        <a href={`mailto:${user?.company?.company_mail}`}>
+                                            {user?.company?.company_mail}
+                                        </a>
                                     </strong>
                                 </div>
                             </div>
                         )
                     }
                     {
-                        user?.gender && (
+                        user?.company?.company_phone && (
                             <div className="flex flex-col items-center mb-7 justify-center">
-                                {user?.gender==="M" ? <BsGenderMale className="text-3xl" /> : <BsGenderFemale className="text-3xl" />}
+                                <AiOutlinePhone className="text-3xl" />
                                 <div className="text-xs">
-                                    <strong>
-                                        {user.gender === "M" ? "Male" :
-                                            user.gender === "F" ? "Female" : ""}
-                                    </strong>
+                                    <a href={`tel:${user?.company?.company_phone}`}>
+                                        <strong>{user?.company?.company_phone}</strong>
+                                    </a>
                                 </div>
                             </div>
                         )
                     }
-                    {user?.birth_date &&
+                    {user?.company?.company_url &&
                         <div className={"flex flex-col mb-7 items-center justify-center"}>
-                            <RiCake2Line className='text-3xl'/>
-                            <div className='text-xs'>
-                                <strong>{formattedDate}</strong>
-                            </div>
-                        </div>
-                    }
-                    {user?.linkedin_url &&
-                        <div className={"flex flex-col mb-7 items-center justify-center"}>
-                            <a href={user?.linkedin_url} target="_blank" rel="noopener noreferrer"><AiOutlineLinkedin className='text-3xl'/></a>
+                            <a href={user?.company?.company_url} target="_blank" rel="noopener noreferrer"><CgWebsite className='text-3xl'/></a>
                             <div className='text-xs' >
-                                <strong><a href={user?.linkedin_url} target="_blank" rel="noopener noreferrer">Linkedin Account</a></strong>
-                            </div>
-                        </div>
-                    }
-                    {user?.website_url &&
-                        <div className={"flex flex-col mb-7 items-center justify-center"}>
-                            <a href={user?.website_url} target="_blank" rel="noopener noreferrer"><AiOutlineInstagram className='text-3xl'/></a>
-                            <div className='text-xs'>
-                                <strong><a href={user?.website_url} target="_blank" rel="noopener noreferrer">Instagram Account</a></strong>
-                            </div>
-                        </div>
-                    }
-                    {user?.spotify_playlist &&
-                        <div className={"flex flex-col mb-7 items-center justify-center"}>
-                            <a href={user?.spotify_playlist} target="_blank" rel="noopener noreferrer"><RiSpotifyLine className='text-3xl'/></a>
-                            <div className='text-xs'>
-                                <strong><a href={user?.spotify_playlist} target="_blank" rel="noopener noreferrer">Spotify Playlist</a></strong>
+                                <strong><a href={user?.company?.company_url} target="_blank" rel="noopener noreferrer">Company URL</a></strong>
                             </div>
                         </div>
                     }
@@ -231,10 +196,10 @@ const Left = ({
                                     className={`w-full h-full absolute top-0 left-0 object-cover ${
                                         rounded.includes(k)
                                             ? `rounded-${
-                                                  positionRounded[
-                                                      rounded.indexOf(k)
-                                                  ]
-                                              }-lg`
+                                                positionRounded[
+                                                    rounded.indexOf(k)
+                                                    ]
+                                            }-lg`
                                             : ""
                                     } `}
                                 />

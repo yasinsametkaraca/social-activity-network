@@ -72,3 +72,8 @@ class CanCrudPrivateCommentDetail(BasePermission):  # sadece o aktiviteye katıl
         if obj.is_public:
             return True
         return request.user in obj.activity.activity_user.filter(activityuser__participate_status="Accepted")
+
+
+class IsCompanyEmployer(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.employer == request.user

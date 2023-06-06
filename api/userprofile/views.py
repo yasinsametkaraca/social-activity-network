@@ -43,7 +43,8 @@ class UserProfileByUsername(RetrieveUpdateAPIView):
         return Response(serializer.data)
 
     def get_serializer_class(self):
-        if self.request.user.role == 'FRIEND':
+        profile = self.get_object()
+        if profile.user.role == 'FRIEND':
             return UserProfileSerializer
         return CompanyStaffProfileSerializer
 

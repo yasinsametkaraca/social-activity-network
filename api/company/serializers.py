@@ -15,4 +15,4 @@ class CompanyAdvertisementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ['name', 'company_logo', 'company_url', 'employer', 'company_mail', 'company_phone']
+        fields = ['name', 'company_logo', 'company_url', 'employer', 'company_mail', 'company_phone', 'address', 'description']

@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useAppContext} from "../../context/useContext.jsx";
 import {useEffect, useState} from "react";
-import Left from "../profile/components/Details.component.jsx";
+import Left from "../company/components/CompanyDetails.component.jsx";
 import Right from "../company/components/Advertisements.component.jsx";
 import Header from "../company/components/Header.jsx";
 import {LoadingProfile} from "../index.js";
@@ -42,6 +42,7 @@ const Company = () => {
         setLoading(false);
     };
 
+
     const getAdvertisementWithUsername = async (username) => {
         setPostLoading(true);
         try {
@@ -49,7 +50,6 @@ const Company = () => {
                 `/advertisements/${username}/`
             );
             setAdvertisements(data);
-
         } catch (error) {
             console.log(error);
         }
@@ -73,7 +73,6 @@ const Company = () => {
         setAdvertisements(newPosts);
     };
 
-    console.log(advertisements)
 
     return (
         <div className='min-h-screen w-[99.5vw] overflow-x-hidden pb-7 '>
@@ -94,6 +93,7 @@ const Company = () => {
                     <div className='col-span-2'>
                         <Left
                             user={user}
+                            setUser={setUser}
                             own={own}
                             images={images}
                             navigate={navigate}

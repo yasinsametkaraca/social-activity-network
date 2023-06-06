@@ -3,9 +3,9 @@ import {MdPhoto} from "react-icons/md";
 import {toast} from "react-toastify";
 import {useAppContext} from "../../context/useContext.jsx";
 
-const FormCreatePost = ({user, setOpenModal, setAttachment, title ,description, totalPlayerCount, startDate, endDate, address, category, price }) => {
+const FormCreatePost = ({user, setOpenModal, setAttachment, title, isAdvertisement = false }) => {
     const {dark} = useAppContext();
-    const imageUrl =`${user.avatar ? user.avatar : "/images/profile.png"}`
+    const imageUrl = isAdvertisement ? `${user?.company?.company_logo ? user?.company?.company_logo : "/images/company.png"}` : `${user.avatar ? user.avatar : "/images/profile.png"}`
 
     return (
         <div
@@ -23,8 +23,8 @@ const FormCreatePost = ({user, setOpenModal, setAttachment, title ,description, 
                     onClick={() => {
                         setOpenModal(true);
                     }}>
-                    <div className='mr-2 overflow-hidden  text-overflow-ellipsis'>
-                        {title || `What activity would you like to do today?, ${user.username}?`}
+                    <div className='mr-2 overflow-hidden text-[15px]  text-overflow-ellipsis'>
+                        {title || `What ${isAdvertisement ? "advertisement" : "activity" } would you like to do today?, ${user.username}?`}
                     </div>
                 </div>
             </div>

@@ -102,14 +102,8 @@ const Right = ({
                 setAttachment={setAttachment}
                 setOpenModal={setOpenModal}
                 title={title}
-                description={description}
-                totalPlayerCount={totalPlayerCount}
-                startDate={startDate}
-                endDate={endDate}
-                address={address}
-                category={category}
-                price={price}
                 user={user}
+                isAdvertisement={user?.role === 'COMPANY_STAFF'}
             />
         );
     };

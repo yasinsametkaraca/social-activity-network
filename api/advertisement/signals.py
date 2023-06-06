@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 from confirmation.models import AdvertisementConfirmation
 from advertisement.models import Advertisement
@@ -32,3 +32,9 @@ def update_advertisement_confirmation(sender, instance, **kwargs):
         post_save.disconnect(update_advertisement_status, sender=AdvertisementConfirmation)
         AdvertisementConfirmation.objects.create(advertisement=instance, confirm_status=False, confirm_type='Create')
         post_save.connect(update_advertisement_status, sender=AdvertisementConfirmation)
+
+
+@receiver(post_delete, sender=Advertisement)
+def delete_related_address(sender, instance, **kwargs):
+    if instance.address:
+        instance.address.delete()
