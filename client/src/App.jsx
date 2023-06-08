@@ -13,7 +13,7 @@ import {
 } from "./page/index.jsx";
 // layout
 import {Dashboard, Messenger, Admin, Advertisement, AdvertisementDetail} from "./page/Layout/index.jsx";
-import {Profile, UpdateProfile, Company} from "./page/user/index.jsx";
+import {Profile, UpdateProfile, Company, UpdateCompany} from "./page/user/index.jsx";
 import {Information} from "./page/Post/index.jsx";
 // modal qrCode
 import {ModalQrCode} from "./components";
@@ -63,6 +63,10 @@ const App = () => {
                         <Route
                             path='/update-profile'
                             element={<UpdateProfile />}
+                        />
+                        <Route
+                            path='/update-company'
+                            element={<UpdateCompany />}
                         />
                         <Route path='/company/*' element={<Company />} />
                         <Route

@@ -366,7 +366,7 @@ const Comment = ({
                     alt='own_avt_cmt'
                     className='z-10 object-cover w-10 h-10 rounded-full cursor-pointer '
                     onClick={() => {
-                        navigate(`/profile/${comment.owner_id}`);
+                        navigate(`/profile/${comment.owner_username}`);
                     }}
                 />
                 <div
@@ -379,7 +379,7 @@ const Comment = ({
                                 className='font-bold text-[18px] text-[#050505] dark:text-[#e4e6eb] flex items-center gap-x-1 cursor-pointer '
                                 onClick={() => {
                                     navigate(
-                                        `/profile/${comment.owner_id}`
+                                        `/profile/${comment.owner_username}`
                                     );
                                 }}>
                                 {comment?.owner_username}

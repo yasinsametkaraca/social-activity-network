@@ -62,7 +62,7 @@ const Modal = ({
                 setFormData(formData);
             }
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong");
         }
         setLoading(false);
     };
@@ -250,6 +250,8 @@ const Modal = ({
                             placeholder={`Start Date`}
                             onChange={(e) => {
                                 setStartDate(e.target.value);
+                                console.log("e", e.target.value)
+                                console.log("startDate", startDate)
                             }}
                         />
                     </div>

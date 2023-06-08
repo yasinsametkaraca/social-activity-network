@@ -50,6 +50,7 @@ const Information = () => {
     const [attachment, setAttachment] = useState(
         post?.image ? "photo" : ""
     );
+    const [activityStatus, setActivityStatus] = useState(post?.activity_status);
 
     useEffect(() => {
         getCurrentPost(currentActivityId);
@@ -121,8 +122,8 @@ const Information = () => {
             setAddressEdit(data.address);
             setCategoryEdit(data.category);
             setPriceEdit(data.activity_price);
+            setActivityStatus(data.activity_status);
         } catch (error) {
-            console.log(error);
             setLoading(false);
         }
     };
@@ -242,16 +243,6 @@ const Information = () => {
                     return;
                 }
             }
-            // let image = imageEdit;
-            // if (formData) {
-            //     image = await handleUpImageComment();
-            //     if (!image) {
-            //         toast.error("Upload image fail. Try again!");
-            //         setLoadingEdit(false);
-            //         return;
-            //     }
-            // }
-            q
             const {data} = await autoFetch.patch(
                 `/activities/${post.id}/`,
                 {
@@ -263,7 +254,6 @@ const Information = () => {
                     address: addressEdit,
                     category: categoryEdit,
                     activity_price: priceEdit,
-
                 }
             );
             setPost(data);
@@ -276,7 +266,7 @@ const Information = () => {
             setAddressEdit(data.address);
             setCategoryEdit(data.category);
             setPriceEdit(data.activity_price);
-
+            setActivityStatus(data.activity_status);
             if (data.post.image) {
                 setAttachment("photo");
             }
@@ -384,7 +374,7 @@ const Information = () => {
                             <div className='text-[16px] '>
                                 {post?.category}
                             </div>
-                            {(post?.owner === user?.username) ? (
+                            {(post?.owner === user?.username) && activityStatus === true ? (
                                 <div
                                     className='ml-2 text-[25px] transition-50 cursor-pointer font-bold w-[35px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative '
                                     onClick={() => {
@@ -422,15 +412,22 @@ const Information = () => {
                                 </div>
                             ) : (
                                 <>
-                                    <button
-                                        className={`mr-0 ml-2 text-[14px] transition-50 cursor-pointer font-bold w-[80px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative ${post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected') ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}`}
-                                        onClick={() => joinActivity(post.id)}
-                                        disabled={post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected')}
-                                    >
-                                        {post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Accepted') ? 'Joined' : (post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Wait-listed') ? 'Requested' : 'Join')}
-                                    </button>
+                                    {activityStatus === true &&
+                                        <button
+                                            className={`mr-0 ml-2 text-[14px] transition-50 cursor-pointer font-bold w-[80px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative ${post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected') ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}`}
+                                            onClick={() => joinActivity(post.id)}
+                                            disabled={post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected')}
+                                        >
+                                            {post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Accepted') ? 'Joined' : (post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Wait-listed') ? 'Requested' : 'Join')}
+                                        </button>
+                                    }
                                 </>
                             )}
+                            {activityStatus === false &&
+                                <div className='flex text-[15px]'>
+                                    <span className={`text-red-500 ${post?.owner===user?.username ? "text-base mb-1" : "text-xs"}`}>{post?.owner===user?.username ? "Waiting for approval" : "Waiting for activity updating"}</span>
+                                </div>
+                            }
                         </div>
                         <div className={`content my-5 ${post?.image || post?.title.length > 60 ? 'text-[15px]' : 'text-[17px]'}`}>
                             <label className="font-bold">Title</label>

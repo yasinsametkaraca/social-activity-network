@@ -48,11 +48,15 @@ class AdvertisementDetail(generics.RetrieveUpdateDestroyAPIView):
         instance = serializer.instance
         if instance.employer != self.request.user:
             raise PermissionDenied("You do not have permission to update this advertisement.")
+        if not instance.advertisement_status:
+            raise PermissionDenied("Advertisement in approval status cannot be updated.")
         serializer.save(employer=self.request.user)
 
     def perform_destroy(self, instance):
         if instance.employer != self.request.user:
             raise PermissionDenied("You do not have permission to delete this advertisement.")
+        if not instance.advertisement_status:
+            raise PermissionDenied("Advertisement in approval status cannot be updated")
         instance.delete()
 
     def get_serializer_class(self):
@@ -73,7 +77,8 @@ class AdvertisementListByUsername(ListAPIView):
 
     def get_queryset(self):
         username = self.kwargs['username']
-        queryset = Advertisement.objects.get_advertisement_by_username(username)
+        serializer = self.get_serializer(context=self.get_serializer_context())
+        queryset = serializer.get_advertisement_by_username(username)
         return queryset
 
 

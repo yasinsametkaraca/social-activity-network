@@ -14,6 +14,7 @@ import {MdAdminPanelSettings} from "react-icons/md";
 import {useAppContext} from "../../context/useContext.jsx";
 import {FiLogOut} from "react-icons/fi";
 import {RiAdvertisementFill} from "react-icons/ri";
+import {HiOutlineOfficeBuilding} from "react-icons/hi";
 
 export default function Dropdown() {
     const {logOut, dark, user} = useAppContext();
@@ -56,6 +57,33 @@ export default function Dropdown() {
             });
         }
         drop = [
+            ...(user.role === "COMPANY_STAFF"
+                    ? [
+                        {
+                            text: "Company",
+                            bgColor: "#FF5722",
+                            icon: (
+                                <HiOutlineOfficeBuilding
+                                    className='w-5 h-5 mr-2'
+                                    aria-hidden='true'
+                                />
+                            ),
+                            href: `/company/${user.username}`,
+                        },
+                        {
+                            text: "Update Company",
+                            bgColor: "#795548",
+                            icon: (
+                                <AiOutlineSetting
+                                    className='w-5 h-5 p-0 mr-2'
+                                    aria-hidden='true'
+                                />
+                            ),
+                            href: "/update-company",
+                        },
+                    ]
+                    : []
+            ),
             {
                 text: "Profile",
                 bgColor: "#FF5722",
@@ -68,7 +96,7 @@ export default function Dropdown() {
                 href: `/profile/${user.username}`,
             },
             {
-                text: "Update profile",
+                text: "Update Profile",
                 bgColor: "#795548",
                 icon: (
                     <AiOutlineSetting
@@ -146,13 +174,13 @@ export default function Dropdown() {
                 leave='transition ease-in duration-75'
                 leaveFrom='transform opacity-100 scale-100'
                 leaveTo='transform opacity-0 scale-95'>
-                <Menu.Items className='absolute right-0 w-40 mt-48 origin-top-right bg-white/0 dark:bg-[#1A1A1A]/0 divide-y divide-gray-100 rounded-md dark:ring-0 dark:ring-black ring-opacity-5 focus:outline-none'>
+                <Menu.Items className='absolute right-0 w-44 mt-48 origin-top-right bg-white/0 dark:bg-[#1A1A1A]/0 divide-y divide-gray-100 rounded-md dark:ring-0 dark:ring-black ring-opacity-5 focus:outline-none'>
                     <div
                         className={`${
                             user ? "translate-y-[70px]" : "translate-y-0"
                         } ${
                             user.role === "ADMIN" && "translate-y-[85px]"
-                        } md:translate-y-0 `}>
+                        } md:translate-y-0  ${user.role === "COMPANY_STAFF" && "mt-[86px]"}` }>
                         {user &&
                             dropForMdScreen.map((v, k) => (
                                 <div
@@ -179,8 +207,7 @@ export default function Dropdown() {
                                                         }
                                                     }
                                                 }}>
-                                                {v.icon}
-                                                {v.text}
+                                                {v.icon}{v.text}
                                             </NavLink>
                                         )}
                                     </Menu.Item>
@@ -188,7 +215,7 @@ export default function Dropdown() {
                             ))}
                         {drop.map((v, k) => (
                             <div
-                                className={`px-1 py-1 dark:bg-[#3A3A3A] `}
+                                className={`px-1 py-1 dark:bg-[#3A3A3A]`}
                                 key={k + "navigation"}
                                 style={{
                                     backgroundColor: dark ? "" : v.bgColor,

@@ -2,8 +2,6 @@ from rest_framework import serializers
 from comment.models import Comment
 from .models import Activity, ActivityUser
 from address.serializers import AddressSerializer
-from userprofile.models import Profile
-from userprofile.serializers import ProfileAvatarSerializer
 
 
 class ActivityUserSerializer(serializers.ModelSerializer):
@@ -67,6 +65,17 @@ class ActivitySerializer(serializers.ModelSerializer):
         activity_users = ActivityUser.objects.filter(activity=obj)
         return ActivityUserSerializer(activity_users, many=True).data
 
+    def get_activities_by_username(self, username):
+        user = self.context['request'].user
+        if user.username == username:
+            activities = Activity.objects.filter(owner__username=username)
+        else:
+            if Activity.objects.filter(owner__username=username, activity_user=user).exists():
+                activities = Activity.objects.filter(owner__username=username)
+            else:
+                activities = Activity.objects.filter(owner__username=username, activity_status=True)
+        return activities
+
 
 class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
     owner = serializers.StringRelatedField()
@@ -114,8 +123,8 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
 
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
-        instance.start_date = validated_data.get('start_datetime', instance.start_date)
-        instance.end_date = validated_data.get('end_datetime', instance.end_date)
+        instance.start_date = validated_data.get('start_date', instance.start_date)
+        instance.end_date = validated_data.get('end_date', instance.end_date)
         instance.activity_price = validated_data.get('activity_price', instance.activity_price)
         instance.category = validated_data.get('category', instance.category)
         instance.total_player_count = validated_data.get('total_player_count', instance.total_player_count)

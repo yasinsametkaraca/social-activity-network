@@ -53,6 +53,8 @@ const Post = ({
     const [priceEdit, setPriceEdit] = useState(currentActivity?.activity_price);
     const [loadingEdit, setLoadingEdit] = useState(false);
     const [showParticipants, setShowParticipants] = useState(false);
+    const [activityStatus, setActivityStatus] = useState(currentActivity?.activity_status);
+
 
     // open modal
     useEffect(() => {
@@ -231,7 +233,7 @@ const Post = ({
             setAddressEdit(data.address);
             setCategoryEdit(data.category);
             setPriceEdit(data.activity_price);
-
+            setActivityStatus(data.activity_status);
             if (data.post.image) {
                 setAttachment("photo");
             }
@@ -310,7 +312,7 @@ const Post = ({
                 />
             )}
             {/* header post */}
-            <div className='flex items-center pl-2 pr-3 sm:px-3 md:px-4'>
+            <div className='flex items-center justify-between pl-2 pr-3 sm:px-3 md:px-4'>
                 {/* avatar */}
                 <img
                     src={`${user_img ? ("/api/v1/" + user_img) : "/images/profile.png"}`}
@@ -336,8 +338,11 @@ const Post = ({
                         {moment(post.created_at).fromNow()}
                     </div>
                 </div>
+                <div className={`flex text-[15px] ${activityStatus ? "ml-auto" : "mx-auto"} `}>
+                    {post?.category}
+                </div>
                 {/* Edit or delete activity */}
-                {(userId === post.userId || userRole === "ADMIN") && post.owner === user.username ? (
+                {(userId === post.userId || userRole === "ADMIN") && post.owner === user.username && activityStatus === true ? (
                     <div
                         className='ml-auto text-[25px] transition-50 cursor-pointer font-bold w-[35px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative '
                         onClick={() => {
@@ -382,15 +387,22 @@ const Post = ({
                     </div>
                 ) : (
                     <>
-                        <button
-                            className={`mr-0 ml-auto text-[14px] transition-50 cursor-pointer font-bold w-[80px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative ${post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected') ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}`}
-                            onClick={() => joinActivity(post.id)}
-                            disabled={post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected')}
-                        >
-                            {post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Accepted') ? 'Joined' : (post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Wait-listed') ? 'Requested' : 'Join')}
-                        </button>
+                        {activityStatus===true &&
+                            <button
+                                className={`mr-0 ml-auto text-[14px] transition-50 cursor-pointer font-bold w-[80px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative ${post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected') ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}`}
+                                onClick={() => joinActivity(post.id)}
+                                disabled={post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected')}
+                            >
+                                {post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Accepted') ? 'Joined' : (post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Wait-listed') ? 'Requested' : 'Join')}
+                            </button>
+                        }
                     </>
                 )}
+                {activityStatus === false &&
+                    <div className='flex text-[15px]'>
+                        <span className={`text-red-500 ${post?.owner===user?.username ? "text-base mb-1" : "text-xs"}`}>{post?.owner===user?.username ? "Waiting for approval" : "Waiting for activity updating"}</span>
+                    </div>
+                }
             </div>
             {/* post's text */}
             <div

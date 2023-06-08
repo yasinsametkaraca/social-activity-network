@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from company.models import Company
-from company.serializers import CompanySerializer, CompanyAdvertisementSerializer
-from .models import Profile, Friendship
+from company.serializers import CompanyAdvertisementSerializer
+from .models import Profile
 from address.serializers import AddressSerializer
 from account.serializers import UserSerializer
 

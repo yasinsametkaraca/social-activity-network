@@ -33,6 +33,7 @@ const Right = ({
     const [category, setCategory] = useState("");
     const [price, setPrice] = useState();
 
+
     useEffect(() => {
         setOneState("openModal", openModal);
     }, [openModal]);

@@ -86,6 +86,7 @@ const Right = ({
                     dark={dark}
                     isAdvertisementList={true}
                     advertisementItem={advertisementItem}
+                    user={own}
                 ></AdvertisementItem>
             ));
         }

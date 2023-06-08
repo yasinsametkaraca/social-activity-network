@@ -1,11 +1,32 @@
 import {useEffect, useState} from "react";
 import moment from "moment/moment.js";
 import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
+import Modal from "../common/Modal.jsx";
+import PostLoading from "../loading/Loading.Post.jsx";
 
-const AdvertisementItem = ({dark, autoFetch, isAdvertisementList = false, advertisementItem = {} }) => {
+const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdvertisementList = false, advertisementItem = {} }) => {
 
     const navigate = useNavigate();
     const [advertisement, setAdvertisement] = useState(advertisementItem);
+    const [imageEdit, setImageEdit] = useState(advertisementItem?.image);
+    const [descriptionEdit, setDescriptionEdit] = useState(advertisementItem?.description);
+    const [totalPlayerCountEdit, setTotalPlayerCountEdit] = useState(advertisementItem?.total_player_count);
+    const [startDateEdit, setStartDateEdit] = useState(advertisementItem?.start_date);
+    const [endDateEdit, setEndDateEdit] = useState(advertisementItem?.end_date);
+    const [addressEdit, setAddressEdit] = useState(advertisementItem?.address);
+    const [categoryEdit, setCategoryEdit] = useState(advertisementItem?.category);
+    const [priceEdit, setPriceEdit] = useState(advertisementItem?.advertisement_price);
+    const [titleEdit, setTitleEdit] = useState(advertisementItem?.title);
+    const [advertisementUrl, setAdvertisementUrl] = useState(advertisementItem?.advertisement_url);
+    const [advertisementStatus, setAdvertisementStatus] = useState(advertisementItem?.advertisement_status);
+    const [attachment, setAttachment] = useState(
+        advertisementItem?.image ? "photo" : ""
+    );
+    const [loadingEdit, setLoadingEdit] = useState(false);
+    const [formData, setFormData] = useState(null);
+    const [showOption, setShowOption] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
         !isAdvertisementList && getHighlightAdvertisement();
@@ -20,6 +41,47 @@ const AdvertisementItem = ({dark, autoFetch, isAdvertisementList = false, advert
         }
     }
 
+    const updateAdvertisement = async () => {
+        setLoadingEdit(true);
+        try {
+            const {data} = await autoFetch.patch(
+                `/advertisements/${advertisement.id}/`,
+                {
+                    title: titleEdit,
+                    description: descriptionEdit,
+                    total_user_count: totalPlayerCountEdit,
+                    start_date: startDateEdit,
+                    end_date: endDateEdit,
+                    address: addressEdit,
+                    category: categoryEdit,
+                    advertisement_price: priceEdit,
+                    advertisement_url: advertisementUrl,
+                    image: formData ? formData : null,
+                }
+            );
+            setAdvertisement(data)
+            setTitleEdit(data.title);
+            setImageEdit(data.image);
+            setDescriptionEdit(data.description);
+            setTotalPlayerCountEdit(data.total_user_count);
+            setStartDateEdit(data.start_date);
+            setEndDateEdit(data.end_date);
+            setAddressEdit(data.address);
+            setCategoryEdit(data.category);
+            setPriceEdit(data.activity_price);
+            setAdvertisementUrl(data.advertisement_url);
+            setAdvertisementStatus(data.advertisement_status);
+            navigate(`/company/${advertisementItem?.company?.employer}`)
+            if (data.image) {
+                setAttachment("photo");
+            }
+            toast("Update advertisement success! Your ad will be approved by the system staff.!");
+        } catch (error) {
+            toast.error("Something went wrong!");
+        }
+        setLoadingEdit(false);
+    };
+
     const formatDate = (dateTimeString) => {
         if (!dateTimeString) return '';
 
@@ -29,21 +91,66 @@ const AdvertisementItem = ({dark, autoFetch, isAdvertisementList = false, advert
         return dateTime.toLocaleString('en-US', options);
     };
 
+    const deleteAdvertisement = async () => {
+        try {
+            await autoFetch.delete(`/advertisements/${advertisementItem?.id}/`);
+            toast.success("Advertisement deleted successfully.");
+            navigate("/advertisement")
+        } catch (e) {
+            toast.error("Error.");
+        }
+    }
+
+    if (loadingEdit) {
+        return <PostLoading className='mb-4' />;
+    }
+
     return (
-        <div className={`bg-white  ${!dark ? "shadow-post" : ""} dark:bg-[#242526] flex flex-col w-full rounded-lg py-2 sm:py-3 ${!isAdvertisementList ? "md:py-4 md:w-[24%] md:fixed" : "h-[100%]"} px-5 mb-5 `}>
+        <div className={`bg-white ${!dark ? "shadow-post" : ""} dark:bg-[#242526] flex flex-col w-full rounded-lg py-2 sm:py-3 ${!isAdvertisementList ? "md:py-4 md:w-[24%] md:fixed" : "h-[100%]"} px-5 mb-5 `}>
             {!isAdvertisementList &&
                 <div className='flex items-center justify-between text-[#8e8e8e] dark:text-[] font-semibold mb-2 '>
                     Highlight Advertisement
                 </div>
             }
-            <div className='flex mt-2 justify-between	'>
+            <div className='flex mt-2 justify-between'>
+                {openModal && (
+                    <Modal
+                        setOpenModal={setOpenModal}
+                        attachment={attachment}
+                        setAttachment={setAttachment}
+                        isEditPost={true}
+                        imageEdit={imageEdit}
+                        setFormDataEdit={setFormData}
+                        handleEditPost={updateAdvertisement}
+                        setImageEdit={setImageEdit}
+                        title={titleEdit}
+                        setTitle={setTitleEdit}
+                        description={descriptionEdit}
+                        setDescription={setDescriptionEdit}
+                        totalPlayerCount={totalPlayerCountEdit}
+                        setTotalPlayerCount={setTotalPlayerCountEdit}
+                        startDate={startDateEdit}
+                        setStartDate={setStartDateEdit}
+                        endDate={endDateEdit}
+                        setEndDate={setEndDateEdit}
+                        address={addressEdit}
+                        setAddress={setAddressEdit}
+                        category={categoryEdit}
+                        setCategory={setCategoryEdit}
+                        price={priceEdit}
+                        setPrice={setPriceEdit}
+                        isAdvertisement={true}
+                        advertisementUrl={advertisementUrl}
+                        setAdvertisementUrl={setAdvertisementUrl}
+                    />
+                )}
                 <div
                     className='flex items-start gap-x-1 cursor-pointer'
                     onClick={() => {
                         navigate(`/company/${advertisement?.company.employer}`);
                     }}>
                     <img
-                        src={`${advertisement?.company?.company_logo ? advertisement?.company?.company_logo: "/images/company.png"}`}
+                        src={`${advertisement?.company?.company_logo ? advertisement?.company?.company_logo : "/images/company.png"}`}
                         alt='advertisement company'
                         className='w-12 h-12 rounded-full'
                     />
@@ -56,9 +163,51 @@ const AdvertisementItem = ({dark, autoFetch, isAdvertisementList = false, advert
                         </div>
                     </div>
                 </div>
-                <div className='flex ml-auto  text-[15px]'>
+                <div className='flex text-[15px]'>
                     {advertisement?.category}
                 </div>
+                {(advertisementItem?.company?.employer === user?.username) && advertisementStatus === true && (
+                    <div
+                        className='ml-2 text-[25px] transition-50 cursor-pointer font-bold w-[35px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative '
+                        onClick={() => {
+                            setShowOption(!showOption);
+                        }}>
+                        <div className='translate-y-[-12px] z-[100] '>...</div>
+                        <ul
+                            className={`text-base absolute top-[110%] text-center mr-9 ${
+                                !showOption ? "hidden" : "flex flex-col"
+                            }   `}
+                            onMouseLeave={() => {
+                                setShowOption(false);
+                            }}>
+                            <li
+                                className='px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60 '
+                                onClick={() => {
+                                    setOpenModal(true);
+                                }}>
+                                Edit
+                            </li>
+                            <li
+                                className='mt-1 px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60'
+                                onClick={() => {
+                                    if (
+                                        window.confirm(
+                                            "Do u want delete this post?"
+                                        )
+                                    ) {
+                                        deleteAdvertisement(advertisementItem?.id);
+                                    }
+                                }}>
+                                Delete
+                            </li>
+                        </ul>
+                    </div>
+                )}
+                {advertisementStatus === false &&
+                    <div className='flex text-[15px]'>
+                        <span className="text-red-500">Waiting for approval</span>
+                    </div>
+                }
             </div>
             <div className={"ml-1 cursor-pointer"} onClick={() => navigate("/advertisement/detail/" + advertisement.id )}>
                 {advertisement?.title &&

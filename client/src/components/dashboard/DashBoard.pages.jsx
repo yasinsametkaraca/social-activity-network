@@ -57,6 +57,7 @@ const Dashboard = () => {
                     <AdvertisementItem
                         autoFetch={autoFetch}
                         dark={dark}
+                        user={user}
                     ></AdvertisementItem>
                 </div>
                 <div className='col-span-11 md:col-span-5 shrink-0 order-3 md:order-2'>

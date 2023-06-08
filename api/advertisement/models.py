@@ -16,7 +16,7 @@ class AdvertisementManager(models.Manager):
         return advertisements
 
     def get_advertisement_by_category(self, category):
-        advertisements = self.filter(category=category)
+        advertisements = self.filter(category=category, advertisement_status=True)
         return advertisements
 
 

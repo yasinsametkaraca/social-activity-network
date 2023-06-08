@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.pagination import CustomPagination
-from api.permissions import CanChangeActivityParticipateStatus, IsActivityOwner, IsFriend
+from api.permissions import CanChangeActivityParticipateStatus, IsActivityOwner, IsFriend, ActivityStatus, \
+    CanCrudPrivateCommentDetail
 from .models import ActivityUser, Activity
 from .serializers import ActivitySerializer, ActivityCreateUpdateSerializer, ActivityUserSerializer
 from account.models import MyUser
@@ -49,13 +50,12 @@ class ActivityList(generics.ListCreateAPIView):
 class ActivityDetail(generics.UpdateAPIView, generics.DestroyAPIView, generics.RetrieveAPIView):
     queryset = Activity.objects.all()
     serializer_class = ActivityCreateUpdateSerializer
-    permission_classes = [IsAuthenticated, IsActivityOwner]
 
     def get_permissions(self):
         if self.request.method == 'GET':
             self.permission_classes = (IsAuthenticated,)
         else:
-            self.permission_classes = (IsActivityOwner, IsAuthenticated)
+            self.permission_classes = (IsActivityOwner, IsAuthenticated, ActivityStatus)
         return super().get_permissions()
 
 
@@ -97,7 +97,9 @@ class ActivityJoin(generics.GenericAPIView):
             return Response({'message': 'Activity participation successfully canceled.', 'data': serializer.data},
                             status=status.HTTP_200_OK)
 
-        return Response({'message': 'The request to join the activity was successfully received.', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(
+            {'message': 'The request to join the activity was successfully received.', 'data': serializer.data},
+            status=status.HTTP_201_CREATED)
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -127,11 +129,13 @@ class ActivityUserStatusUpdate(generics.UpdateAPIView):
         activity_user.participate_status = participate_status
         activity_user.save()
         if participate_status == "Rejected":
-            return Response({'status': participate_status, 'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
-                                                     f'iptal ettiniz.'}, status=status.HTTP_200_OK)
+            return Response({'status': participate_status,
+                             'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
+                                        f'iptal ettiniz.'}, status=status.HTTP_200_OK)
         elif participate_status == "Accepted":
-            return Response({'status': participate_status, 'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
-                                                          f'onayladınız.'}, status=status.HTTP_200_OK)
+            return Response({'status': participate_status,
+                             'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
+                                        f'onayladınız.'}, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -145,7 +149,8 @@ class FavouriteActivity(APIView):
 
         if user in activity.add_favourite.all():
             activity.add_favourite.remove(user)
-            response = {'message': f'{activity.title} favorilerden kaldırıldı.', "data": ActivitySerializer(activity).data}
+            response = {'message': f'{activity.title} favorilerden kaldırıldı.',
+                        "data": ActivitySerializer(activity).data}
         else:
             activity.add_favourite.add(user)
             response = {'message': f'{activity.title} favorilere eklendi.', "data": ActivitySerializer(activity).data}
@@ -155,9 +160,10 @@ class FavouriteActivity(APIView):
 
 class ActivityListByUsername(ListAPIView):
     serializer_class = ActivitySerializer
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         username = self.kwargs['username']
-        queryset = Activity.objects.get_activities_by_username(username)
+        serializer = self.get_serializer(context=self.get_serializer_context())
+        queryset = serializer.get_activities_by_username(username)
         return queryset
-

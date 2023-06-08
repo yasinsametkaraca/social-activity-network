@@ -4,7 +4,6 @@ import {useState} from "react";
 import {toast} from "react-toastify";
 import {TiTick} from "react-icons/ti";
 import ReactLoading from "react-loading";
-import profile from "./profile/index.jsx";
 
 const UpdateProfile = () => {
     const {user, autoFetch, setName} = useAppContext();

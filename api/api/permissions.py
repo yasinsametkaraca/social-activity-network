@@ -77,3 +77,10 @@ class CanCrudPrivateCommentDetail(BasePermission):  # sadece o aktiviteye katıl
 class IsCompanyEmployer(BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.employer == request.user
+
+
+class ActivityStatus(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method == 'GET':
+            return obj.owner == request.user
+        return obj.activity_status
