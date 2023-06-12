@@ -53,7 +53,6 @@ export default function ItemsList({
                                         dispatch({type: CLEAR_WHEN_DUPLICATE});
                                         if (username) return;
                                     }
-                                    // @ts-ignore
                                     dispatch({
                                         type: ADD_USER_TO_SEND_NEW_MESSAGE,
                                         payload: {

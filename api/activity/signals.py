@@ -1,7 +1,10 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from rest_framework.generics import get_object_or_404
+
 from confirmation.models import Confirmation
 from activity.models import Activity
+from notification.models import Notification
 
 
 @receiver(post_save, sender=Confirmation)
@@ -14,11 +17,24 @@ def update_activity_status(sender, instance, **kwargs):
         post_save.disconnect(update_confirmation, sender=Activity)  # post_save sinyalini geçici olarak devre dışı bırak
         instance.activity.save()
         post_save.connect(update_confirmation, sender=Activity)  # post_save sinyalini tekrar etkinleştir
+        notification = Notification(receiver=instance.activity.owner, activity_notify=instance.activity,
+                                    text=f"System staff confirmed your {instance.activity.title} activity.", type="SSC")
+        notification.save()
     else:
         instance.activity.activity_status = False
         post_save.disconnect(update_confirmation, sender=Activity)
         instance.activity.save()
         post_save.connect(update_confirmation, sender=Activity)
+        try:
+            notification = Notification.objects.get(receiver=instance.activity.owner, activity_notify=instance.activity,
+                                                    type="SSC")
+            notification.text = f"System staff did not confirm your {instance.activity.title} activity."
+            notification.type = "SSR"
+            notification.save()
+        except Notification.DoesNotExist:
+            notification = Notification(receiver=instance.activity.owner, activity_notify=instance.activity,
+                                        text=f"System staff confirmed your {instance.activity.title} activity.", type="SSR")
+            notification.save()
 
 
 @receiver(post_save, sender=Activity)

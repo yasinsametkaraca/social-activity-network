@@ -131,6 +131,15 @@ const Left = ({
                     </button>
                 )}
                 <div className='mt-5 flex gap-x-2 items-center flex-col'>
+                    {user?.first_name && user?.last_name &&
+                        <div className={"flex flex-col mb-5 items-center justify-center"}>
+                            <div className='text-lg'>
+                                <strong>
+                                    {user?.first_name && user?.last_name && `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1)} ${user.last_name.charAt(0).toUpperCase()}${user.last_name.slice(1)}`}
+                                </strong>
+                            </div>
+                        </div>
+                    }
                     {
                         user?.education_level && (
                             <div className="flex flex-col items-center mb-7 justify-center">

@@ -26,11 +26,11 @@ const Posts = ({convertDate, countPosts}) => {
         setLoading(true);
         try {
             const {data} = await autoFetch.get(
-                `/api/post/all-posts?page=${page}&perPage=${perPage}`
+                `/activities/admin/?page=${page}&perPage=${perPage}`
             );
-            setPosts(data.posts);
-            setPostsCount(data.postsCount);
-            countPosts(data.postsCount);
+            setPosts(data.results);
+            setPostsCount(data.count);
+            countPosts(data.count);
         } catch (error) {
             console.log(error);
         }
@@ -80,25 +80,16 @@ const Posts = ({convertDate, countPosts}) => {
     const data = useMemo(() => {
         return posts.map((v, index) => {
             return {
-                // @ts-ignore
-                id: v._id,
+                id: v.id,
                 no: index + (page - 1) * perPage + 1,
-                // @ts-ignore
-                avatar: v.postedBy?.image?.url,
-                // @ts-ignore
-                name: v.postedBy?.name,
-                // @ts-ignore
-                content: v.content,
-                // @ts-ignore
-                image: v.image?.url,
-                // @ts-ignore
-                likeCount: v.likes?.length,
-                // @ts-ignore
-                commentCount: v.comments?.length,
-                // @ts-ignore
-                date: convertDate(v.createdAt),
-                // @ts-ignore
-                userId: v.postedBy?._id,
+                avatar: v.avatar,
+                name: v.owner,
+                content: v.title,
+                image: v?.image,
+                likeCount: v.add_favourite?.length,
+                commentCount: v.comment_count,
+                date: convertDate(v.created_at),
+                userId: v.owner,
             };
         });
     }, [posts, fields]);

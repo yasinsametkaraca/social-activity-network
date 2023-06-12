@@ -111,7 +111,7 @@ const Profile = () => {
             );
         }
         return (
-            <div className='w-full sm:grid grid-cols-5 gap-x-4 '>
+            <div className={`w-full sm:grid ${user?.role === "FRIEND" ? "grid-cols-5" : "grid-cols-2"}  gap-x-4`}>
                 <div className='col-span-2'>
                     <Left
                         user={user}
@@ -125,19 +125,21 @@ const Profile = () => {
                         setUser={setUser}
                     />
                 </div>
-                <div className='col-span-3 '>
-                    <Right
-                        autoFetch={autoFetch}
-                        dark={dark}
-                        own={own}
-                        user={user}
-                        setOneState={setOneState}
-                        loading={postLoading}
-                        posts={posts}
-                        setPosts={setPosts}
-                        getDeletePostId={getDeletePostId}
-                    />
-                </div>
+                {user?.role === "FRIEND" &&
+                    <div className='col-span-3 '>
+                        <Right
+                            autoFetch={autoFetch}
+                            dark={dark}
+                            own={own}
+                            user={user}
+                            setOneState={setOneState}
+                            loading={postLoading}
+                            posts={posts}
+                            setPosts={setPosts}
+                            getDeletePostId={getDeletePostId}
+                        />
+                    </div>
+                }
             </div>
         );
     };

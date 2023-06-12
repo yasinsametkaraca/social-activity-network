@@ -40,6 +40,7 @@ const Modal = ({
     advertisementUrl = "",
     setAdvertisementUrl = (event) => {},
     isAdvertisement = false,
+    convertActivity = false
 }) => {
     const {user} = useAppContext();
     const [image, setImage] = useState(imageEdit);
@@ -168,7 +169,7 @@ const Modal = ({
                 />
                 <div className='POST'>
                     <div className='font-extrabold py-4 text-xl text-center border-b-[1px] border-black/20 dark:border-white/20 '>
-                        {isEditPost ? `${isAdvertisement ? "Edit advertisement" : "Edit activity"}` : `${isAdvertisement ? "Create advertisement" : "Create activity"}`}
+                        {isEditPost && !convertActivity ? `${isAdvertisement ? "Edit Advertisement" : "Edit Activity"}` : `${isAdvertisement ? "Create Advertisement" : "Create Activity"}`}
                     </div>
                     <div className='flex gap-x-2 py-4 items-center'>
                         <img
@@ -250,8 +251,6 @@ const Modal = ({
                             placeholder={`Start Date`}
                             onChange={(e) => {
                                 setStartDate(e.target.value);
-                                console.log("e", e.target.value)
-                                console.log("startDate", startDate)
                             }}
                         />
                     </div>
@@ -418,7 +417,7 @@ const Modal = ({
                         }`}
                         disabled={!title || loading}
                         onClick={handleButton}>
-                        {isEditPost ? "Save" : "Post"}
+                        {isEditPost && !convertActivity ? "Save" : "Post"}
                     </button>
                 </div>
             </div>

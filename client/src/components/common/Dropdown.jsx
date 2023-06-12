@@ -43,7 +43,7 @@ export default function Dropdown() {
     ];
 
     if (user) {
-        if (user.role === "ADMIN") {
+        if (user?.role === "ADMIN") {
             dropForMdScreen.push({
                 text: "Admin-page",
                 bgColor: "#607D8B",
@@ -57,7 +57,7 @@ export default function Dropdown() {
             });
         }
         drop = [
-            ...(user.role === "COMPANY_STAFF"
+            ...(user?.role === "COMPANY_STAFF"
                     ? [
                         {
                             text: "Company",
@@ -179,8 +179,8 @@ export default function Dropdown() {
                         className={`${
                             user ? "translate-y-[70px]" : "translate-y-0"
                         } ${
-                            user.role === "ADMIN" && "translate-y-[85px]"
-                        } md:translate-y-0  ${user.role === "COMPANY_STAFF" && "mt-[86px]"}` }>
+                            user?.role === "ADMIN" && "translate-y-[85px]"
+                        } md:translate-y-0  ${user?.role === "COMPANY_STAFF" && "mt-[86px]"}` }>
                         {user &&
                             dropForMdScreen.map((v, k) => (
                                 <div

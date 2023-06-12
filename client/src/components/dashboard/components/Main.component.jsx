@@ -143,7 +143,6 @@ const Center = ({activities, loading, token, autoFetch, setOneState, dark, user,
     return (
         <div className=''>
             {form()}
-
             {openModal && !isQrCode && (
                 <Modal
                     setOpenModal={setOpenModal}

@@ -77,16 +77,18 @@ const Dashboard = () => {
                     />
                 </div>
                 <div className='col-span-11 md:col-span-3 relative order-2 md:order-3 '>
-                    <Right
-                        autoFetch={autoFetch}
-                        getAllActivities={getAllActivities}
-                        navigate={navigate}
-                        setNameAndToken={setNameAndToken}
-                        user={user}
-                        token={token}
-                        dark={dark}
-                        error={error}
-                    />
+                    {user?.role === "FRIEND" &&
+                        <Right
+                            autoFetch={autoFetch}
+                            getAllActivities={getAllActivities}
+                            navigate={navigate}
+                            setNameAndToken={setNameAndToken}
+                            user={user}
+                            token={token}
+                            dark={dark}
+                            error={error}
+                        />
+                    }
                 </div>
             </div>
         </div>

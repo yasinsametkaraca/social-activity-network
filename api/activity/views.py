@@ -1,13 +1,13 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.pagination import CustomPagination
-from api.permissions import CanChangeActivityParticipateStatus, IsActivityOwner, IsFriend, ActivityStatus, \
-    CanCrudPrivateCommentDetail
+from api.permissions import CanChangeActivityParticipateStatus, IsActivityOwner, IsFriend, ActivityStatus
+from notification.models import Notification
 from .models import ActivityUser, Activity
 from .serializers import ActivitySerializer, ActivityCreateUpdateSerializer, ActivityUserSerializer
 from account.models import MyUser
@@ -94,9 +94,15 @@ class ActivityJoin(generics.GenericAPIView):
 
         if not created:
             activity_user.delete()
+            get_object_or_404(Notification, sender=request.user, receiver=activity_user.user,
+                                        activity_notify=activity_user.activity, type="AJ").delete()
+
             return Response({'message': 'Activity participation successfully canceled.', 'data': serializer.data},
                             status=status.HTTP_200_OK)
 
+        notification = Notification(sender=request.user, receiver=activity_user.user,
+                                    activity_notify=activity_user.activity, type="AJ")
+        notification.save()
         return Response(
             {'message': 'The request to join the activity was successfully received.', 'data': serializer.data},
             status=status.HTTP_201_CREATED)
@@ -129,10 +135,15 @@ class ActivityUserStatusUpdate(generics.UpdateAPIView):
         activity_user.participate_status = participate_status
         activity_user.save()
         if participate_status == "Rejected":
+            notification = get_object_or_404(Notification, sender=request.user, receiver=activity_user.user, activity_notify=activity_user.activity, type="AA")
+            notification.type = "AR"
+            notification.save()
             return Response({'status': participate_status,
                              'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
                                         f'iptal ettiniz.'}, status=status.HTTP_200_OK)
         elif participate_status == "Accepted":
+            notification = Notification(sender=request.user, receiver=activity_user.user, activity_notify=activity_user.activity, type="AA")
+            notification.save()
             return Response({'status': participate_status,
                              'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
                                         f'onayladınız.'}, status=status.HTTP_200_OK)
@@ -150,10 +161,14 @@ class FavouriteActivity(APIView):
         if user in activity.add_favourite.all():
             activity.add_favourite.remove(user)
             response = {'message': f'{activity.title} favorilerden kaldırıldı.',
-                        "data": ActivitySerializer(activity).data}
+                        "data": ActivitySerializer(activity, context={'request': request}).data}
+            notification = Notification.objects.get(sender=user, receiver=activity.owner, activity_notify=activity, type="Fav")
+            notification.delete()
         else:
             activity.add_favourite.add(user)
-            response = {'message': f'{activity.title} favorilere eklendi.', "data": ActivitySerializer(activity).data}
+            response = {'message': f'{activity.title} favorilere eklendi.', "data": ActivitySerializer(activity, context={'request': request}).data}
+            notification = Notification(sender=user, receiver=activity.owner, activity_notify=activity, type="Fav")
+            notification.save()
 
         return Response(response, status=status.HTTP_200_OK)
 
@@ -167,3 +182,10 @@ class ActivityListByUsername(ListAPIView):
         serializer = self.get_serializer(context=self.get_serializer_context())
         queryset = serializer.get_activities_by_username(username)
         return queryset
+
+
+class ActivityListForAdmin(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    pagination_class = CustomPagination
+    serializer_class = ActivitySerializer
+    queryset = Activity.objects.all()

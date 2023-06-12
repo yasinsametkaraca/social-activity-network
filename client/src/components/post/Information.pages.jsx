@@ -412,7 +412,7 @@ const Information = () => {
                                 </div>
                             ) : (
                                 <>
-                                    {activityStatus === true &&
+                                    {activityStatus === true && user?.role === "FRIEND" &&
                                         <button
                                             className={`mr-0 ml-2 text-[14px] transition-50 cursor-pointer font-bold w-[80px] h-[35px] rounded-full hover:bg-[#F2F2F2] dark:hover:bg-[#3A3B3C] flex flex-row items-center justify-center group relative ${post?.activity_user?.some((participant) => participant?.username === user?.username && participant?.participate_status === 'Rejected') ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}`}
                                             onClick={() => joinActivity(post.id)}
@@ -514,62 +514,65 @@ const Information = () => {
                                 </span>
                             </div>
                         )}
-                        <div className=' mt-2 py-1 flex items-center justify-between border-y dark:border-y-[#3E4042] border-y-[#CED0D4] px-[6px]'>
-                            {post?.add_favourite?.includes(user.username) ? (
+                        {user?.role === "FRIEND" &&
+                            <div className=' mt-2 py-1 flex items-center justify-between border-y dark:border-y-[#3E4042] border-y-[#CED0D4] px-[6px]'>
+                                {post?.add_favourite?.includes(user.username) ? (
+                                    <button
+                                        className=' py-[6px] flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#c22727] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#c22727] transition-50 cursor-pointer  '
+                                        onClick={() => likeAndUnlike(post.id)}
+                                        disabled={likeLoading}>
+                                        {likeLoading ? (
+                                            <ReactLoading
+                                                type='bubbles'
+                                                width='14%'
+                                                height='14%'
+                                                color='#c22727'
+                                            />
+                                        ) : (
+                                            <>
+                                                <AiFillHeart className='text-xl translate-y-[1px] text-[#c22727] ' />
+                                                Favourite
+                                            </>
+                                        )}
+                                    </button>
+                                ) : (
+                                    <button
+                                        className=' py-[6px] flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
+                                        onClick={() => likeAndUnlike(post.id)}
+                                        disabled={likeLoading}>
+                                        {likeLoading ? (
+                                            <ReactLoading
+                                                type='bubbles'
+                                                width='14%'
+                                                height='14%'
+                                                color='#6A7583'
+                                            />
+                                        ) : (
+                                            <>
+                                                <AiOutlineHeart className='text-xl translate-y-[1px] ' />
+                                                Favourite
+                                            </>
+                                        )}
+                                    </button>
+                                )}
                                 <button
-                                    className=' py-[6px] flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#c22727] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#c22727] transition-50 cursor-pointer  '
-                                    onClick={() => likeAndUnlike(post.id)}
-                                    disabled={likeLoading}>
-                                    {likeLoading ? (
-                                        <ReactLoading
-                                            type='bubbles'
-                                            width='14%'
-                                            height='14%'
-                                            color='#c22727'
-                                        />
-                                    ) : (
-                                        <>
-                                            <AiFillHeart className='text-xl translate-y-[1px] text-[#c22727] ' />
-                                            Favourite
-                                        </>
-                                    )}
+                                    className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
+                                    onClick={() => getComment(post.id)}
+                                    disabled={!commentCount}>
+                                    <FiMessageSquare className='text-xl translate-y-[2px] ' />
+                                    Comment
                                 </button>
-                            ) : (
                                 <button
-                                    className=' py-[6px] flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
-                                    onClick={() => likeAndUnlike(post.id)}
-                                    disabled={likeLoading}>
-                                    {likeLoading ? (
-                                        <ReactLoading
-                                            type='bubbles'
-                                            width='14%'
-                                            height='14%'
-                                            color='#6A7583'
-                                        />
-                                    ) : (
-                                        <>
-                                            <AiOutlineHeart className='text-xl translate-y-[1px] ' />
-                                            Favourite
-                                        </>
-                                    )}
+                                    className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
+                                    onClick={() => getParticipants(post.id)}
+                                    disabled={!post?.activity_user?.length}
+                                >
+                                    <SlPeople className='text-xl translate-y-[2px]' />
+                                    Participants
                                 </button>
-                            )}
-                            <button
-                                className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
-                                onClick={() => getComment(post.id)}
-                                disabled={!commentCount}>
-                                <FiMessageSquare className='text-xl translate-y-[2px] ' />
-                                Comment
-                            </button>
-                            <button
-                                className='py-[6px] px-2 flex items-center justify-center gap-x-1 w-full rounded-sm hover:bg-[#e0e0e0] text-[#6A7583] dark:hover:bg-[#3A3B3C] font-semibold text-[15px] dark:text-[#b0b3b8] transition-50 cursor-pointer '
-                                onClick={() => getParticipants(post.id)}
-                                disabled={!post?.activity_user?.length}
-                            >
-                                <SlPeople className='text-xl translate-y-[2px]' />
-                                Participants
-                            </button>
-                        </div>
+                            </div>
+                        }
+
                         {((showComment) && (commentCount > 0)) && (
                             <div className='px-4 py-3 style-3 max-h-[38vh] overflow-y-scroll '>
                                 {post?.comments?.map((comment) => (
@@ -621,60 +624,62 @@ const Information = () => {
                                 ))}
                             </div>
                         )}
-                        <div className='flex gap-x-1.5 py-1'>
-                            <img
-                                src={`${user.avatar ? user.avatar : "/images/profile.png"}`}
-                                alt='user_avatar'
-                                className='w-[40px] h-[40px] object-cover shrink-0 rounded-full max-sm:w-[25px] max-sm:h-[25px] max-sm:mt-[8px]'
-                            />
-                            <form
-                                className='flex px-2 rounded-full bg-[#F0F2F5] w-full mt-1 items-center dark:bg-[#3A3B3C]  '
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    addComment(post.id);
-                                }}>
-                                <input
-                                    type='text'
-                                    className='px-2 py-1.5 border-none focus:ring-0 bg-inherit rounded-full w-full font-medium dark:placeholder:text-[#b0b3b8] max-sm:text-sm '
-                                    placeholder='Write a comment...'
-                                    value={textComment}
-                                    disabled={commentLoading}
-                                    onChange={(e) => {
-                                        setTextComment(e.target.value);
-                                    }}
+                        {user?.role === "FRIEND" &&
+                            <div className='flex gap-x-1.5 py-1'>
+                                <img
+                                    src={`${user.avatar ? user.avatar : "/images/profile.png"}`}
+                                    alt='user_avatar'
+                                    className='w-[40px] h-[40px] object-cover shrink-0 rounded-full max-sm:w-[25px] max-sm:h-[25px] max-sm:mt-[8px]'
                                 />
-                                <div className="flex items-center flex-row mr-1">
-                                    <label htmlFor="inline-2-checkbox" className="ml-0 text-sm font-medium text-gray-900 hover:opacity-100 dark:text-gray-300 mr-1 text-[#707173]">Private</label>
-                                    <input id="inline-2-checkbox" type="checkbox" value="" checked={isPrivate} onChange={() => setIsPrivate(!isPrivate)} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                                </div>
-                                {!commentLoading && (
-                                    <label>
-                                        <AiOutlineCamera className='shrink-0 text-[18px] transition-50 mr-2 opacity-60 hover:opacity-100 dark:text-[#b0b3b8] cursor-pointer ' />
-                                        <input
-                                            onChange={handleImage}
-                                            type='file'
-                                            accept='image/*'
-                                            name='avatar'
-                                            hidden
-                                        />
-                                    </label>
-                                )}
-                                <button
-                                    type='submit'
-                                    disabled={commentLoading || !textComment}>
-                                    {commentLoading ? (
-                                        <ReactLoading
-                                            type='bubbles'
-                                            width={20}
-                                            height={20}
-                                            color='#7d838c'
-                                        />
-                                    ) : (
-                                        <AiOutlineSend className='shrink-0 text-xl transition-50 hover:scale-125 dark:text-[#b0b3b8] ' />
+                                <form
+                                    className='flex px-2 rounded-full bg-[#F0F2F5] w-full mt-1 items-center dark:bg-[#3A3B3C]  '
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        addComment(post.id);
+                                    }}>
+                                    <input
+                                        type='text'
+                                        className='px-2 py-1.5 border-none focus:ring-0 bg-inherit rounded-full w-full font-medium dark:placeholder:text-[#b0b3b8] max-sm:text-sm '
+                                        placeholder='Write a comment...'
+                                        value={textComment}
+                                        disabled={commentLoading}
+                                        onChange={(e) => {
+                                            setTextComment(e.target.value);
+                                        }}
+                                    />
+                                    <div className="flex items-center flex-row mr-1">
+                                        <label htmlFor="inline-2-checkbox" className="ml-0 text-sm font-medium text-gray-900 hover:opacity-100 dark:text-gray-300 mr-1 text-[#707173]">Private</label>
+                                        <input id="inline-2-checkbox" type="checkbox" value="" checked={isPrivate} onChange={() => setIsPrivate(!isPrivate)} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                                    </div>
+                                    {!commentLoading && (
+                                        <label>
+                                            <AiOutlineCamera className='shrink-0 text-[18px] transition-50 mr-2 opacity-60 hover:opacity-100 dark:text-[#b0b3b8] cursor-pointer ' />
+                                            <input
+                                                onChange={handleImage}
+                                                type='file'
+                                                accept='image/*'
+                                                name='avatar'
+                                                hidden
+                                            />
+                                        </label>
                                     )}
-                                </button>
-                            </form>
-                        </div>
+                                    <button
+                                        type='submit'
+                                        disabled={commentLoading || !textComment}>
+                                        {commentLoading ? (
+                                            <ReactLoading
+                                                type='bubbles'
+                                                width={20}
+                                                height={20}
+                                                color='#7d838c'
+                                            />
+                                        ) : (
+                                            <AiOutlineSend className='shrink-0 text-xl transition-50 hover:scale-125 dark:text-[#b0b3b8] ' />
+                                        )}
+                                    </button>
+                                </form>
+                            </div>
+                        }
                         {/* image when comment have image */}
                         <div className='transition-50 flex items-start justify-start w-full px-20 group '>
                             {imageComment && (
@@ -711,9 +716,9 @@ const Information = () => {
             <div className='md:hidden pt-[65px] px-1 min-h-screen'>
                 <Post
                     currentPost={post}
-                    userId={user._id}
-                    userRole={user.role}
-                    user_img={user.image}
+                    userId={user?.id}
+                    userRole={user?.role}
+                    user_img={user?.image}
                 />
             </div>
         </>

@@ -5,17 +5,14 @@ import {useAppContext} from "../context/useContext.jsx";
 import {Navigate, NavLink} from "react-router-dom";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
-import {GrValidate} from "react-icons/gr";
 
 const Register = () => {
     const navigate = useNavigate();
     const [eye, setEye] = useState(false);
     const [reEye, setReEye] = useState(false);
     const {dark, user, autoFetch, setNameAndToken} = useAppContext();
-
     const [loading, setLoading] = useState(false);
     const initState = {
-        name: "",
         email: "",
         username: "",
         password: "",
@@ -24,19 +21,37 @@ const Register = () => {
         last_name: "",
         secret_question: "1",
         secret_answer: "",
-        role:"FRIEND",
+        company: {
+            name: "",
+            description: "",
+            company_url: "",
+            company_mail: "",
+            company_phone: "",
+        }
     };
     const [state, setState] = useState(initState);
+    const [employerRegister, setEmployerRegister] = useState(false);
 
     const handleChangeInput = (e) => {
-        setState({...state, [e.target.name]: e.target.value});
+        if (e.target.name.includes("company.") && employerRegister) {
+            setState({
+                ...state,
+                company: {
+                    ...state.company,
+                    [e.target.name.split(".")[1]]: e.target.value,
+                },
+            });
+        } else {
+            setState({ ...state, [e.target.name]: e.target.value });
+        }
     };
 
+    console.log(state)
     const register = async () => {
         setLoading(true);
         try {
-            const {name, password, rePassword,first_name,last_name,  secret_question,secret_answer, role, username} = state;
-            if (name.includes("admin")) {
+            const {password, rePassword,first_name,last_name,  secret_question,secret_answer, role, username} = state;
+            if (username.includes("admin")) {
                 toast.error(`Name cannot include "admin"`);
                 setLoading(false);
                 return;
@@ -48,7 +63,6 @@ const Register = () => {
             }
             const email = state.email.toLowerCase();
             const {data} = await autoFetch.post("/accounts/register", {
-                name,
                 email,
                 username,
                 password,
@@ -62,12 +76,46 @@ const Register = () => {
             toast.success("Register success!");
             setState(initState);
             setLoading(false);
-            // setTimeout(() => {
-            //     navigate("/login");
-            // }, 3000);
         } catch (error) {
             setLoading(false);
             console.log(error);
+            toast.error("Please Fill In The Required Fields!");
+        }
+    };
+
+    const companyEmployerRegister = async () => {
+        setLoading(true);
+        try {
+            const {password, rePassword,first_name,last_name,  secret_question,secret_answer, role, username, company} = state;
+            if (username.includes("admin")) {
+                toast.error(`Name cannot include "admin"`);
+                setLoading(false);
+                return;
+            }
+            if (password !== rePassword) {
+                toast.error("Password and re-password not match!");
+                setLoading(false);
+                return;
+            }
+
+            const email = state.email.toLowerCase();
+            const {data} = await autoFetch.post("/accounts/company/register", {
+                email,
+                username,
+                password,
+                first_name,
+                last_name,
+                secret_question,
+                secret_answer,
+                company,
+                role: "COMPANY_STAFF"
+            });
+            setNameAndToken(data.user, data.token);
+            toast.success("Company Register success!");
+            setState(initState);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
             toast.error("Please Fill In The Required Fields!");
         }
     };
@@ -80,7 +128,7 @@ const Register = () => {
         <div>
             <Nav />
             <div
-                className={`bg-[#5c7bd1] dark:bg-[#4E4F50] h-screen w-screen flex items-center relative transition-50 overflow-hidden md:grid-cols-3 `}
+                className={`bg-[#5c7bd1] dark:bg-[#4E4F50] w-screen ${!employerRegister && "h-screen"} flex items-center relative transition-50 overflow-hidden md:grid-cols-3 `}
                 style={{
                     backgroundImage: !dark ? "none" : "url(/images/bg.png)",
                 }}>
@@ -128,10 +176,15 @@ const Register = () => {
                             className='mt-[13px] sm:mt-[15px] md:mt-[20px] font-bold '
                             onSubmit={(e) => {
                                 e.preventDefault();
-                                register();
+                                employerRegister ? companyEmployerRegister() : register();
                             }}>
                             {/* name and email */}
-                            <div className='grid grid-cols-2 gap-x-2 md:gap-x-3 '>
+                            {
+                                employerRegister && (
+                                    <div className='mt-4 mt-[20px] md:mt-[25px] w-full font-extrabold text-[15px] md:text-lg bg-[#46289A]/80 border text-white py-[8px] md:py-[13px] rounded-[5px] flex justify-center transition-50 mt-4'>Employer Information</div>
+                                )
+                            }
+                            <div className='grid grid-cols-2 gap-x-2 md:gap-x-3 mt-4'>
                                 <div className='col-span-1'>
                                     <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
                                         First Name*
@@ -142,6 +195,7 @@ const Register = () => {
                                         className='input-register '
                                         placeholder='Jack'
                                         name='first_name'
+                                        value={state.first_name}
                                         onChange={(e) => handleChangeInput(e)}
                                         required
                                     />
@@ -156,6 +210,7 @@ const Register = () => {
                                         className='input-register '
                                         placeholder='Frost'
                                         name='last_name'
+                                        value={state.last_name}
                                         onChange={(e) => handleChangeInput(e)}
                                         required
                                     />
@@ -172,6 +227,7 @@ const Register = () => {
                                         className=' input-register'
                                         placeholder='user@gmail.com'
                                         name='email'
+                                        value={state.email}
                                         onChange={(e) => handleChangeInput(e)}
                                     />
                                 </div>
@@ -185,6 +241,7 @@ const Register = () => {
                                         className=' input-register'
                                         placeholder='jackfrost'
                                         name='username'
+                                        value={state.username}
                                         onChange={(e) => handleChangeInput(e)}
                                         required={true}
                                     />
@@ -204,6 +261,7 @@ const Register = () => {
                                             className=' input-register '
                                             placeholder='Password'
                                             name='password'
+                                            value={state.password}
                                             onChange={(e) =>
                                                 handleChangeInput(e)
                                             }
@@ -234,6 +292,7 @@ const Register = () => {
                                             className=' input-register '
                                             placeholder='Password'
                                             name='rePassword'
+                                            value={state.rePassword}
                                             onChange={(e) =>
                                                 handleChangeInput(e)
                                             }
@@ -308,6 +367,93 @@ const Register = () => {
                                     />
                                 </div>
                             </div>
+                            {/* Company information */}
+                            {employerRegister && (
+                                    <>
+                                        <div className='mt-4 mt-[20px] md:mt-[25px] w-full font-extrabold text-[15px] md:text-lg bg-[#46289A]/80 border text-white py-[8px] md:py-[13px] rounded-[5px] flex justify-center transition-50 mt-4'>Company Information</div>
+                                        <div className='grid grid-cols-2 gap-x-2 md:gap-x-3 mt-4'>
+                                            <div className='col-span-1'>
+                                                <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
+                                                    Name*
+                                                </div>
+                                                <input
+                                                    disabled={loading}
+                                                    type='text'
+                                                    className='input-register '
+                                                    placeholder='Company Name'
+                                                    name='company.name'
+                                                    value={state.company.name}
+                                                    onChange={(e) => handleChangeInput(e)}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className='col-span-1'>
+                                                <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
+                                                    Description*
+                                                </div>
+                                                <input
+                                                    disabled={loading}
+                                                    type='text'
+                                                    className='input-register '
+                                                    placeholder='Company Description'
+                                                    name='company.description'
+                                                    value={state.company.description}
+                                                    onChange={(e) => handleChangeInput(e)}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className='grid grid-cols-2 gap-x-2 md:gap-x-3 mt-4'>
+                                            <div className='col-span-1'>
+                                                <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
+                                                    Phone*
+                                                </div>
+                                                <input
+                                                    disabled={loading}
+                                                    type='text'
+                                                    className='input-register '
+                                                    placeholder='Company Phone'
+                                                    name='company.company_phone'
+                                                    value={state.company.company_phone}
+                                                    onChange={(e) => handleChangeInput(e)}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className='col-span-1'>
+                                                <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
+                                                    Mail*
+                                                </div>
+                                                <input
+                                                    disabled={loading}
+                                                    type='text'
+                                                    className='input-register '
+                                                    placeholder='Company Mail'
+                                                    name='company.company_mail'
+                                                    value={state.company.company_mail}
+                                                    onChange={(e) => handleChangeInput(e)}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className='grid grid-cols-1 gap-x-2 md:gap-x-3 mt-4'>
+                                            <div className='text-sm md:text-[16px] mb-1 md:mb-2'>
+                                                Website Url*
+                                            </div>
+                                            <input
+                                                disabled={loading}
+                                                type='text'
+                                                className='input-register md:w-auto'
+                                                placeholder='Company Url'
+                                                name='company.company_url'
+                                                value={state.company.company_url}
+                                                onChange={(e) => handleChangeInput(e)}
+                                                required
+                                            />
+                                        </div>
+                                    </>
+                                )
+                            }
+
                             <div className='mt-[12px] md:mt-[17px] text-[13px] font-normal flex justify-between items-center '>
                                 <NavLink to='/forget-password'>
                                     Forget password?
@@ -322,7 +468,6 @@ const Register = () => {
                                 {loading ? "Loading..." : "Register"}
                             </button>
                         </form>
-
                         <div className='mt-[8px] md:mt-[16px] text-[13px] md:text-[15px] text-center '>
                             <span className='block md:inline '>
                                 If you have an account,{" "}
@@ -331,6 +476,16 @@ const Register = () => {
                                 to='/login'
                                 className='font-bold text-[17px]  '>
                                 let's login
+                            </NavLink>
+                        </div>
+                        <div className='mt-[8px] md:mt-[16px] text-[13px] md:text-[15px] text-center' onClick={() => setEmployerRegister(!employerRegister)}>
+                            <span className='block md:inline '>
+                                {employerRegister ? "If you are an friend" : "If you are an employer"}{" "}
+                            </span>
+                            <NavLink
+                                to='/register'
+                                className='font-bold text-[17px]  '>
+                                {employerRegister ? "let's friend register" : "let's employer register"}
                             </NavLink>
                         </div>
                     </div>

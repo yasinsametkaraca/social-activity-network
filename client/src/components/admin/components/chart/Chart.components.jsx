@@ -19,10 +19,10 @@ const Chart = ({ convertDate }) => {
     const getAllUsers = async () => {
         setLoadingUsers(true);
         try {
-            const { data } = await autoFetch.get(
-                `/api/auth/all-users?page=${1}&perPage=${9999}`
+            const {data} = await autoFetch.get(
+                `/profiles/admin/users/`
             );
-            setDataUsers(data.users);
+            setDataUsers(data.results);
         } catch (error) {
             console.log(error);
         }
@@ -32,10 +32,10 @@ const Chart = ({ convertDate }) => {
     const getAllPosts = async () => {
         setLoadingPosts(true);
         try {
-            const { data } = await autoFetch.get(
-                `/api/post/all-posts?page=${1}&perPage=${9999}`
+            const {data} = await autoFetch.get(
+                `/activities/admin/`
             );
-            setDataPosts(data.posts);
+            setDataPosts(data.results);
         } catch (error) {
             console.log(error);
         }
@@ -45,8 +45,7 @@ const Chart = ({ convertDate }) => {
     const datasetPosts = useMemo(() => {
         const data = [];
         dataPosts.forEach((v) => {
-            // @ts-ignore
-            const x = convertDate(v.createdAt);
+            const x = convertDate(v.created_at);
             const index = data.find((v) => v.x === x);
             if (!index) {
                 data.push({ x: x, y: 1 });
@@ -60,8 +59,7 @@ const Chart = ({ convertDate }) => {
     const datasetUser = useMemo(() => {
         const data = [];
         dataUsers.forEach((v) => {
-            // @ts-ignore
-            const x = convertDate(v.createdAt);
+            const x = convertDate(v.created_at);
             const index = data.find((v) => v.x === x);
             if (!index) {
                 data.push({ x: x, y: 1 });

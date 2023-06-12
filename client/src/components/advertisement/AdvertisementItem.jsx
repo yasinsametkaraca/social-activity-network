@@ -27,6 +27,7 @@ const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdv
     const [formData, setFormData] = useState(null);
     const [showOption, setShowOption] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const [convertActivity, setConvertActivity] = useState(false);
 
     useEffect(() => {
         !isAdvertisementList && getHighlightAdvertisement();
@@ -82,6 +83,37 @@ const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdv
         setLoadingEdit(false);
     };
 
+    const convertAdvertisementToActivity = async () => {
+        setLoadingEdit(true);
+        try {
+            // let image = null;
+            // if (formData) {
+            //     const {data} = await autoFetch.post(
+            //         `/api/post/upload-image`,
+            //         formData
+            //     );
+            //     image = {url: data.url, public_id: data.public_id};
+            // }
+            const {data} = await autoFetch.post(`/activities/`, {
+                title: titleEdit,
+                description: descriptionEdit,
+                total_player_count: totalPlayerCountEdit,
+                start_date: startDateEdit,
+                end_date: endDateEdit,
+                address: addressEdit,
+                activity_price: priceEdit,
+                category: categoryEdit,
+                image: formData ? formData : null,
+            });
+            toast("Activity create success! Your activity will be approved by the system staff.!");
+            navigate(`/profile/${user?.username}`)
+            setConvertActivity(false)
+        } catch (error) {
+            toast.error("Something went wrong. Try again!");
+        }
+        setLoadingEdit(false);
+    }
+
     const formatDate = (dateTimeString) => {
         if (!dateTimeString) return '';
 
@@ -121,7 +153,7 @@ const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdv
                         isEditPost={true}
                         imageEdit={imageEdit}
                         setFormDataEdit={setFormData}
-                        handleEditPost={updateAdvertisement}
+                        handleEditPost={convertActivity ? convertAdvertisementToActivity : updateAdvertisement}
                         setImageEdit={setImageEdit}
                         title={titleEdit}
                         setTitle={setTitleEdit}
@@ -139,9 +171,10 @@ const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdv
                         setCategory={setCategoryEdit}
                         price={priceEdit}
                         setPrice={setPriceEdit}
-                        isAdvertisement={true}
+                        isAdvertisement={!convertActivity}
                         advertisementUrl={advertisementUrl}
                         setAdvertisementUrl={setAdvertisementUrl}
+                        convertActivity={convertActivity}
                     />
                 )}
                 <div
@@ -206,6 +239,15 @@ const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdv
                 {advertisementStatus === false &&
                     <div className='flex text-[15px]'>
                         <span className="text-red-500">Waiting for approval</span>
+                    </div>
+                }
+                {user?.role === "FRIEND" && isAdvertisementList &&
+                    <div className='flex text-[15px]'
+                         onClick={() => {
+                             setOpenModal(true)
+                             setConvertActivity(true)
+                         }}>
+                        <span className="text-green-600 cursor-pointer border-full">Convert Activity</span>
                     </div>
                 }
             </div>

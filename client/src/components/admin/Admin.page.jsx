@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Users from "./components/table/Users.components.jsx";
 import Posts from "./components/table/Posts.components.jsx";
 import Chart from "./components/chart/Chart.components.jsx";

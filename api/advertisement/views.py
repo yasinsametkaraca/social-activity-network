@@ -83,7 +83,7 @@ class AdvertisementListByUsername(ListAPIView):
 
 
 class GetRandomAdvertisement(generics.ListAPIView):
-    queryset = Advertisement.objects.order_by('?')[:1]
+    queryset = Advertisement.objects.filter(advertisement_status=True).order_by('?')[:1]
     serializer_class = AdvertisementGetSerializer
     permission_classes = [IsAuthenticated]
 

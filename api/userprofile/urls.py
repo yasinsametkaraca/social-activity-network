@@ -12,4 +12,5 @@ urlpatterns = [
     path('follow/<str:username>/', views.FollowAndUnfollowView.as_view(), name='follow_and_unfollow'),
     path('follower/<str:username>/', views.FollowerListAPIView.as_view(), name='followers_list'),
     path('following/<str:username>/', views.FollowingListAPIView.as_view(), name='following_list'),
+    path('admin/users/', views.UserListAPI.as_view()),
 ]

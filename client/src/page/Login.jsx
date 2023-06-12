@@ -42,7 +42,7 @@ const Login = () => {
         setState({...state, [e.target.name]: e.target.value});
     };
 
-    if (user.role === 'COMPANY_STAFF') {
+    if (user?.role === 'COMPANY_STAFF') {
         return <Navigate to={`/company/${user.username}`} />;
     }
     if (user) {

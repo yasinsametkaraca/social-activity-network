@@ -1,4 +1,3 @@
-import React, {useState} from "react";
 import {Avatar, Tooltip} from "@mui/material";
 // components
 import {GroupAvatars} from "../../";
@@ -175,7 +174,6 @@ const BoxChat = ({setOneState, state, getData, user, dispatch}) => {
                                                 state.sourceMessage
                                             );
                                         } else {
-                                            // @ts-ignore
                                             dispatch({
                                                 type: IS_NEW_MESSAGE,
                                             });

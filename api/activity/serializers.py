@@ -62,8 +62,12 @@ class ActivitySerializer(serializers.ModelSerializer):
         return Comment.objects.filter(activity=obj).count()
 
     def get_activity_user(self, obj):
-        activity_users = ActivityUser.objects.filter(activity=obj)
-        return ActivityUserSerializer(activity_users, many=True).data
+        if self.context.get('request').user == obj.owner:
+            activity_users = ActivityUser.objects.filter(activity=obj)
+            return ActivityUserSerializer(activity_users, many=True).data
+        else:
+            activity_users = ActivityUser.objects.filter(activity=obj, participate_status="Accepted")
+            return ActivityUserSerializer(activity_users, many=True).data
 
     def get_activities_by_username(self, username):
         user = self.context['request'].user
