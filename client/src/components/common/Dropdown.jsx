@@ -9,7 +9,7 @@ import {
     AiFillHome,
 } from "react-icons/ai";
 import {SiMessenger} from "react-icons/si";
-import {MdAdminPanelSettings} from "react-icons/md";
+import {MdAdminPanelSettings, MdNotificationsActive} from "react-icons/md";
 // components
 import {useAppContext} from "../../context/useContext.jsx";
 import {FiLogOut} from "react-icons/fi";
@@ -38,6 +38,12 @@ export default function Dropdown() {
             text: "Advertisement",
             bgColor: "#3d59cc",
             icon: <RiAdvertisementFill className='w-5 h-5 mr-2' aria-hidden='true' />,
+            href: "/advertisement",
+        },
+        {
+            text: "Notifications",
+            bgColor: "#faa405",
+            icon: <MdNotificationsActive className='w-5 h-5 mr-2' aria-hidden='true' />,
             href: "/advertisement",
         },
     ];

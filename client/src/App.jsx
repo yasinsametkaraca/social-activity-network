@@ -13,7 +13,7 @@ import {
 } from "./page/index.jsx";
 // layout
 import {Dashboard, Messenger, Admin, Advertisement, AdvertisementDetail} from "./page/Layout/index.jsx";
-import {Profile, UpdateProfile, Company, UpdateCompany} from "./page/user/index.jsx";
+import {Profile, UpdateProfile, Company, UpdateCompany, Notification} from "./page/user/index.jsx";
 import {Information} from "./page/Post/index.jsx";
 // modal qrCode
 import {ModalQrCode} from "./components";
@@ -53,6 +53,7 @@ const App = () => {
                             element={<Dashboard />}
                         />
                         <Route path='/messenger' element={<Messenger />} />
+                        <Route path='/notification' element={<Notification />} />
                         <Route path='/advertisement' element={<Advertisement />} />
                         <Route
                             path={'/advertisement/detail/:id'}

@@ -44,6 +44,9 @@
     .advertisement {
         @apply text-[#3d59cc] hover:text-[#2645c7] after:bg-[#2645c7];
     }
+    .notification {
+        @apply text-[#eb5c09] hover:text-[#fa5305] after:bg-[#fa5305];
+    }
     .admin {
         @apply text-[#607D8B] hover:text-[#455A64] after:bg-[#607D8B];
     }

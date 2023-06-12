@@ -5,7 +5,7 @@ import { AiFillHome, AiOutlineQrcode } from "react-icons/ai";
 import { BiSearchAlt } from "react-icons/bi";
 import { SiMessenger } from "react-icons/si";
 import {RiAdvertisementFill, RiSpaceShipFill} from "react-icons/ri";
-import { MdAdminPanelSettings } from "react-icons/md";
+import {MdAdminPanelSettings, MdNotificationsActive} from "react-icons/md";
 import { BsFillSunFill, BsMoon } from "react-icons/bs";
 // components
 import { useAppContext } from "../../context/useContext.jsx";
@@ -89,6 +89,14 @@ const Nav = () => {
                 link: "/advertisement",
                 icon: <RiAdvertisementFill className='text-[26px] p-0' />,
                 className: "advertisement",
+            },
+            {
+                text: "#eb5c09",
+                hover: "#fa5305",
+                bgAfter: "#fa5305",
+                link: "/notification",
+                icon: <MdNotificationsActive className='text-[26px] p-0' />,
+                className: "notification",
             },
         ];
 

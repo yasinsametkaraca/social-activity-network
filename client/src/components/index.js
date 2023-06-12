@@ -31,6 +31,7 @@ import Company from "./company/Company.pages.jsx";
 import Admin from "./admin/Admin.page.jsx";
 import Information from "./post/Information.pages.jsx";
 import Advertisement from "./advertisement/Advertisement.pages.jsx";
+import Notification from "./notification/Notification.pages.jsx";
 
 // function
 import colorGeneration from "./common/colorGeneration.jsx";
@@ -68,4 +69,5 @@ export {
     Information,
     Advertisement,
     Company,
+    Notification,
 };

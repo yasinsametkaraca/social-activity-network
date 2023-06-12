@@ -66,19 +66,22 @@ class ActivitySerializer(serializers.ModelSerializer):
             activity_users = ActivityUser.objects.filter(activity=obj)
             return ActivityUserSerializer(activity_users, many=True).data
         else:
-            activity_users = ActivityUser.objects.filter(activity=obj, participate_status="Accepted")
+            activity_users = ActivityUser.objects.filter(activity=obj)
             return ActivityUserSerializer(activity_users, many=True).data
+    # def get_activities_by_username(self, username):
+    #     user = self.context['request'].user
+    #     if user.username == username:
+    #         activities = Activity.objects.filter(owner__username=username)
+    #     else:
+    #         if Activity.objects.filter(owner__username=username, activity_user=user).exists():
+    #             activities = Activity.objects.filter(owner__username=username)
+    #         else:
+    #             activities = Activity.objects.filter(owner__username=username, activity_status=True)
+    #     return activities
 
-    def get_activities_by_username(self, username):
-        user = self.context['request'].user
-        if user.username == username:
-            activities = Activity.objects.filter(owner__username=username)
-        else:
-            if Activity.objects.filter(owner__username=username, activity_user=user).exists():
-                activities = Activity.objects.filter(owner__username=username)
-            else:
-                activities = Activity.objects.filter(owner__username=username, activity_status=True)
-        return activities
+    def get_activity_user(self, obj):
+        activity_users = ActivityUser.objects.filter(activity=obj)
+        return ActivityUserSerializer(activity_users, many=True).data
 
 
 class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
