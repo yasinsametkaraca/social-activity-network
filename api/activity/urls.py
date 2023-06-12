@@ -4,6 +4,7 @@ from .views import ActivityUserStatusUpdate, ActivityJoin, \
 
 urlpatterns = [
     path('', ActivityList.as_view(), name='activity_list'),
+    path("admin/", ActivityListForAdmin.as_view()),
     path('<int:pk>/', ActivityDetail.as_view(), name='activity_update_delete'),
     path('<str:username>/', ActivityListByUsername.as_view(), name='activity_list_by_username'),
     path('<str:activity_id>/join/', ActivityJoin.as_view(), name='activity_join'),

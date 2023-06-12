@@ -94,6 +94,7 @@ class ActivityJoin(generics.GenericAPIView):
 
         if not created:
             activity_user.delete()
+<<<<<<< HEAD
             get_object_or_404(Notification, sender=request.user, receiver=activity.owner,
                                         activity_notify=activity, type="AJ").delete()
             return Response({'message': 'Activity participation successfully canceled.', 'data': serializer.data},
@@ -101,6 +102,16 @@ class ActivityJoin(generics.GenericAPIView):
 
         notification = Notification(sender=request.user,  receiver=activity.owner,
                                     activity_notify=activity, type="AJ")
+=======
+            get_object_or_404(Notification, sender=request.user, receiver=activity_user.user,
+                                        activity_notify=activity_user.activity, type="AJ").delete()
+
+            return Response({'message': 'Activity participation successfully canceled.', 'data': serializer.data},
+                            status=status.HTTP_200_OK)
+
+        notification = Notification(sender=request.user, receiver=activity_user.user,
+                                    activity_notify=activity_user.activity, type="AJ")
+>>>>>>> main
         notification.save()
         return Response(
             {'message': 'The request to join the activity was successfully received.', 'data': serializer.data},

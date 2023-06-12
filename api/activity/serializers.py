@@ -66,6 +66,7 @@ class ActivitySerializer(serializers.ModelSerializer):
             activity_users = ActivityUser.objects.filter(activity=obj)
             return ActivityUserSerializer(activity_users, many=True).data
         else:
+<<<<<<< HEAD
             activity_users = ActivityUser.objects.filter(activity=obj)
             return ActivityUserSerializer(activity_users, many=True).data
     # def get_activities_by_username(self, username):
@@ -82,6 +83,10 @@ class ActivitySerializer(serializers.ModelSerializer):
     def get_activity_user(self, obj):
         activity_users = ActivityUser.objects.filter(activity=obj)
         return ActivityUserSerializer(activity_users, many=True).data
+=======
+            activity_users = ActivityUser.objects.filter(activity=obj, participate_status="Accepted")
+            return ActivityUserSerializer(activity_users, many=True).data
+>>>>>>> main
 
 
 class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
