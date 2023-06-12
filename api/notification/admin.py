@@ -5,7 +5,7 @@ from .models import Notification
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ('sender', 'receiver', 'type', 'created_at', 'is_read')
     list_filter = ('type', 'created_at', 'is_read')
-    search_fields = ('sender__username', 'receiver__username')
+    search_fields = ('receiver__username', 'type')
     date_hierarchy = 'created_at'
 
 

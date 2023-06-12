@@ -69,7 +69,7 @@ const Header = ({
                         navigate(`/update-profile`);
                     }}>
                     <FiEdit2 className=' ' />
-                    Edit profile
+                    Edit Profile
                 </button>
             );
         if (own?.following?.includes(user?.username)) {
@@ -111,48 +111,48 @@ const Header = ({
                 />
                 <div className='flex flex-col sm:flex-row w-full justify-between items-center sm:items-end pt-4 translate-y-[-32px] sm:translate-y-[0] '>
                     <div>
-                        <div className='flex justify-center'>
+                        <div className='flex justify-start max-sm:justify-center'>
                             <div className='text-[32px] font-bold md:flex items-center gap-x-1 '>
                                 <div className='text-center flex items-center justify-center '>
-                                    {user?.first_name}{" "}{user?.last_name}
+                                    {user?.username}
                                     {user?.role === "ADMIN" && (
                                         <TiTick className='text-[20px] text-white rounded-full bg-sky-500 ' />
                                     )}
                                 </div>
-
-                                <div className='ml-1.5 font-normal text-xl md:text-[28px] flex-shrink-0 '>
-                                    ({user?.username})
-                                </div>
                             </div>
                         </div>
-                        <div className='dark:text-[#b0b3b8] font-semibold text-[17px] flex gap-x-1.5 items-center text-[#65676b] justify-center sm:justify-start'>
-                            <span className='cursor-pointer flex-shrink-0 '>
-                                {user?.following?.length} following
-                            </span>
-                            <GoPrimitiveDot />
-                            <span className='cursor-pointer flex-shrink-0 '>
-                                {user?.follower?.length} follower
-                            </span>
-                        </div>
+                        {user?.role === "FRIEND" &&
+                            <div className='dark:text-[#b0b3b8] font-semibold text-[17px] flex gap-x-1.5 items-center text-[#65676b] justify-center sm:justify-start'>
+                                <span className='cursor-pointer flex-shrink-0 '>
+                                    {user?.following?.length} following
+                                </span>
+                                    <GoPrimitiveDot />
+                                    <span className='cursor-pointer flex-shrink-0 '>
+                                    {user?.follower?.length} follower
+                                </span>
+                            </div>
+                        }
                     </div>
                     <div className='flex mt-4 sm:mt-0 flex-shrink-0 '>
-                        {btn()}
+                        {own?.role === "FRIEND" && btn()}
                     </div>
                 </div>
             </div>
             <div className='flex mx-0 sm:mx-10 '>
-                <ul className='flex items-center justify-between w-full px-16 py-1 gap-x-10 '>
-                    {list.map((v) => (
-                        <li
-                            key={v + "button"}
-                            className={`li-profile ${menu === v && "active"} `}
-                            onClick={() => {
-                                setMenu(v);
-                            }}>
-                            {v}
-                        </li>
-                    ))}
-                </ul>
+                {user?.role === "FRIEND" &&
+                    <ul className='flex items-center justify-between w-full px-16 py-1 gap-x-10 '>
+                        {list.map((v) => (
+                            <li
+                                key={v + "button"}
+                                className={`li-profile ${menu === v && "active"} `}
+                                onClick={() => {
+                                    setMenu(v);
+                                }}>
+                                {v}
+                            </li>
+                        ))}
+                    </ul>
+                }
             </div>
         </div>
     );

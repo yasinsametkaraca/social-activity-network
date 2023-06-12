@@ -92,7 +92,7 @@ const Nav = () => {
             },
         ];
 
-        if (user.role === "ADMIN") {
+        if (user?.role === "ADMIN") {
             list.push({
                 text: "#607D8B",
                 hover: "#455A64",
@@ -103,12 +103,12 @@ const Nav = () => {
             });
         }
         return list;
-    }, [user.role]);
+    }, [user?.role]);
 
     const navMenuLogged = () => {
         return menuListLogged.map((v) => (
             <div
-                className={`w-full ${user.role !== "ADMIN" ? "px-[10%]" : ""
+                className={`w-full ${user?.role !== "ADMIN" ? "px-[10%]" : ""
                     } + ${v.className} `}
                 key={"navlink" + v.link}>
                 <NavLink
@@ -139,7 +139,6 @@ const Nav = () => {
                     <div className='flex items-center border border-black/20 dark:bg-[#4E4F50] dark:text-[#b9bbbe] w-[180px] md:w-[220px] h-auto md:h-[40px] rounded-full px-2 ml-2 '>
                         <BiSearchAlt className='text-16px md:text-[20px] mx-1 ' />
                         <div
-                            // @ts-ignore
                             ref={searchRef}>
                             <input
                                 type='text'

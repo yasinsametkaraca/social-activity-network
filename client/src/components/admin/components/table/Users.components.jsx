@@ -25,11 +25,11 @@ const Users = ({convertDate, countUsers}) => {
         setLoading(true);
         try {
             const {data} = await autoFetch.get(
-                `/api/auth/all-users?page=${page}&perPage=${perPage}`
+                `/profiles/admin/users/?page=${page}&perPage=${perPage}`
             );
-            setTotalUser(data.numberUsers);
-            setListUser(data.users);
-            countUsers(data.numberUsers);
+            setTotalUser(data.count);
+            setListUser(data.results);
+            countUsers(data.count);
         } catch (error) {
             console.log(error);
         }
@@ -61,22 +61,15 @@ const Users = ({convertDate, countUsers}) => {
     const data = useMemo(() => {
         return listUser.map((v, index) => {
             return {
-                // @ts-ignore
-                id: v._id,
+                id: v.id,
                 no: index + (page - 1) * perPage + 1,
-                // @ts-ignore
-                avatar: v.image?.url,
-                // @ts-ignore
-                name: v.name,
-                // @ts-ignore
-                email: v.email,
+                avatar: v?.avatar,
+                name: v?.user.username,
+                email: v.user.email,
                 postNumber: "n/a",
-                // @ts-ignore
                 follower: v.follower?.length,
-                // @ts-ignore
                 following: v.following?.length,
-                // @ts-ignore
-                date: convertDate(v.createdAt),
+                date: convertDate(v.created_at),
             };
         });
     }, [listUser, fields]);

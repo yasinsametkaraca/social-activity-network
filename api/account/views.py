@@ -26,7 +26,7 @@ class UserRegister(GenericAPIView):
         if request.data.get('role') == 'ADMIN' or request.data.get('role') == 'SYSTEM_STAFF' or request.data.get('role') == 'COMPANY_STAFF' or request.data.get('is_superuser') or request.data.get('is_staff'):
             return Response({'error': 'You are not allowed to register with this role.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = serializer.save(role=request.data.get('role'))
+        user = serializer.save(role="FRIEND")
         login(request, user)
         token_serializer = CustomTokenObtainPairSerializer(data={
             'username': user.username,
@@ -58,7 +58,7 @@ class CompanyRegister(GenericAPIView):
                 'is_superuser') or request.data.get('is_staff'):
             return Response({'error': 'You are not allowed to register with this role.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = serializer.save(role=request.data.get('role'))
+        user = serializer.save(role="COMPANY_STAFF")
 
         login(request, user)
         token_serializer = CustomTokenObtainPairSerializer(data={
@@ -109,7 +109,6 @@ class UserLogout(GenericAPIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class UserAPI(RetrieveUpdateAPIView):  # Bir Kullanıcı bilgisini güncelleme ve görüntüleme

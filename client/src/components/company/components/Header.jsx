@@ -58,7 +58,7 @@ const Header = ({
                 />
                 <div className='flex flex-col sm:flex-row w-full justify-between items-center sm:items-end pt-4 translate-y-[-32px] sm:translate-y-[0] '>
                     <div>
-                        <div className='flex justify-start  max-sm:justify-center '>
+                        <div className='flex justify-start max-sm:justify-center '>
                             <div className='text-[32px] font-bold md:flex items-center gap-x-1 '>
                                 <div className='text-center flex items-center justify-center '>
                                     {user?.company?.name}{" "}

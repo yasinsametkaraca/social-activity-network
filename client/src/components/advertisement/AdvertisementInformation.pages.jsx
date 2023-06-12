@@ -31,7 +31,7 @@ const AdvertisementInformation = () => {
     const [loadingEdit, setLoadingEdit] = useState(false);
     const [formData, setFormData] = useState(null);
     const [advertisementStatus, setAdvertisementStatus] = useState(advertisementDetail?.advertisement_status);
-
+    const [convertActivity, setConvertActivity] = useState(false);
 
     useEffect(() => {
         getAdvertisementDetail(id)
@@ -66,6 +66,37 @@ const AdvertisementInformation = () => {
 
         return dateTime.toLocaleString('en-US', options);
     };
+
+    const convertAdvertisementToActivity = async () => {
+        setLoadingEdit(true);
+        try {
+            // let image = null;
+            // if (formData) {
+            //     const {data} = await autoFetch.post(
+            //         `/api/post/upload-image`,
+            //         formData
+            //     );
+            //     image = {url: data.url, public_id: data.public_id};
+            // }
+            const {data} = await autoFetch.post(`/activities/`, {
+                title: titleEdit,
+                description: descriptionEdit,
+                total_player_count: totalPlayerCountEdit,
+                start_date: startDateEdit,
+                end_date: endDateEdit,
+                address: addressEdit,
+                activity_price: priceEdit,
+                category: categoryEdit,
+                image: formData ? formData : null,
+            });
+            toast("Activity create success! Your activity will be approved by the system staff.!");
+            navigate(`/profile/${user?.username}`)
+            setConvertActivity(false)
+        } catch (error) {
+            toast.error("Something went wrong. Try again!");
+        }
+        setLoadingEdit(false);
+    }
 
     const updateAdvertisement = async () => {
         setLoadingEdit(true);
@@ -140,13 +171,13 @@ const AdvertisementInformation = () => {
                                     isEditPost={true}
                                     imageEdit={imageEdit}
                                     setFormDataEdit={setFormData}
-                                    handleEditPost={updateAdvertisement}
+                                    handleEditPost={convertActivity ? convertAdvertisementToActivity : updateAdvertisement}
                                     setImageEdit={setImageEdit}
                                     title={titleEdit}
                                     setTitle={setTitleEdit}
                                     description={descriptionEdit}
                                     setDescription={setDescriptionEdit}
-                                    totalPlayerCount={totalPlayerCountEdit}
+                                    totalPlayerCount={!convertActivity && totalPlayerCountEdit}
                                     setTotalPlayerCount={setTotalPlayerCountEdit}
                                     startDate={startDateEdit}
                                     setStartDate={setStartDateEdit}
@@ -158,9 +189,10 @@ const AdvertisementInformation = () => {
                                     setCategory={setCategoryEdit}
                                     price={priceEdit}
                                     setPrice={setPriceEdit}
-                                    isAdvertisement={true}
+                                    isAdvertisement={!convertActivity}
                                     advertisementUrl={advertisementUrl}
                                     setAdvertisementUrl={setAdvertisementUrl}
+                                    convertActivity={convertActivity}
                                 />
                             </div>
                         )}
@@ -226,6 +258,15 @@ const AdvertisementInformation = () => {
                         {advertisementStatus === false &&
                             <div className='flex text-[15px]'>
                                 <span className="text-red-500">Waiting for approval</span>
+                            </div>
+                        }
+                        {user?.role === "FRIEND" &&
+                            <div className='flex text-[15px]'
+                                 onClick={() => {
+                                     setOpenModal(true)
+                                     setConvertActivity(true)
+                                 }}>
+                                <span className="text-green-600 cursor-pointer border-full">Convert Activity</span>
                             </div>
                         }
                     </div>

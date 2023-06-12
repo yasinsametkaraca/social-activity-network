@@ -2,10 +2,11 @@ from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView, \
     get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.pagination import CustomPagination
 from api.permissions import IsFriend
 from .models import Profile
 from .serializers import ProfileDetailSerializer, ProfileAvatarSerializer, UserProfileSerializer, \
@@ -60,8 +61,7 @@ class FollowAndUnfollowView(APIView):
         if profile.user in my_profile.following.all():
             my_profile.following.remove(profile.user)
             profile.follower.remove(my_profile.user)
-            notification = Notification(sender=request.user, receiver=user, type="U")
-            notification.save()
+            get_object_or_404(Notification, sender=request.user, receiver=user, type="F").delete()
             message = "Unfollowed user successfully."
 
         else:
@@ -150,3 +150,10 @@ class GetSearchProfiles(generics.ListAPIView):
         print(query)
         results = Profile.objects.filter(user__username__icontains=query, user__role='FRIEND')
         return results
+
+
+class UserListAPI(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    pagination_class = CustomPagination
+    serializer_class = ProfileDetailSerializer
+    queryset = Profile.objects.filter(user__is_superuser=False, user__is_staff=False)

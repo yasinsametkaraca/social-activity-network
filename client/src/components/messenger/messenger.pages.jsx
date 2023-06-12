@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useReducer, useState} from "react";
+import {useEffect, useRef, useReducer, useState} from "react";
 import {AiOutlineCamera, AiOutlineSend} from "react-icons/ai";
 import ReactLoading from "react-loading";
 import {toast} from "react-toastify";
@@ -174,7 +174,6 @@ const Message = () => {
     const [formData, setFormData] = useState(null);
 
     const setLoading = (value) => {
-        // @ts-ignore
         dispatch({
             type: SET_LOADING,
             payload: {
@@ -183,7 +182,6 @@ const Message = () => {
         });
     };
     const setOneState = (name, value) => {
-        // @ts-ignore
         dispatch({
             type: SET_ONE_STATE,
             payload: {
@@ -237,9 +235,7 @@ const Message = () => {
                 });
             }
             if (!state.text && !state.textSearchPeople) {
-                // @ts-ignore
                 emailInputRef.current?.focus();
-                // @ts-ignore
                 messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
             }
         }
@@ -263,7 +259,6 @@ const Message = () => {
                     (v) => v._id !== user._id
                 );
             }
-            // @ts-ignore
             dispatch({
                 type: GET_DATA_SUCCESS,
                 payload: {
@@ -387,7 +382,6 @@ const Message = () => {
             const {data} = await autoFetch.get(
                 `/api/auth/search-user/${textSearchNewMessage}`
             );
-            // @ts-ignore
             dispatch({
                 type: SEARCH_USER_TO_NEW_MESSAGE,
                 payload: {
