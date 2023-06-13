@@ -44,7 +44,7 @@ export default function Dropdown() {
             text: "Notifications",
             bgColor: "#faa405",
             icon: <MdNotificationsActive className='w-5 h-5 mr-2' aria-hidden='true' />,
-            href: "/advertisement",
+            href: "/notification",
         },
     ];
 

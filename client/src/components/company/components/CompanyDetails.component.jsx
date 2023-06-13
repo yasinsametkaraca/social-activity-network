@@ -188,7 +188,7 @@ const Left = ({user,
                                 key={i?.image}
                                 className='w-full  pt-[100%] relative cursor-pointer '
                                 onClick={() => {
-                                    navigate(`/activity/detail/${i?.id}`);
+                                    navigate(`/advertisement/detail/${i?.id}`);
                                 }}>
                                 <img
                                     src={i?.image}

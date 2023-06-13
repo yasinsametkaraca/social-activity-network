@@ -42,6 +42,7 @@ def update_confirmation(sender, instance, **kwargs):
     if ('title' in instance.get_dirty_fields()) or ('description' in instance.get_dirty_fields()) or ('activity_status' in instance.get_dirty_fields()):
         confirmation = Confirmation.objects.get(activity=instance)
         confirmation.confirm_status = False
+        instance.activity_status = False
         confirmation.confirm_type = 'Update'
         post_save.disconnect(update_activity_status, sender=Confirmation)
         confirmation.save()

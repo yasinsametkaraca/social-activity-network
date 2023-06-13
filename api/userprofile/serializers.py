@@ -114,6 +114,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         user.save()
 
         # TODO instance.about = validated_data.get('about', instance.about)
+        instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.birth_date = validated_data.get('birth_date', instance.birth_date)
         instance.linkedin_url = validated_data.get('linkedin_url', instance.linkedin_url)
         instance.website_url = validated_data.get('website_url', instance.website_url)
@@ -187,6 +188,7 @@ class CompanyStaffProfileSerializer(serializers.ModelSerializer):
         user.save()
 
         # TODO instance.about = validated_data.get('about', instance.about)
+        instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.birth_date = validated_data.get('birth_date', instance.birth_date)
         instance.linkedin_url = validated_data.get('linkedin_url', instance.linkedin_url)
         instance.website_url = validated_data.get('website_url', instance.website_url)

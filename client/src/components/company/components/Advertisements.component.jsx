@@ -40,34 +40,29 @@ const Right = ({
         setOneState("openModal", openModal);
     }, [openModal]);
 
-    const createNewAdvertisement = async (formData) => {
+    const createNewAdvertisement = async (file) => {
         setLoadingcreateNewAdvertisement(true);
         if (!title) {
             toast.error("You must type something...");
             return;
         }
         try {
-            // let image = null;
-            // if (formData) {
-            //     const {data} = await autoFetch.post(
-            //         `/api/post/upload-image`,
-            //         formData
-            //     );
-            //     image = {url: data.url, public_id: data.public_id};
-            // }
-            const {data} = await autoFetch.post(`/advertisements/`, {
-                title: title,
-                description: description,
-                address: address,
-                category: category,
-                advertisement_price: price,
-                start_date: startDate,
-                end_date: endDate,
-                total_user_count: totalPlayerCount,
-                image: formData ? formData : null,
-                advertisement_url: advertisementUrl,
-                advertisement_company: user?.company?.name,
-            });
+            let formData = new FormData();
+            file && formData.append("image", file);
+            formData.append("title", title);
+            formData.append("description", description);
+            formData.append("address.address_line1", address.address_line1);
+            formData.append("address.city", address.city);
+            formData.append("address.country", address.country);
+            formData.append("category", category);
+            formData.append("advertisement_price", price);
+            formData.append("total_user_count", totalPlayerCount);
+            formData.append("start_date", startDate);
+            formData.append("end_date", endDate);
+            advertisementUrl && formData.append("advertisement_url", advertisementUrl);
+
+            const {data} = await autoFetch.post(`/advertisements/`, formData);
+            setAdvertisements([data, ...advertisements]);
             toast.success("Your ad will be approved by the system staff.!");
         } catch (error) {
             toast.error("Something went wrong. Try again!");

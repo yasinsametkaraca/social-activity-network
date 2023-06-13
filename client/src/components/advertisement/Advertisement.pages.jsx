@@ -48,7 +48,7 @@ const AdvertisementPages = () => {
                             dataLength={count}
                             next={getNewAdvertisements}
                             style={{ display: 'flex', flexDirection:'column', flexWrap: 'wrap', justifyContent: 'center', width: '100%', height: '100%', overflow: 'auto' }}
-                            hasMore={advertisementList.length <= count}
+                            hasMore={advertisementList.length < count}
                             loader={<LoadingPost />}
                             endMessage={
                                 <p style={{ textAlign: 'center' }}>

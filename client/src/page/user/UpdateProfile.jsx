@@ -9,64 +9,54 @@ const UpdateProfile = () => {
     const {user, autoFetch, setName} = useAppContext();
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState(null);
+    const [file, setFile] = useState(null);
     const [profileInfo, setProfileInfo] = useState({
-        first_name: user.first_name,
-        last_name: user.last_name,
-        gender: user.gender,
-        website_url: user.website_url,
-        birth_date: user.birth_date,
-        linkedin_url: user.linkedin_url,
-        company_url: user.company_url,
-        company_name: user.company_name,
-        education_level: user.education_level,
-        username: user.username,
-        email: user.email,
-        spotify_playlist: user.spotify_playlist,
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        gender: user.gender || "",
+        website_url: user.website_url || "",
+        birth_date: user.birth_date || "",
+        linkedin_url: user.linkedin_url || "",
+        company_url: user.company_url || "",
+        company_name: user.company_name || "",
+        education_level: user.education_level || "",
+        username: user.username || "",
+        email: user.email || "",
+        spotify_playlist: user.spotify_playlist || "",
+        avatar: user.avatar || "",
     });
+
 
     const handleImage = async (e) => {
         try {
             setImage(null);
             const file = e.target.files[0];
             setImage(URL.createObjectURL(file));
-
-            let formData = new FormData();
-            formData.append("image", file);
-            setFormData(formData);
+            setFile(e.target.files[0]);
         } catch (error) {
             console.log(error);
-        }
-    };
-
-    const updateImage = async () => {
-        try {
-            const {data} = await autoFetch.post(
-                `/api/post/upload-image`,
-                formData
-            );
-            return {url: data.url, public_id: data.public_id};
-        } catch (error) {
-            toast.error("Upload image fail!");
-            return null;
         }
     };
 
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            // let image;
-            // if (formData) {
-            //     image = await updateImage();
-            //     if (!image) {
-            //         setLoading(false);
-            //         setImage(null);
-            //         return;
-            //     }
-            // }
-            const {data} = await autoFetch.patch(`/profiles/${user.username}/`, {
-                ...profileInfo,
-            });
+            let formData = new FormData();
+            file && formData.append("avatar", file)
+            formData.append("first_name", profileInfo?.first_name);
+            formData.append("last_name", profileInfo?.last_name);
+            formData.append("email", profileInfo?.email);
+            formData.append("username", profileInfo?.username);
+            formData.append("education_level", profileInfo?.education_level);
+            formData.append("gender", profileInfo?.gender);
+            formData.append("website_url", profileInfo?.website_url);
+            formData.append("birth_date", profileInfo?.birth_date);
+            formData.append("linkedin_url", profileInfo?.linkedin_url);
+            formData.append("company_url", profileInfo?.company_url);
+            formData.append("company_name", profileInfo?.company_name);
+            formData.append("spotify_playlist", profileInfo?.spotify_playlist);
+
+            const {data} = await autoFetch.patch(`/profiles/${user.username}/`, formData);
             //setNameAndToken(data.user, data.token);
             localStorage.setItem("user", JSON.stringify(data));
             setName(data);
@@ -234,7 +224,6 @@ const UpdateProfile = () => {
             <div className='col-span-1 flex flex-col items-center justify-center pb-10 '>
                 <label className='relative group w-40 h-40 cursor-pointer '>
                     <img
-                        // @ts-ignore
                         src={image || (user?.avatar ? user?.avatar : "/images/profile.png")}
                         alt='avatar'
                         className='w-full h-full rounded-full object-cover '

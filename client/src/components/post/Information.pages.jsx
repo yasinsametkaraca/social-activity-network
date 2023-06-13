@@ -123,6 +123,7 @@ const Information = () => {
             setCategoryEdit(data.category);
             setPriceEdit(data.activity_price);
             setActivityStatus(data.activity_status);
+            setAttachment(data?.image ? "photo" : "")
         } catch (error) {
             setLoading(false);
         }
@@ -231,31 +232,24 @@ const Information = () => {
         setImageComment(null);
     };
 
-    const updateActivity = async () => {
+    const updateActivity = async (file) => {
         setLoadingEdit(true);
         try {
-            let image = imageEdit;
-            if (formData) {
-                image = await handleUpImageComment();
-                if (!image) {
-                    toast.error("Upload image fail. Try again!");
-                    setLoadingEdit(false);
-                    return;
-                }
-            }
-            const {data} = await autoFetch.patch(
-                `/activities/${post.id}/`,
-                {
-                    title: titleEdit,
-                    description: descriptionEdit,
-                    total_player_count: totalPlayerCountEdit,
-                    start_date: startDateEdit,
-                    end_date: endDateEdit,
-                    address: addressEdit,
-                    category: categoryEdit,
-                    activity_price: priceEdit,
-                }
-            );
+            let formData = new FormData();
+            file && formData.append("image", file);
+            formData.append("title", titleEdit);
+            formData.append("description", descriptionEdit);
+            formData.append("address.address_line1", addressEdit.address_line1);
+            formData.append("address.city", addressEdit.city);
+            formData.append("address.country", addressEdit.country);
+            formData.append("category", categoryEdit);
+            formData.append("activity_price", priceEdit);
+            formData.append("total_player_count", totalPlayerCountEdit);
+            formData.append("start_date", startDateEdit);
+            formData.append("end_date", endDateEdit);
+
+            const {data} = await autoFetch.patch(`/activities/${post.id}/`, formData);
+
             setPost(data);
             setTitleEdit(data.title);
             setImageEdit(data.image);
@@ -267,7 +261,7 @@ const Information = () => {
             setCategoryEdit(data.category);
             setPriceEdit(data.activity_price);
             setActivityStatus(data.activity_status);
-            if (data.post.image) {
+            if (data?.image) {
                 setAttachment("photo");
             }
             toast("Update post success!");
@@ -424,8 +418,8 @@ const Information = () => {
                                 </>
                             )}
                             {activityStatus === false &&
-                                <div className='flex text-[15px]'>
-                                    <span className={`text-red-500 ${post?.owner===user?.username ? "text-base mb-1" : "text-xs"}`}>{post?.owner===user?.username ? "Waiting for approval" : "Waiting for activity updating"}</span>
+                                <div className='flex text-[15px] p-0 m-0'>
+                                    <span className={`text-red-500 p-0 m-0 max-sm:pl-7 ${post?.owner===user?.username ? "text-base mb-1" : "max-sm:text-xs "}`}>{post?.owner===user?.username ? "Waiting for approval" : "Waiting for activity updating"}</span>
                                 </div>
                             }
                         </div>

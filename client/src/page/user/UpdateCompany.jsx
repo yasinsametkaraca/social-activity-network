@@ -9,55 +9,21 @@ const UpdateCompany = () => {
     const {user, autoFetch, setName} = useAppContext();
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState(null);
     const [companyInfo, setCompanyInfo] = useState(user?.company || {});
-
-    const handleCompanyLogo = async (e) => {
-        try {
-            setImage(null);
-            const file = e.target.files[0];
-            setImage(URL.createObjectURL(file));
-
-            let formData = new FormData();
-            formData.append("image", file);
-            setFormData(formData);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const updateImage = async () => {
-        try {
-            const {data} = await autoFetch.post(
-                `/api/post/upload-image`,
-                formData
-            );
-            return {url: data.url, public_id: data.public_id};
-        } catch (error) {
-            toast.error("Upload image fail!");
-            return null;
-        }
-    };
+    const [file, setFile] = useState(null);
 
     const handleSubmitCompany = async () => {
         setLoading(true);
         try {
-            // let image;
-            // if (formData) {
-            //     image = await updateImage();
-            //     if (!image) {
-            //         setLoading(false);
-            //         setImage(null);
-            //         return;
-            //     }
-            // }
-            const {data} = await autoFetch.put(`/companies/`, {
-                name: companyInfo.name,
-                description: companyInfo.description,
-                company_url: companyInfo.company_url,
-                company_mail: companyInfo.company_mail,
-                company_phone: companyInfo.company_phone,
-            });
+            let formData = new FormData();
+            file && formData.append("company_logo", file);
+            formData.append("name", companyInfo?.name);
+            formData.append("description", companyInfo?.description);
+            formData.append("company_url", companyInfo?.company_url);
+            formData.append("company_mail", companyInfo?.company_mail);
+            formData.append("company_phone", companyInfo?.company_phone);
+
+            const {data} = await autoFetch.put(`/companies/`, formData);
             const userData = localStorage.getItem('user')
             const parsedUserData = JSON.parse(userData)
             parsedUserData.company = data
@@ -76,7 +42,6 @@ const UpdateCompany = () => {
                     toast.error(errorMessage);
                 });
             }
-
         }
         setLoading(false);
     };
@@ -145,10 +110,13 @@ const UpdateCompany = () => {
                         <AiFillCamera className='text-4xl text-black/70 ' />
                     </div>
                     <input
-                        onChange={handleCompanyLogo}
+                        onChange={(e) => {
+                            setImage(URL.createObjectURL(e.target.files[0]));
+                            setFile(e.target.files[0]);
+                        }}
                         type='file'
                         accept='image/*'
-                        name='avatar'
+                        name='company_logo'
                         hidden
                     />
                 </label>

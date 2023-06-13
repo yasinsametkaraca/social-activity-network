@@ -42,10 +42,12 @@ const Modal = ({
     isAdvertisement = false,
     convertActivity = false
 }) => {
+
     const {user} = useAppContext();
     const [image, setImage] = useState(imageEdit);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState(null);
+    const [file, setFile] = useState(null);
 
     const handleImage = async (e) => {
         setLoading(true);
@@ -53,9 +55,7 @@ const Modal = ({
             setImage(null);
             const file = e.target.files[0];
             setImage(URL.createObjectURL(file));
-
-            let formData = new FormData();
-            formData.append("image", file);
+            setFile(e.target.files[0]);
 
             if (isEditPost) {
                 setFormDataEdit(formData);
@@ -68,13 +68,14 @@ const Modal = ({
         setLoading(false);
     };
 
+    console.log(formData);
     const handleButton = () => {
         if (isEditPost) {
             // Edit post
-            handleEditPost();
+            handleEditPost(file);
         } else {
             // Create post
-            createNewActivity(formData);
+            createNewActivity(file);
         }
         setTitle("");
         setDescription("");
@@ -160,7 +161,7 @@ const Modal = ({
                         setOpenModal(false);
                     }
                 }}></div>
-            <div className='mx-auto w-[98%] sm:w-[60%] md:w-[40%] md:h-[80%] bg-white dark:bg-[#242526] rounded-xl px-3 z-[202] box-shadow relative '>
+            <div className={`mx-auto w-[98%] sm:w-[60%] md:w-[40%] ${attachment && !isAdvertisement ? "md:h-[80%]" : "md:h-[73%]"} ${attachment && isAdvertisement ? "md:h-[88%]" : "md:h-[81%]"} md:h-[80%] bg-white dark:bg-[#242526] rounded-xl px-3 z-[202] box-shadow relative`}>
                 <MdCancel
                     className='absolute top-4 right-6 text-[30px] opacity-50 hover:opacity-100 cursor-pointer transition-50 '
                     onClick={() => {
@@ -189,13 +190,13 @@ const Modal = ({
                         </div>
                     </div>
                     <div className='flex'>
-                        <label htmlFor="title" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : " mt-2 ml-0 text-[17px]" }`}>Title</label>
+                        <label htmlFor="title" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[15px]" : " mt-2 ml-0 text-[17px]" }`}>Title</label>
                         <textarea
                             id="title"
                             value={title}
                             className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
                                 title?.length > 40 || attachment
-                                    ? "text-[11px] "
+                                    ? "text-[15px] "
                                     : "text-[17px]"
                             } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
 
@@ -206,13 +207,13 @@ const Modal = ({
                         />
                     </div>
                     <div className={"flex"}>
-                        <label htmlFor="description" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Description</label>
+                        <label htmlFor="description" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-2.5 ml-0 text-[15px]" : "mt-2 ml-0 text-[17px]" }`}>Description</label>
                         <textarea
                             id="description"
                             value={description}
                             className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
                                 description?.length > 40 || attachment
-                                    ? "text-[11px] "
+                                    ? "text-[15px] "
                                     : "text-[17px]"
                             } ${attachment ? "h-[50px]" : "h-[60px]"} relative`}
 
@@ -223,7 +224,7 @@ const Modal = ({
                         />
                     </div>
                     <div className={"flex"}>
-                        <label htmlFor="totalPlayerCount" className={`w-40 mt-3 ml-0 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}>Total Player</label>
+                        <label htmlFor="totalPlayerCount" className={`w-40 ml-0 mt-2 p-0 text-[#a0a0a1] ${attachment ? "mt-2 text-[15px]" : "mt-3 text-[17px]" }`}>Total Player</label>
                         <input
                             type={"number"}
                             max="1000"
@@ -231,7 +232,7 @@ const Modal = ({
                             value={totalPlayerCount}
                             className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
                                 totalPlayerCount?.length > 40 || attachment
-                                    ? "text-[11px] "
+                                    ? "text-[15px] "
                                     : "text-[17px]"
                             } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
 
@@ -242,12 +243,12 @@ const Modal = ({
                         />
                     </div>
                     <div className={"flex"}>
-                        <label htmlFor="startDate" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Start Date</label>
+                        <label htmlFor="startDate" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-2.5 ml-0 text-[15px]" : "mt-3 ml-0 text-[17px]" }`}>Start Date</label>
                         <input
                             id="startDate"
                             type="datetime-local"
                             value={startDate}
-                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] w-40 mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] w-40 mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[15px]" : "text-[17px]" }`}
                             placeholder={`Start Date`}
                             onChange={(e) => {
                                 setStartDate(e.target.value);
@@ -255,12 +256,12 @@ const Modal = ({
                         />
                     </div>
                     <div className={"flex mt-2"}>
-                        <label htmlFor="endDate" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>End Date</label>
+                        <label htmlFor="endDate" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-2.5 ml-0 text-[15px]" : "mt-3 ml-0 text-[17px]" }`}>End Date</label>
                         <input
                             id="endDate"
                             type="datetime-local"
                             value={endDate}
-                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] w-40 mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}
+                            className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] w-40 mt-2 ml-3 p-0 text-[#a0a0a1] ${attachment ? "text-[15px]" : "text-[17px]" }`}
                             placeholder={`End Date`}
                             onChange={(e) => {
                                 setEndDate(e.target.value);
@@ -268,13 +269,13 @@ const Modal = ({
                         />
                     </div>
                     <div className={"flex mt-2"}>
-                        <label htmlFor="address_line1" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Address</label>
+                        <label htmlFor="address_line1" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-2.5 ml-0 text-[15px]" : "mt-2.5 ml-0 text-[17px]" }`}>Address</label>
                         <textarea
                             id="address_line1"
                             value={address.address_line1}
                             className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
                                 address.address_line1?.length > 40 || attachment
-                                    ? "text-[11px] "
+                                    ? "text-[15px] "
                                     : "text-[17px]"
                             } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
                             onChange={(e) => {
@@ -284,13 +285,13 @@ const Modal = ({
                     </div>
                     <div className={"grid gap-1 grid-cols-2"}>
                         <div className={"flex "}>
-                            <label htmlFor="city" className={`text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>City</label>
+                            <label htmlFor="city" className={`text-[#a0a0a1] ${attachment ? "mt-2.5 ml-0 text-[15px]" : "mt-2 ml-0 text-[17px]" }`}>City</label>
                             <textarea
                                 id={"city"}
                                 value={address.city}
                                 className={`input-modal style-3 w-full mr-1 bg-inherit focus:ring-0 border-0 placeholder:text-[#a0a0a1] ${
                                     address.city?.length > 40 || attachment
-                                        ? "text-[11px] "
+                                        ? "text-[15px] "
                                         : "text-[17px]"
                                 } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
                                 onChange={(e) => {
@@ -299,13 +300,13 @@ const Modal = ({
                             />
                         </div>
                         <div className={"flex"}>
-                            <label htmlFor="country" className={`text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Country</label>
+                            <label htmlFor="country" className={`text-[#a0a0a1] ${attachment ? "mt-2.5 ml-0 text-[15px]" : "mt-2 ml-0 text-[17px]" }`}>Country</label>
                             <textarea
                                 id={"country"}
                                 value={address.country}
                                 className={`input-modal style-3 w-full bg-inherit focus:ring-0 border-0 placeholder:text-[#a0a0a1] ${
                                     address.country?.length > 40 || attachment
-                                        ? "text-[11px] "
+                                        ? "text-[15px] "
                                         : "text-[17px]"
                                 } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
                                 onChange={(e) => {
@@ -316,7 +317,7 @@ const Modal = ({
                     </div>
                     <div className={"grid gap-1 grid-cols-2 mt-2"}>
                         {/*<div className={"flex"}>*/}
-                        {/*    <label htmlFor="postal_code" className={`w-40 mt-3 ml-0 p-0 text-[#a0a0a1] ${attachment ? "text-[11px]" : "text-[17px]" }`}>Postal Code</label>*/}
+                        {/*    <label htmlFor="postal_code" className={`w-40 mt-3 ml-0 p-0 text-[#a0a0a1] ${attachment ? "text-[15px]" : "text-[17px]" }`}>Postal Code</label>*/}
                         {/*    <input*/}
                         {/*        type={"number"}*/}
                         {/*        max="1000"*/}
@@ -324,7 +325,7 @@ const Modal = ({
                         {/*        value={address.postal_code}*/}
                         {/*        className={`px-0 input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${*/}
                         {/*            address.postal_code?.length > 40 || attachment*/}
-                        {/*                ? "text-[11px] "*/}
+                        {/*                ? "text-[15px] "*/}
                         {/*                : "text-[17px]"*/}
                         {/*        } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}*/}
 
@@ -335,7 +336,7 @@ const Modal = ({
                         {/*    />*/}
                         {/*</div>*/}
                         <div className={"flex"}>
-                            <label htmlFor="price" className={`p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-3 ml-0 text-[17px]" }`}>Price</label>
+                            <label htmlFor="price" className={`p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[15px]" : "mt-3 ml-0 text-[17px]" }`}>Price</label>
                             <input
                                 id={"price"}
                                 type={"number"}
@@ -343,7 +344,7 @@ const Modal = ({
                                 value={price}
                                 className={`input-modal style-3 bg-inherit focus:ring-0 border-0 w-full placeholder:text-[#a0a0a1] ${
                                     price?.length > 40 || attachment
-                                        ? "text-[11px] "
+                                        ? "text-[15px] "
                                         : "text-[17px]"
                                 } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
                                 onChange={(e) => {
@@ -351,7 +352,7 @@ const Modal = ({
                                 }}
                             />
                         </div>
-                        <select className={`w-40 w-full mb-2 border-0 outline-none mt-1 ml-0 p-0 dark:bg-[#3A3B3C] ${category==="" ? "text-[#a0a0a1]" : ""} ${attachment ? "text-[11px]" : "text-[17px]"}`} value={category} onChange={(e) => setCategory(e.target.value)}>
+                        <select className={`w-40 w-full mb-2 border-0 outline-none mt-1 ml-0 p-0 dark:bg-[#3A3B3C] ${category==="" ? "text-[#a0a0a1]" : ""} ${attachment ? "text-[15px]" : "text-[17px]"}`} value={category} onChange={(e) => setCategory(e.target.value)}>
                             <option className={"text-[#a0a0a1]"} value="">Categories</option>
                             <option value={"Theatre"}>{"Theatre"}</option>
                             <option value={"Music"}>{"Music"}</option>
@@ -364,13 +365,13 @@ const Modal = ({
                     </div>
                     {isAdvertisement &&
                        <div className={"flex"}>
-                           <label htmlFor="advertisementUrl" className={`w-45 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[11px]" : "mt-2 ml-0 text-[17px]" }`}>Advertisement URL</label>
+                           <label htmlFor="advertisementUrl" className={`w-45 p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[15px]" : "mt-2 ml-0 text-[17px]" }`}>Advertisement URL</label>
                              <textarea
                                  id={"advertisementUrl"}
                                  value={advertisementUrl}
                                  className={`input-modal style-3 w-[78.5%] bg-inherit focus:ring-0 border-0 placeholder:text-[#a0a0a1] ${
                                      address.country?.length > 40 || attachment
-                                         ? "text-[11px] "
+                                         ? "text-[15px] "
                                          : "text-[17px]"
                                  } ${attachment ? "h-[40px]" : "h-[50px]"} relative`}
                                  onChange={(e) => {

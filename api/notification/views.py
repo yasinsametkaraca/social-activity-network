@@ -1,20 +1,27 @@
 from rest_framework import status
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+
+from api.pagination import CustomPagination
 from .models import Notification
 from .serializers import NotificationSerializer
 from rest_framework.response import Response
 
 
-class ShowNotifications(APIView):
-    def get(self, request):
+class ShowNotifications(ListAPIView):
+    serializer_class = NotificationSerializer
+    pagination_class = CustomPagination
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
         user = self.request.user
-        notifications = Notification.objects.filter(receiver=user, is_read=False).order_by('-created_at')
-        serializer = NotificationSerializer(notifications, many=True)
-        return Response(serializer.data)
+        queryset = Notification.objects.filter(receiver=user).order_by('-created_at')
+        return queryset
 
 
 class NotificationRead(APIView):
-    def post(self, request, pk):
+    def put(self, request, pk):
         try:
             notification = Notification.objects.get(receiver=request.user, id=pk)
         except Notification.DoesNotExist:

@@ -34,33 +34,28 @@ const Center = ({activities, loading, token, autoFetch, setOneState, dark, user,
         }
     }, [token]);
 
-    const createNewActivity = async (formData) => {
+    const createNewActivity = async (file) => {
         setLoadingCreateNewActivity(true);
         if (!title && !description) {
             toast.error("Error. You must type something...");
             return;
         }
         try {
-            // let image = null;
-            // if (formData) {
-            //     const {data} = await autoFetch.post(
-            //         `/activities/upload-image`,
-            //         formData
-            //     );
-            //     image = {url: data.url, public_id: data.public_id};
-            // }
+            let formData = new FormData();
+            file && formData.append("image", file);
+            formData.append("title", title);
+            formData.append("description", description);
+            formData.append("address.address_line1", address.address_line1);
+            formData.append("address.city", address.city);
+            formData.append("address.postal_code", address.postal_code);
+            formData.append("address.country", address.country);
+            formData.append("category", category);
+            formData.append("activity_price", price);
+            formData.append("total_player_count", totalPlayerCount);
+            formData.append("start_date", startDate);
+            formData.append("end_date", endDate);
 
-            const {data} = await autoFetch.post(`/activities/`, {
-                title: title,
-                description: description,
-                address: address,
-                category: category,
-                activity_price: price,
-                start_date: startDate,
-                end_date: endDate,
-                total_player_count: totalPlayerCount,
-                image: formData ? formData : null,
-            });
+            const {data} = await autoFetch.post(`/activities/`, formData);
             toast.success("Your activity will be approved by the system staff.!");
         } catch (error) {
             toast.error("Error...");

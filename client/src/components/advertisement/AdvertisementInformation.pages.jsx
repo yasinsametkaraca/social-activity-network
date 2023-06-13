@@ -67,28 +67,23 @@ const AdvertisementInformation = () => {
         return dateTime.toLocaleString('en-US', options);
     };
 
-    const convertAdvertisementToActivity = async () => {
+    const convertAdvertisementToActivity = async (file) => {
         setLoadingEdit(true);
         try {
-            // let image = null;
-            // if (formData) {
-            //     const {data} = await autoFetch.post(
-            //         `/api/post/upload-image`,
-            //         formData
-            //     );
-            //     image = {url: data.url, public_id: data.public_id};
-            // }
-            const {data} = await autoFetch.post(`/activities/`, {
-                title: titleEdit,
-                description: descriptionEdit,
-                total_player_count: totalPlayerCountEdit,
-                start_date: startDateEdit,
-                end_date: endDateEdit,
-                address: addressEdit,
-                activity_price: priceEdit,
-                category: categoryEdit,
-                image: formData ? formData : null,
-            });
+            let formData = new FormData();
+            file && formData.append("image", file);
+            formData.append("title", titleEdit);
+            formData.append("description", descriptionEdit);
+            formData.append("address.address_line1", addressEdit.address_line1);
+            formData.append("address.city", addressEdit.city);
+            formData.append("address.country", addressEdit.country);
+            formData.append("category", categoryEdit);
+            formData.append("activity_price", priceEdit);
+            formData.append("total_player_count", totalPlayerCountEdit);
+            formData.append("start_date", startDateEdit);
+            formData.append("end_date", endDateEdit);
+
+            const {data} = await autoFetch.post(`/activities/`,formData);
             toast("Activity create success! Your activity will be approved by the system staff.!");
             navigate(`/profile/${user?.username}`)
             setConvertActivity(false)
@@ -98,24 +93,25 @@ const AdvertisementInformation = () => {
         setLoadingEdit(false);
     }
 
-    const updateAdvertisement = async () => {
+    const updateAdvertisement = async (file) => {
         setLoadingEdit(true);
+        let formData = new FormData();
+        file && formData.append("image", file);
+        formData.append("title", titleEdit);
+        formData.append("description", descriptionEdit);
+        formData.append("address.address_line1", addressEdit.address_line1);
+        formData.append("address.city", addressEdit.city);
+        formData.append("address.country", addressEdit.country);
+        formData.append("category", categoryEdit);
+        formData.append("advertisement_price", priceEdit);
+        formData.append("total_user_count", totalPlayerCountEdit);
+        formData.append("start_date", startDateEdit);
+        formData.append("end_date", endDateEdit);
+        advertisementUrl && formData.append("advertisement_url", advertisementUrl);
+
         try {
             const {data} = await autoFetch.patch(
-                `/advertisements/${advertisementDetail.id}/`,
-                {
-                    title: titleEdit,
-                    description: descriptionEdit,
-                    total_user_count: totalPlayerCountEdit,
-                    start_date: startDateEdit,
-                    end_date: endDateEdit,
-                    address: addressEdit,
-                    category: categoryEdit,
-                    advertisement_price: priceEdit,
-                    advertisement_url: advertisementUrl,
-                    image: formData ? formData : null,
-                }
-            );
+                `/advertisements/${advertisementDetail.id}/`,formData);
             setAdvertisementDetail(data);
             setTitleEdit(data.title);
             setImageEdit(data.image);

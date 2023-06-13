@@ -197,32 +197,23 @@ const Post = ({
     };
 
     //update activity
-    const updateActivity = async () => {
+    const updateActivity = async (file) => {
         setLoadingEdit(true);
         try {
-            // let image = imageEdit;
-            // if (formData) {
-            //     image = await handleUpImageComment();
-            //     if (!image) {
-            //         toast.error("Upload image fail. Try again!");
-            //         setLoadingEdit(false);
-            //         return;
-            //     }
-            // }
-            const {data} = await autoFetch.patch(
-                `/activities/${currentActivity.id}/`,
-                {
-                    title: titleEdit,
-                    description: descriptionEdit,
-                    total_player_count: totalPlayerCountEdit,
-                    start_date: startDateEdit,
-                    end_date: endDateEdit,
-                    address: addressEdit,
-                    category: categoryEdit,
-                    activity_price: priceEdit,
+            let formData = new FormData();
+            file && formData.append("image", file);
+            formData.append("title", titleEdit);
+            formData.append("description", descriptionEdit);
+            formData.append("address.address_line1", addressEdit.address_line1);
+            formData.append("address.city", addressEdit.city);
+            formData.append("address.country", addressEdit.country);
+            formData.append("category", categoryEdit);
+            formData.append("activity_price", priceEdit);
+            formData.append("total_player_count", totalPlayerCountEdit);
+            formData.append("start_date", startDateEdit);
+            formData.append("end_date", endDateEdit);
 
-                }
-            );
+            const {data} = await autoFetch.patch(`/activities/${currentActivity?.id}/`, formData);
             setPost(data);
             setTitleEdit(data.title);
             setImageEdit(data.image);
@@ -234,7 +225,7 @@ const Post = ({
             setCategoryEdit(data.category);
             setPriceEdit(data.activity_price);
             setActivityStatus(data.activity_status);
-            if (data.post.image) {
+            if (data?.image) {
                 setAttachment("photo");
             }
             toast("Update post success!");

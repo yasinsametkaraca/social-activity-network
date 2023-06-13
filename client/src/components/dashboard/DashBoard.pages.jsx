@@ -1,6 +1,5 @@
 import {useAppContext} from "../../context/useContext.jsx";
 import {useNavigate} from "react-router-dom";
-import Left from "./components/Weather.component.jsx";
 import Center from "./components/Main.component.jsx";
 import Right from "./components/Sugestion.component.jsx";
 import { useState} from "react";

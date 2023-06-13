@@ -68,16 +68,17 @@ class ActivitySerializer(serializers.ModelSerializer):
         else:
             activity_users = ActivityUser.objects.filter(activity=obj)
             return ActivityUserSerializer(activity_users, many=True).data
-    # def get_activities_by_username(self, username):
-    #     user = self.context['request'].user
-    #     if user.username == username:
-    #         activities = Activity.objects.filter(owner__username=username)
-    #     else:
-    #         if Activity.objects.filter(owner__username=username, activity_user=user).exists():
-    #             activities = Activity.objects.filter(owner__username=username)
-    #         else:
-    #             activities = Activity.objects.filter(owner__username=username, activity_status=True)
-    #     return activities
+
+    def get_activities_by_username(self, username):
+        user = self.context['request'].user
+        if user.username == username:
+            activities = Activity.objects.filter(owner__username=username)
+        else:
+            if Activity.objects.filter(owner__username=username, activity_user=user).exists():
+                activities = Activity.objects.filter(owner__username=username)
+            else:
+                activities = Activity.objects.filter(owner__username=username, activity_status=True)
+        return activities
 
 
 class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
@@ -125,13 +126,13 @@ class ActivityCreateUpdateSerializer(serializers.ModelSerializer):
             address_serializer.save()
 
         instance.title = validated_data.get('title', instance.title)
+        instance.image = validated_data.get('image', instance.image)
         instance.description = validated_data.get('description', instance.description)
         instance.start_date = validated_data.get('start_date', instance.start_date)
         instance.end_date = validated_data.get('end_date', instance.end_date)
         instance.activity_price = validated_data.get('activity_price', instance.activity_price)
         instance.category = validated_data.get('category', instance.category)
         instance.total_player_count = validated_data.get('total_player_count', instance.total_player_count)
-        instance.activity_status = False
-        instance.save()
 
+        instance.save()
         return instance
