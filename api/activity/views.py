@@ -94,24 +94,13 @@ class ActivityJoin(generics.GenericAPIView):
 
         if not created:
             activity_user.delete()
-<<<<<<< HEAD
             get_object_or_404(Notification, sender=request.user, receiver=activity.owner,
-                                        activity_notify=activity, type="AJ").delete()
+                              activity_notify=activity, type="AJ").delete()
             return Response({'message': 'Activity participation successfully canceled.', 'data': serializer.data},
                             status=status.HTTP_200_OK)
 
-        notification = Notification(sender=request.user,  receiver=activity.owner,
+        notification = Notification(sender=request.user, receiver=activity.owner,
                                     activity_notify=activity, type="AJ")
-=======
-            get_object_or_404(Notification, sender=request.user, receiver=activity_user.user,
-                                        activity_notify=activity_user.activity, type="AJ").delete()
-
-            return Response({'message': 'Activity participation successfully canceled.', 'data': serializer.data},
-                            status=status.HTTP_200_OK)
-
-        notification = Notification(sender=request.user, receiver=activity_user.user,
-                                    activity_notify=activity_user.activity, type="AJ")
->>>>>>> main
         notification.save()
         return Response(
             {'message': 'The request to join the activity was successfully received.', 'data': serializer.data},
@@ -145,14 +134,16 @@ class ActivityUserStatusUpdate(generics.UpdateAPIView):
         activity_user.participate_status = participate_status
         activity_user.save()
         if participate_status == "Rejected":
-            notification = get_object_or_404(Notification, sender=request.user, receiver=activity_user.user, activity_notify=activity_user.activity, type="AA")
+            notification = get_object_or_404(Notification, sender=request.user, receiver=activity_user.user,
+                                             activity_notify=activity_user.activity, type="AA")
             notification.type = "AR"
             notification.save()
             return Response({'status': participate_status,
                              'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
                                         f'iptal ettiniz.'}, status=status.HTTP_200_OK)
         elif participate_status == "Accepted":
-            notification = Notification(sender=request.user, receiver=activity_user.user, activity_notify=activity_user.activity, type="AA")
+            notification = Notification(sender=request.user, receiver=activity_user.user,
+                                        activity_notify=activity_user.activity, type="AA")
             notification.save()
             return Response({'status': participate_status,
                              'message': f'{activity_user.user.username} adlı kullanıcının aktiviteye katılmasını '
@@ -172,11 +163,13 @@ class FavouriteActivity(APIView):
             activity.add_favourite.remove(user)
             response = {'message': f'{activity.title} favorilerden kaldırıldı.',
                         "data": ActivitySerializer(activity, context={'request': request}).data}
-            notification = Notification.objects.get(sender=user, receiver=activity.owner, activity_notify=activity, type="Fav")
+            notification = Notification.objects.get(sender=user, receiver=activity.owner, activity_notify=activity,
+                                                    type="Fav")
             notification.delete()
         else:
             activity.add_favourite.add(user)
-            response = {'message': f'{activity.title} favorilere eklendi.', "data": ActivitySerializer(activity, context={'request': request}).data}
+            response = {'message': f'{activity.title} favorilere eklendi.',
+                        "data": ActivitySerializer(activity, context={'request': request}).data}
             notification = Notification(sender=user, receiver=activity.owner, activity_notify=activity, type="Fav")
             notification.save()
 
@@ -185,7 +178,7 @@ class FavouriteActivity(APIView):
 
 class ActivityListByUsername(ListAPIView):
     serializer_class = ActivitySerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         username = self.kwargs['username']
