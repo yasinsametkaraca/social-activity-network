@@ -3,7 +3,7 @@ import {toast} from "react-toastify";
 import {Modal, Post, LoadingPost, LoadingForm, FormCreatePost} from "../..";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-const Center = ({activities, loading, token, autoFetch, setOneState, dark, user, getAllActivities, setActivities, getNewActivities, error, isQrCode,}) => {
+const Center = ({activities, activityCount= 0, loading, token, autoFetch, setOneState, dark, user, getAllActivities, getNewActivities, error, isQrCode,}) => {
 
     const [attachment, setAttachment] = useState("");
     const [title, setTitle] = useState("");
@@ -58,10 +58,11 @@ const Center = ({activities, loading, token, autoFetch, setOneState, dark, user,
             const {data} = await autoFetch.post(`/activities/`, formData);
             toast.success("Your activity will be approved by the system staff.!");
         } catch (error) {
-            toast.error("Error...");
+            toast.error("Something went wrong. Try again!");
         }
         setLoadingCreateNewActivity(false);
     };
+
     const content = () => {
         if (loading) {
             return (
@@ -95,14 +96,14 @@ const Center = ({activities, loading, token, autoFetch, setOneState, dark, user,
             <InfiniteScroll
                 dataLength={activities?.length}
                 next={getNewActivities}
-                hasMore={true}
+                hasMore={activities?.length < activityCount}
                 endMessage={
                     <p style={{ textAlign: 'center' }}>
                         <b>You have seen it all</b>
                     </p>
                 }
                 loader={<LoadingPost />}>
-                {activities.map((activity) => (
+                {activities?.map((activity) => (
                     <Post
                         key={activity?.id}
                         currentActivity={activity}

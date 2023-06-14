@@ -52,9 +52,8 @@ const AdvertisementInformation = () => {
             setPriceEdit(data.advertisement_price);
             setAdvertisementUrl(data.advertisement_url);
             setAdvertisementStatus(data.advertisement_status)
-            console.log(data);
         } catch (e) {
-            toast.error("Error.");
+            toast.error("Something went wrong. Try again!");
         }
     }
 
@@ -198,7 +197,7 @@ const AdvertisementInformation = () => {
                                 navigate(`/company/${advertisementDetail?.company.employer}`);
                             }}>
                             <img
-                                src={`${advertisementDetail?.image ? advertisementDetail?.company?.company_logo: "/images/company.png"}`}
+                                src={`${advertisementDetail?.company?.company_logo ? advertisementDetail?.company?.company_logo: "/images/company.png"}`}
                                 alt='advertisement company'
                                 className='w-12 h-12 rounded-full'
                             />

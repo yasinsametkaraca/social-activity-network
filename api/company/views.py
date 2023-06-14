@@ -1,8 +1,17 @@
 from django.http import Http404
 from rest_framework import generics, permissions
+
+from api.pagination import CustomPagination
 from api.permissions import IsCompanyEmployer
 from .models import Company
 from .serializers import CompanySerializer
+
+
+class CompanyList(generics.ListAPIView):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CustomPagination
 
 
 class CompanyDescriptionUpdate(generics.UpdateAPIView):

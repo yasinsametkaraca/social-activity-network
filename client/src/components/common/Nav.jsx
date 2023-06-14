@@ -14,6 +14,7 @@ import { Dropdown, ItemsList } from "../";
 import useDebounce from "../../hooks/useDebounce";
 import useOnClickOutside from "../../hooks/useOnClickOutside";
 import ReactLoading from "react-loading";
+import {toast} from "react-toastify";
 
 const Nav = () => {
     const { dark, setOneState, user, openQrCode, autoFetch } = useAppContext();
@@ -59,7 +60,7 @@ const Nav = () => {
                 setListSearchResult(data);
             }
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };
@@ -160,7 +161,7 @@ const Nav = () => {
                                 {(isEmpty || listSearchResult.length > 0) && (
                                     <div className=' box-shadow'>
                                         {isEmpty && (
-                                            <div className='w-full text-center border dark:border-white/20 box-shadow dark:bg-[#2E2F30] rounded-[7px] py-6 '>
+                                            <div className='w-full bg-[#F0F2F5] text-center border dark:border-white/20 box-shadow dark:bg-[#2E2F30] rounded-[7px] py-6 '>
                                                 No user found!
                                             </div>
                                         )}

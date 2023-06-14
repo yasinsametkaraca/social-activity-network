@@ -48,8 +48,7 @@ const Participant = ({
             }));
             toast.success(data.message);
         } catch (err) {
-            toast.error(err.message);
-            console.log(err)
+            toast.error("Something went wrong. Try again!");
         }
     }
 
@@ -71,7 +70,7 @@ const Participant = ({
                                 className='font-bold text-[15px] text-[#050505] dark:text-[#e4e6eb] flex items-center gap-x-1 cursor-pointer '
                                 onClick={() => {
                                     navigate(
-                                        `/profile/${participant.participantId}`
+                                        `/profile/${participant?.participantId}`
                                     );
                                 }}>
                                 {participant?.username}
@@ -81,7 +80,7 @@ const Participant = ({
                                 {description}
                             </div>
                             {/* accept or reject participant */}
-                            {(user.username === post.owner) && (post.owner !== participant.username) && (
+                            {(user?.username === post?.owner) && (post?.owner !== participant?.username) && (
                                 <div
                                     className='max-sm:bg-slate-200 shrink-1 w-10 h-10 hidden group-hover:flex cursor-pointer text-[23px] font-extrabold hover:bg-[#F0F2F5] items-center justify-center rounded-full transition-50 dark:hover:bg-[#3A3B3C] absolute z-[100]  right-[-45px] top-[50%] translate-y-[-50%] '
                                     onClick={() => {
@@ -101,16 +100,21 @@ const Participant = ({
                                             setShowOption(false);
                                         }}
                                     >
-                                        <li
-                                            className='mx-1 mt-1 px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60'
-                                            onClick={() => participantAcceptOrReject("Accepted", participant.username)}>
-                                            <TiTickOutline className={"text-green-600"} size={26}></TiTickOutline>
-                                        </li>
-                                        <li
-                                            className='mt-1 px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60'
-                                            onClick={() => participantAcceptOrReject("Rejected", participant.username)}>
-                                            <MdOutlineCancel className={"text-red-500"} size={25}></MdOutlineCancel>
-                                        </li>
+                                        {participant?.participate_status !== "Accepted" &&
+                                            <li
+                                                className='mx-1 mt-1 px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60'
+                                                onClick={() => participantAcceptOrReject("Accepted", participant?.username)}>
+                                                <TiTickOutline className={"text-green-600"} size={26}></TiTickOutline>
+                                            </li>
+                                        }
+                                        {participant?.participate_status !== "Rejected" &&
+                                            <li
+                                                className='mt-1 px-3 py-1 bg-[#F0F2F5] border-[#3A3B3C]/40 text-[#333]/60 hover:border-[#3A3B3C]/60 hover:text-[#333]/80 dark:bg-[#3A3B3C] rounded-md border dark:text-[#e4e6eb]/60 transition-50 dark:hover:text-[#e4e6eb] dark:border-[#3A3B3C] dark:hover:border-[#e4e6eb]/60'
+                                                onClick={() => {participantAcceptOrReject("Rejected", participant?.username)}}
+                                            >
+                                                <MdOutlineCancel className={"text-red-500"} size={25}></MdOutlineCancel>
+                                            </li>
+                                        }
                                     </ul>
                                 </div>
                             )}

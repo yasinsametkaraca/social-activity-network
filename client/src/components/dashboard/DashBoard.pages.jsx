@@ -4,6 +4,7 @@ import Center from "./components/Main.component.jsx";
 import Right from "./components/Sugestion.component.jsx";
 import { useState} from "react";
 import AdvertisementItem from "../advertisement/AdvertisementItem.jsx";
+import {toast} from "react-toastify";
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Dashboard = () => {
     const [page, setPage] = useState(1);
     const [activities, setActivities] = useState([]);
     const [error, setError] = useState(false);
+    const [activityCount, setActivityCount] = useState(0);
 
     const getAllActivities = async () => {
         setLoading(true);
@@ -28,8 +30,9 @@ const Dashboard = () => {
                 `/activities/`
             );
             setActivities(data.data.results);
+            setActivityCount(data.data.count);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
             setError(true);
         }
         setLoading(false);
@@ -43,7 +46,7 @@ const Dashboard = () => {
             setPage(page + 1);
             setActivities([...activities, ...data.results]);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     };
 
@@ -73,13 +76,13 @@ const Dashboard = () => {
                         getNewActivities={getNewActivities}
                         error={error}
                         isQrCode={isQrCode}
+                        activityCount={activityCount}
                     />
                 </div>
                 <div className='col-span-11 md:col-span-3 relative order-2 md:order-3 '>
                     {user?.role === "FRIEND" &&
                         <Right
                             autoFetch={autoFetch}
-                            getAllActivities={getAllActivities}
                             navigate={navigate}
                             setNameAndToken={setNameAndToken}
                             user={user}

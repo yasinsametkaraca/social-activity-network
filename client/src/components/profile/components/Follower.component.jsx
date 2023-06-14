@@ -37,7 +37,7 @@ const FollowingPage = ({
             );
             setListFollowing(data);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };
@@ -104,7 +104,7 @@ export function People({
             setName(data.user);
             toast(`Follow ${username} success`);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };
@@ -117,7 +117,7 @@ export function People({
             setName(data.user);
             toast.info(`You have unfollowed ${username}!`);
         } catch (error) {
-            console.log(error);
+            toast.error(`Something went wrong.`);
         }
         setLoading(false);
     };

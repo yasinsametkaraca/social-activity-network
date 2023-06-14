@@ -15,7 +15,7 @@ const NotificationItem = ({ notification, autoFetch }) => {
             setIsRead(true);
             toast.success("Marked as read");
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     };
 
@@ -38,6 +38,9 @@ const NotificationItem = ({ notification, autoFetch }) => {
             break;
         case "SSR":
             notificationText = `System staff did not confirmed your activity "${notification?.advertisement ? notification?.advertisement_title : notification?.activity_title}"`;
+            break;
+        case "Fav":
+            notificationText = `${notification?.sender} added your activity "${notification?.advertisement ? notification?.advertisement_title : notification?.activity_title}" to favorites`;
             break;
         default:
             notificationText = "New notification";
@@ -72,12 +75,14 @@ const NotificationItem = ({ notification, autoFetch }) => {
                                 return navigate(`/advertisement/detail/${notification?.advertisement}`)
                             navigate(`/activity/detail/${notification?.activity}`)}
                         }
-                        className="cursor-pointer text-lg font-bold">{notification?.advertisement ? notification?.advertisement_title : notification?.activity_title}
+                        className="cursor-pointer text-lg font-bold"
+                    >
+                        {notification?.advertisement ? notification?.advertisement_title : notification?.activity_title}
                     </h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{moment(notification?.created_at).fromNow()}</p>
                 </div>
                 <div className={"flex justify-between"}>
-                    <p className="text-gray-600 dark:text-gray-400 max-sm:w-full mt-1">{notificationText}</p>
+                    <p className={` ${notification?.type === "F" ? "text-lg font-bold mb-4" : " max-sm:w-full mt-1"}`}>{notificationText}</p>
                     {!isRead && (
                         <button
                             className="text-blue-500 text-sm"

@@ -29,7 +29,7 @@ const Right = ({
             const {data} = await autoFetch.get(`/profiles/suggestions/`);
             setListPeople(data);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setPLoading(false);
     };
@@ -45,7 +45,7 @@ const Right = ({
             getAllActivities();
             toast(`Follow ${username} success`);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     };
 

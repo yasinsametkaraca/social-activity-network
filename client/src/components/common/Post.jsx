@@ -103,7 +103,7 @@ const Post = ({
             setTextComment("");
             setImageComment(null);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setCommentLoading(false);
     }
@@ -119,7 +119,7 @@ const Post = ({
                 }));
                 setShowParticipants(!showParticipants);
             } catch (error) {
-                console.log(error);
+                toast.error("Something went wrong. Try again!");
             }
         }
         setShowParticipants(!showParticipants);
@@ -156,7 +156,7 @@ const Post = ({
             setTextComment("");
             setImageComment(null);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setCommentLoading(false);
     };
@@ -180,7 +180,7 @@ const Post = ({
             const {data} = await autoFetch.post(`/activities/${activityId}/addfavourite/`);
             setPost({...post, add_favourite: data.data.add_favourite});
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLikeLoading(false);
     };
@@ -192,7 +192,7 @@ const Post = ({
             toast(data.msg);
             getDeletePostId(activityId);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     };
 
@@ -230,7 +230,7 @@ const Post = ({
             }
             toast("Update post success!");
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoadingEdit(false);
         setFormData(null);

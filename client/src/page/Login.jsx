@@ -32,7 +32,6 @@ const Login = () => {
             toast.success("Login success.");
             setLoading(false);
         } catch (error) {
-            console.log(error);
             toast.error("Username or password incorrect.");
             setLoading(false);
         }

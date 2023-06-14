@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import {LoadingPost} from "../index.js";
 import InfiniteScroll from "react-infinite-scroll-component";
+import CompanyList from "./CompanyList.jsx";
 
 const AdvertisementPages = () => {
     const {autoFetch, dark, user} = useAppContext();
@@ -33,22 +34,22 @@ const AdvertisementPages = () => {
             setPage(page + 1);
             setAdvertisementList([...advertisementList, ...data.results]);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     }
     return (
         <>
             <div className='overflow-x-hidden min-h-screen pt-16 md:pt-[85px]'>
                 <div className='w-screen grid grid-cols-11 md:gap-x-12 px-3 sm:px-7 md:px-10 relative'>
-                    <div className='col-span-11 md:col-span-3 relative order-1 '>
+                    <div className='col-span-11 md:col-span-2 relative order-1'>
 
                     </div>
-                    <div className='col-span-11 md:col-span-5 shrink-0 order-3 md:order-2'>
+                    <div className='col-span-11 md:col-span-4 shrink-0 order-3 md:order-2 '>
                         <InfiniteScroll
-                            dataLength={count}
+                            dataLength={advertisementList?.length}
                             next={getNewAdvertisements}
-                            style={{ display: 'flex', flexDirection:'column', flexWrap: 'wrap', justifyContent: 'center', width: '100%', height: '100%', overflow: 'auto' }}
-                            hasMore={advertisementList.length < count}
+                            style={{ display: 'flex', flexDirection:'column', flexWrap: 'wrap', justifyContent: 'center', width: '100%', height: '100%', overflow: 'hidden' }}
+                            hasMore={advertisementList?.length < count}
                             loader={<LoadingPost />}
                             endMessage={
                                 <p style={{ textAlign: 'center' }}>
@@ -69,6 +70,14 @@ const AdvertisementPages = () => {
                                 </div>
                             ))}
                         </InfiniteScroll>
+                    </div>
+                    <div className='col-span-11 md:col-span-3 relative order-2 md:order-3 '>
+                        <CompanyList
+                            autoFetch={autoFetch}
+                            dark={dark}
+                            user={user}
+                        >
+                        </CompanyList>
                     </div>
                     <div className='col-span-11 md:col-span-3 relative order-2 md:order-3 '>
 

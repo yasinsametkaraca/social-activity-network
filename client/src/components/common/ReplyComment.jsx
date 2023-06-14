@@ -40,7 +40,7 @@ const ReplyComment = ({
             );
             setReplyComment({...replyComment, like: data.reply.like});
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLikeReplyLoading(false);
     };
@@ -55,7 +55,7 @@ const ReplyComment = ({
             });
             setReplyComment({...replyComment, like: data.reply.like});
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLikeReplyLoading(false);
     };

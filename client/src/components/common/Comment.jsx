@@ -47,7 +47,6 @@ const Comment = ({
     const handleImage = (e) => {
         const file = e.target.files[0];
         setImageEdit(URL.createObjectURL(file));
-        console.log(imageEdit)
         let formData = new FormData();
         formData.append("image", file);
         formData.append("activity_id", currentComment.activity)
@@ -90,7 +89,7 @@ const Comment = ({
             setEditComment(false);
             cmtHistory.current = text;
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setEditLoading(false);
     };
@@ -104,7 +103,7 @@ const Comment = ({
             });
             setComment({...comment, like: data.comment.like});
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLikeCommentLoading(false);
     };
@@ -118,7 +117,7 @@ const Comment = ({
             });
             setComment({...comment, like: data.comment.like});
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLikeCommentLoading(false);
     };
@@ -186,12 +185,12 @@ const Comment = ({
                 setComment({...comment, reply: data.comment.reply});
                 setReplyImage(null);
             } catch (error) {
-                console.log(error);
+                toast.error("Something went wrong. Try again!");
             }
             setReplyLoading(false);
             setTextReply("");
         } catch (error) {
-            console.log(error)
+            toast.error("Something went wrong. Try again!");
         }
     };
 

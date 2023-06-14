@@ -38,7 +38,7 @@ const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdv
             const {data} = await autoFetch.get(`/advertisements/highlight/`);
             setAdvertisement(...data);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     }
 
@@ -260,22 +260,22 @@ const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdv
                         <div dangerouslySetInnerHTML={{ __html: advertisement?.description }}></div>
                     </div>
                 }
-                <div className="grid grid-cols-2 gap-9 max-sm:grid-cols-2">
-                    {advertisement?.start_date &&
-                        <div className={`content my-3 ${advertisement?.image || advertisement?.start_date.length > 60 ? 'text-[15px]' : 'text-[16px]'}`}>
-                            <label className="font-bold">Start Date</label>
-                            <div>{formatDate(advertisement?.start_date)}</div>
-                        </div>
-                    }
-                    {advertisement?.end_date &&
-                        <div className={`content my-3 ${advertisement?.image || advertisement?.end_date.length > 60 ? 'text-[15px]' : 'text-[16px]'}`}>
-                            <label className="font-bold">End Date</label>
-                            <div>{formatDate(advertisement?.end_date)}</div>
-                        </div>
-                    }
-                </div>
                 {!isAdvertisementList &&
                     <>
+                        <div className="grid grid-cols-2 gap-9 max-sm:grid-cols-2">
+                            {advertisement?.start_date &&
+                                <div className={`content my-3 ${advertisement?.image || advertisement?.start_date.length > 60 ? 'text-[15px]' : 'text-[16px]'}`}>
+                                    <label className="font-bold">Start Date</label>
+                                    <div>{formatDate(advertisement?.start_date)}</div>
+                                </div>
+                            }
+                            {advertisement?.end_date &&
+                                <div className={`content my-3 ${advertisement?.image || advertisement?.end_date.length > 60 ? 'text-[15px]' : 'text-[16px]'}`}>
+                                    <label className="font-bold">End Date</label>
+                                    <div>{formatDate(advertisement?.end_date)}</div>
+                                </div>
+                            }
+                        </div>
                         <div className="grid grid-cols-2 gap-9 max-sm:grid-cols-2">
                             <div className={`content my-3 ${advertisement?.image || advertisement?.total_user_count?.length > 60 ? 'text-[15px]' : 'text-[16px]'}`}>
                                 <label className="font-bold">Price</label>
@@ -304,16 +304,16 @@ const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdv
                                 </div>
                             </div>
                         </div>
-                        <div className={`content my-3 ${advertisement?.image || advertisement?.address?.address_line1.length > 60 ? 'text-[15px]' : 'text-[16px]'}`}>
-                            {advertisement?.image && (
-                                <img
-                                    src={advertisement.image}
-                                    alt=''
-                                    className='object-cover'></img>
-                            )}
-                        </div>
                     </>
                 }
+                <div className={`content my-3 ${advertisement?.image || advertisement?.address?.address_line1.length > 60 ? 'text-[15px]' : 'text-[16px]'}`}>
+                    {advertisement?.image && (
+                        <img
+                            src={advertisement.image}
+                            alt=''
+                            className='object-cover'></img>
+                    )}
+                </div>
             </div>
         </div>
     );

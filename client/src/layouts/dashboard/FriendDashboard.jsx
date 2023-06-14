@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 // import Right from "./components/Sugestion.component";
 import {useState} from "react";
 import Activity from "../../pages/Activity.jsx";
+import {toast} from "react-toastify";
 
 const FriendDashboard = () => {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ const FriendDashboard = () => {
             );
             setPosts(data.posts);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
             setError(true);
         }
         setLoading(false);
@@ -45,7 +46,7 @@ const FriendDashboard = () => {
             // @ts-ignore
             setPosts([...posts, ...data.posts]);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     };
 

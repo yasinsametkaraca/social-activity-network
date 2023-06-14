@@ -46,7 +46,6 @@ const Register = () => {
         }
     };
 
-    console.log(state)
     const register = async () => {
         setLoading(true);
         try {
@@ -78,7 +77,6 @@ const Register = () => {
             setLoading(false);
         } catch (error) {
             setLoading(false);
-            console.log(error);
             toast.error("Please Fill In The Required Fields!");
         }
     };
@@ -123,7 +121,7 @@ const Register = () => {
     if (user) {
         return <Navigate to='/' />;
     }
-    console.log(state.secret_question)
+
     return (
         <div>
             <Nav />

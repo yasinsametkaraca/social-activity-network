@@ -6,6 +6,7 @@ import {useAppContext} from "../../context/useContext.jsx";
 import NotificationItem from "./components/NotificationItem.jsx";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {LoadingPost} from "../index.js";
+import {toast} from "react-toastify";
 
 
 const Notification = () => {
@@ -27,7 +28,7 @@ const Notification = () => {
             setNotification(data.results);
             setNotificationQuantity(data.count);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     }
@@ -35,24 +36,24 @@ const Notification = () => {
     const getNewNotifications= async () => {
         try {
             const {data} = await autoFetch.get(
-                `/advertisements/?page=${page + 1}`
+                `/notifications/?page=${page + 1}`
             );
             setPage(page + 1);
             setNotification([...notification, ...data.results]);
         } catch (error) {
-            console.log(error);
+            toast.info("You have seen it all notifications!");
         }
     }
 
     return (
-        <div className='w-screen h-screen px-2 md:px-[5%] pt-[60px] md:pt-[80px] overflow-hidden'>
+        <div className={`w-screen  px-2 md:px-[5%] pt-[60px] md:pt-[80px] overflow-hidden ${notificationQuantity < 8 && "h-screen"}`}>
             <div className='flex justify-center w-full'>
                 <div className='border dark:border-white/20 box-shadow md:w-2/3 w-full'>
                     <InfiniteScroll
-                        dataLength={notificationQuantity}
+                        dataLength={notification?.length}
                         next={getNewNotifications}
                         style={{ display: 'flex', flexDirection:'column', flexWrap: 'wrap', justifyContent: 'center', width: '100%', height: '100%', overflow: 'auto' }}
-                        hasMore={notification.length < notificationQuantity}
+                        hasMore={notification?.length < notificationQuantity}
                         loader={<LoadingPost />}
                         endMessage={
                             <p className={"my-3"} style={{ textAlign: 'center' }}>
@@ -79,7 +80,7 @@ const Notification = () => {
                                                 autoFetch={autoFetch}
                                             />
                                         </ListItem>
-                                        {index < notificationQuantity - 1 && (
+                                        {index <= notificationQuantity - 1 && (
                                             <Divider  component='li' />
                                         )}
                                     </div>

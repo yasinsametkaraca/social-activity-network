@@ -34,7 +34,7 @@ const Left = ({
             });
             setUser({...user, about: textBio})
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };

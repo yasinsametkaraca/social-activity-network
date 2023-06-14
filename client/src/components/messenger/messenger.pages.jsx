@@ -270,10 +270,7 @@ const Message = () => {
                 },
             });
         } catch (error) {
-            console.log(error);
-            if (error.response && error.response.data.msg) {
-                toast.error(error.response.data.msg);
-            }
+            toast.error("Something went wrong. Try again!");
         }
         setScrLoading(false);
     };
@@ -353,8 +350,6 @@ const Message = () => {
             if (!id) {
                 id = dt.data.message._id;
             }
-
-            // @ts-ignore
             dispatch({
                 type: HANDLE_SEND_MESSAGE,
                 payload: {
@@ -366,10 +361,7 @@ const Message = () => {
             setImage(initImage);
             socket.emit("new-message", dt.data.message);
         } catch (error) {
-            console.log(error);
-            if (error.response && error.response.data.msg) {
-                toast.error(error.response.data.msg);
-            }
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };
@@ -389,7 +381,7 @@ const Message = () => {
                 },
             });
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     };
 

@@ -246,7 +246,6 @@ const BoxChat = ({setOneState, state, getData, user, dispatch}) => {
                                                 }
                                             }
                                         });
-                                    //console.log(arrFilter);
                                     setOneState("allMessages", arrFilter);
                                 }}
                             />

@@ -8,6 +8,7 @@ import Right from "./components/Posts.component.jsx";
 import {LoadingProfile} from "../";
 import FollowerPage from "./components/Follower.component.jsx";
 import FollowingPage from "./components/Following.component.jsx";
+import {toast} from "react-toastify";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -48,7 +49,7 @@ const Profile = () => {
             const {data} = await autoFetch.get(`/profiles/${username}/`);
             setUser(data);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };
@@ -61,7 +62,7 @@ const Profile = () => {
             );
             setPosts(data);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setPostLoading(false);
     };
@@ -80,7 +81,6 @@ const Profile = () => {
     const getDeletePostId = (postId) => {
         const newPosts = posts.filter((v) => v?.id !== postId);
         setPosts(newPosts);
-        console.log("delete post: ", postId);
     };
 
     const main = () => {

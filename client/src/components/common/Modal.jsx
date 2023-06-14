@@ -68,7 +68,6 @@ const Modal = ({
         setLoading(false);
     };
 
-    console.log(formData);
     const handleButton = () => {
         if (isEditPost) {
             // Edit post

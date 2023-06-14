@@ -4,6 +4,7 @@ import ReactLoading from "react-loading";
 // components
 import {Table} from "../../..";
 import {useAppContext} from "../../../../context/useContext.jsx";
+import {toast} from "react-toastify";
 
 const Users = ({convertDate, countUsers}) => {
     const {autoFetch} = useAppContext();
@@ -31,7 +32,7 @@ const Users = ({convertDate, countUsers}) => {
             setListUser(data.results);
             countUsers(data.count);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };

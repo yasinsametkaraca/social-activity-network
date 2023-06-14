@@ -32,7 +32,7 @@ const Posts = ({convertDate, countPosts}) => {
             setPostsCount(data.count);
             countPosts(data.count);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };
@@ -45,7 +45,7 @@ const Posts = ({convertDate, countPosts}) => {
             toast("Delete post success!");
             getAllPosts();
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     };
 

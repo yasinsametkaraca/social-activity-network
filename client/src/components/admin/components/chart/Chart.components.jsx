@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { LineChart } from "../../../";
 import { useAppContext } from "../../../../context/useContext.jsx";
+import {toast} from "react-toastify";
 
 const Chart = ({ convertDate }) => {
     const { autoFetch } = useAppContext();
@@ -24,7 +25,7 @@ const Chart = ({ convertDate }) => {
             );
             setDataUsers(data.results);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoadingUsers(false);
     };
@@ -37,7 +38,7 @@ const Chart = ({ convertDate }) => {
             );
             setDataPosts(data.results);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoadingPosts(false);
     };

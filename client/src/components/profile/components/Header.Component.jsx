@@ -30,7 +30,7 @@ const Header = ({
             setName(data.user);
             toast.info(`You have unfollowed ${username}!`);
         } catch (error) {
-            console.log(error);
+            toast.error(`Something went wrong.`);
         }
         setLoading(false);
     };
@@ -43,7 +43,7 @@ const Header = ({
             setName(data.user);
             toast(`Follow ${username} success`);
         } catch (error) {
-            console.log(error);
+            toast.error(`Something went wrong.`);
         }
         setLoading(false);
     };

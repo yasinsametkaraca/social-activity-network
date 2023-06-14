@@ -4,9 +4,11 @@ import {useState} from "react";
 import {toast} from "react-toastify";
 import {TiTick} from "react-icons/ti";
 import ReactLoading from "react-loading";
+import {useNavigate} from "react-router-dom";
 
 const UpdateProfile = () => {
     const {user, autoFetch, setName} = useAppContext();
+    const navigate = useNavigate();
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState(null);
@@ -34,7 +36,7 @@ const UpdateProfile = () => {
             setImage(URL.createObjectURL(file));
             setFile(e.target.files[0]);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     };
 
@@ -61,6 +63,7 @@ const UpdateProfile = () => {
             localStorage.setItem("user", JSON.stringify(data));
             setName(data);
             toast.success("Update profile success!");
+            navigate(`/profile/${data.username}`)
             //setState(initValueState);
         } catch (error) {
             if (error?.response?.data) {

@@ -67,7 +67,7 @@ const Information = () => {
                 }));
                 setShowParticipants(!showParticipants);
             } catch (error) {
-                console.log(error);
+                toast.error("Something went wrong. Try again!");
             }
         }
         setShowParticipants(!showParticipants);
@@ -89,7 +89,7 @@ const Information = () => {
             setTextComment("");
             setImageComment(null);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setCommentLoading(false);
     }
@@ -100,7 +100,7 @@ const Information = () => {
             const {data} = await autoFetch.post(`/activities/${activityId}/addfavourite/`);
             setPost({...post, add_favourite: data.data.add_favourite});
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLikeLoading(false);
     };
@@ -266,7 +266,7 @@ const Information = () => {
             }
             toast("Update post success!");
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoadingEdit(false);
         setFormData(null);
@@ -284,7 +284,7 @@ const Information = () => {
             navigate("/")
 
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
     };
 

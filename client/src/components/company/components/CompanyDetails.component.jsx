@@ -3,6 +3,7 @@ import ReactLoading from "react-loading";
 import {LoadingIntro, LoadingImage} from "../..";
 import {AiOutlineMail, AiOutlinePhone} from "react-icons/ai";
 import {CgWebsite} from "react-icons/cg";
+import {toast} from "react-toastify";
 
 const Left = ({user,
               images,
@@ -28,7 +29,7 @@ const Left = ({user,
             });
             setUser({...user, company: {...user.company, description: textDescription}});
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };

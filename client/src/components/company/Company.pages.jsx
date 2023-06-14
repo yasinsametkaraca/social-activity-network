@@ -5,6 +5,7 @@ import Left from "../company/components/CompanyDetails.component.jsx";
 import Right from "../company/components/Advertisements.component.jsx";
 import Header from "../company/components/Header.jsx";
 import {LoadingProfile} from "../index.js";
+import {toast} from "react-toastify";
 
 const Company = () => {
     const navigate = useNavigate();
@@ -37,7 +38,7 @@ const Company = () => {
             const {data} = await autoFetch.get(`/profiles/${username}/`);
             setUser(data);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setLoading(false);
     };
@@ -51,7 +52,7 @@ const Company = () => {
             );
             setAdvertisements(data);
         } catch (error) {
-            console.log(error);
+            toast.error("Something went wrong. Try again!");
         }
         setPostLoading(false);
     };
