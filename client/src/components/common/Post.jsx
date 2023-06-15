@@ -54,16 +54,14 @@ const Post = ({
     const [loadingEdit, setLoadingEdit] = useState(false);
     const [showParticipants, setShowParticipants] = useState(false);
     const [activityStatus, setActivityStatus] = useState(currentActivity?.activity_status);
-
+    const [commentCount, setCommentCount] = useState(currentActivity?.comment_count);
+    const [likeCount, setLikeCount] = useState(currentActivity?.add_favourite?.length);
 
     // open modal
     useEffect(() => {
         setOneState("openModal", openModal);
     }, [openModal]);
 
-
-    let likeCount = post?.add_favourite?.length;
-    let commentCount = post?.comment_count;
     // set image to show in form
     const handleImage = (e) => {
         setImageComment(null);
@@ -151,6 +149,7 @@ const Post = ({
                 const updatedComments = Array.isArray(prevPost.comments) ? [...prevPost.comments, data] : [data];
                 return {...prevPost, comments: updatedComments,};
             });
+            setCommentCount(commentCount + 1)
             setShowComment(true);
             setShowParticipants(false);
             setTextComment("");
@@ -168,6 +167,7 @@ const Post = ({
                 ...prevPost,
                 comments: prevPost.comments.filter((comment) => comment.id !== commentId),
             }));
+            setCommentCount(commentCount - 1)
             toast("You have deleted comment! ");
         } catch (error) {
             toast("You have not deleted comment! ");
@@ -179,6 +179,7 @@ const Post = ({
         try {
             const {data} = await autoFetch.post(`/activities/${activityId}/addfavourite/`);
             setPost({...post, add_favourite: data.data.add_favourite});
+            setLikeCount(data.data.add_favourite.length)
         } catch (error) {
             toast.error("Something went wrong. Try again!");
         }

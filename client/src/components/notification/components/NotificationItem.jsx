@@ -22,7 +22,8 @@ const NotificationItem = ({ notification, autoFetch }) => {
     let notificationText = "";
     switch (notification?.type) {
         case "AJ":
-            notificationText = `${notification?.sender} sent you an activity join request for "${notification?.activity_title}"`;
+            notificationText = `${notification?.sender}
+            sent you an activity join request for "${notification?.activity_title}"`;
             break;
         case "AA":
             notificationText = `${notification?.sender} accepted your activity invitation for "${notification?.activity_title}"`;

@@ -110,7 +110,7 @@ const AdvertisementInformation = () => {
 
         try {
             const {data} = await autoFetch.patch(
-                `/advertisements/${advertisementDetail.id}/`,formData);
+                `/advertisements/${advertisementDetail?.id}/`,formData);
             setAdvertisementDetail(data);
             setTitleEdit(data.title);
             setImageEdit(data.image);

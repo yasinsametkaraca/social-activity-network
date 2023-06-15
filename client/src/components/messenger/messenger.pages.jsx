@@ -13,9 +13,8 @@ import {LoadingMessenger} from "../";
 import "./messenger.css";
 import {MdCancel} from "react-icons/md";
 
-// @ts-ignore
 const socket = io(import.meta.env.REACT_APP_SOCKET_IO_SERVER, {
-    reconnection: true,
+    reconnection: false,
 });
 
 const initState = {

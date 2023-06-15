@@ -22,7 +22,7 @@ const AdvertisementPages = () => {
             setAdvertisementList(data.results);
             setCount(data.count)
         } catch (e) {
-            toast.error("Error...");
+            toast.error("Something went wrong. Try again!");
         }
     }
 

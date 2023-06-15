@@ -51,7 +51,6 @@ const Right = ({
             formData.append("description", description);
             formData.append("address.address_line1", address.address_line1);
             formData.append("address.city", address.city);
-            formData.append("address.postal_code", address.postal_code);
             formData.append("address.country", address.country);
             formData.append("category", category);
             formData.append("activity_price", price);

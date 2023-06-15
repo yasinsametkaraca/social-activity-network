@@ -268,7 +268,7 @@ const Modal = ({
                         />
                     </div>
                     <div className={"flex mt-2"}>
-                        <label htmlFor="address_line1" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-2.5 ml-0 text-[15px]" : "mt-2.5 ml-0 text-[17px]" }`}>Address</label>
+                        <label htmlFor="address_line1" className={`w-40 p-0 text-[#a0a0a1] ${attachment ? "mt-2.5 ml-0 text-[15px]" : "mt-2 ml-0 text-[17px]" }`}>Address</label>
                         <textarea
                             id="address_line1"
                             value={address.address_line1}
@@ -335,7 +335,7 @@ const Modal = ({
                         {/*    />*/}
                         {/*</div>*/}
                         <div className={"flex"}>
-                            <label htmlFor="price" className={`p-0 text-[#a0a0a1] ${attachment ? "mt-3 ml-0 text-[15px]" : "mt-3 ml-0 text-[17px]" }`}>Price</label>
+                            <label htmlFor="price" className={`p-0 text-[#a0a0a1] ${attachment ? "mt-2.5 ml-0 text-[15px]" : "mt-3 ml-0 text-[17px]" }`}>Price</label>
                             <input
                                 id={"price"}
                                 type={"number"}

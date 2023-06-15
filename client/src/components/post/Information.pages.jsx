@@ -51,6 +51,8 @@ const Information = () => {
         post?.image ? "photo" : ""
     );
     const [activityStatus, setActivityStatus] = useState(post?.activity_status);
+    const [commentCount, setCommentCount] = useState(post?.comment_count);
+    const [likeCount, setLikeCount] = useState(post?.add_favourite?.length);
 
     useEffect(() => {
         getCurrentPost(currentActivityId);
@@ -99,6 +101,7 @@ const Information = () => {
         try {
             const {data} = await autoFetch.post(`/activities/${activityId}/addfavourite/`);
             setPost({...post, add_favourite: data.data.add_favourite});
+            setLikeCount(data.data.add_favourite.length)
         } catch (error) {
             toast.error("Something went wrong. Try again!");
         }
@@ -124,6 +127,8 @@ const Information = () => {
             setPriceEdit(data.activity_price);
             setActivityStatus(data.activity_status);
             setAttachment(data?.image ? "photo" : "")
+            setCommentCount(data?.comment_count)
+            setLikeCount(data?.add_favourite?.length)
         } catch (error) {
             setLoading(false);
         }
@@ -136,7 +141,8 @@ const Information = () => {
                 ...prevPost,
                 comments: prevPost.comments.filter((comment) => comment.id !== commentId),
             }));
-            toast("You have deleted comment! ");
+            setCommentCount(commentCount - 1)
+            toast("You have deleted comment!");
         } catch (error) {
             toast("You have not deleted comment! ");
         }
@@ -163,12 +169,13 @@ const Information = () => {
                 comment: textComment,
                 image
             });
+            setShowComment(true);
             setPost((prevPost) => {
                 const updatedComments = Array.isArray(prevPost.comments) ? [...prevPost.comments, data] : [data];
                 return {...prevPost, comments: updatedComments,};
             });
+            setCommentCount(commentCount + 1)
             setShowParticipants(false);
-            setShowComment(true);
             setTextComment("");
             setImageComment(null);
         } catch (error) {
@@ -199,9 +206,6 @@ const Information = () => {
 
         return dateTime.toLocaleString('en-US', options);
     };
-
-    const commentCount = post?.comment_count;
-    const likeCount = post?.add_favourite?.length;
 
     const handleImage = (e) => {
         setImageComment(null);

@@ -247,7 +247,7 @@ const AdvertisementItem = ({dark, autoFetch, user={},getAdvertisements=[] ,isAdv
                     </div>
                 }
             </div>
-            <div className={"ml-1 cursor-pointer"} onClick={() => navigate("/advertisement/detail/" + advertisement.id )}>
+            <div className={"ml-1 cursor-pointer"} onClick={() => navigate("/advertisement/detail/" + advertisement?.id )}>
                 {advertisement?.title &&
                     <div className={`content my-5 ${advertisement?.image || advertisement?.title.length > 60 ? 'text-[15px]' : 'text-[16px]'}`}>
                         <label className="font-bold">Title</label>

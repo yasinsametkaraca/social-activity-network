@@ -248,8 +248,8 @@ const UpdateProfile = () => {
                         <TiTick className='text-[22px] text-white rounded-full bg-sky-500 ' />
                     )}
                 </div>
-                <span className='ml text-2xl font-normal mt-1 '>
-                    ({user.username})
+                <span className='ml text-3xl font-bold mt-1 '>
+                    {user.username}
                 </span>
             </div>
             <div className='col-span-2 my-[5%] lg:py-auto py-7 px-6 bg-gray-400/30 lg:rounded-3xl md:rounded-xl rounded-md'>
